@@ -1,0 +1,60 @@
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calendar-input {
+  padding: 0.5rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+}
+
+.error-message {
+  color: var(--color-error);
+}
+
+.no-dates-message {
+  color: var(--color-text);
+}
+
+.confirmation-dialog {
+  background-color: var(--color-card-background);
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.confirmation-dialog p {
+  margin-bottom: 1rem;
+}
+
+.confirm-button,
+.cancel-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirm-button {
+  background-color: var(--color-primary);
+  color: white;
+  margin-right: 0.5rem;
+}
+
+.confirm-button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.cancel-button {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.cancel-button:hover {
+  background-color: var(--color-secondary-dark);
+}
+

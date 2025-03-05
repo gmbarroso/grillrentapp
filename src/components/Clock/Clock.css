@@ -1,0 +1,13 @@
+.clock {
+    font-size: 1rem;
+    color: white;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .clock {
+      font-size: 0.8rem;
+    }
+  }
+  
+  

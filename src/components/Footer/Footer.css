@@ -1,0 +1,44 @@
+.footer {
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-right: 1rem;
+}
+
+.social-logo {
+  width: 24px;
+  height: 24px;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+    height: auto;
+    padding: 0.5rem 1rem;
+  }
+
+  .app {
+    padding-bottom: 100px;
+  }
+
+  .social-links {
+    margin-right: 0;
+    margin-top: 0.5rem;
+  }
+}
+

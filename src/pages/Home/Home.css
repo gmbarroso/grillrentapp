@@ -1,0 +1,20 @@
+.home-content {
+  display: flex;
+  gap: 2rem;
+}
+
+.booking-section-container,
+.booking-list-container {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .home {
+    padding: 1rem;
+  }
+
+  .home-content {
+    flex-direction: column;
+  }
+}

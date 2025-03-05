@@ -1,0 +1,77 @@
+import type React from "react"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
+import { useAuth } from "../../context/AuthContext"
+import { useLoading } from "../../context/LoadingContext"
+import { useToast } from "../../context/ToastContext"
+import "./LoginScreen.css"
+
+export default function LoginScreen() {
+  const [apartment, setApartment] = useState("")
+  const [block, setBlock] = useState(1)
+  const [password, setPassword] = useState("")
+  const navigate = useNavigate()
+  const { login } = useAuth()
+  const { t } = useTranslation()
+  const { setIsLoading } = useLoading()
+  const { showToast } = useToast()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      const success = await login(apartment, block, password)
+      if (success) {
+        navigate("/")
+      } else {
+        showToast(t("Login.Error"), "error")
+      }
+    } catch (err) {
+      showToast(t("Login.Error"), "error")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="container">
+      <div className="form-container">
+        <h2 className="title">{t("Login.Title")}</h2>
+        <form className="form" onSubmit={handleSubmit}>
+          <input
+            className="input"
+            type="text"
+            placeholder={t("Login.Apartment")}
+            value={apartment}
+            onChange={(e) => setApartment(e.target.value)}
+            required
+          />
+          <input
+            className="input"
+            type="number"
+            min="1"
+            max="2"
+            placeholder={t("Login.Block")}
+            value={block}
+            onChange={(e) => setBlock(Math.min(Math.max(Number.parseInt(e.target.value) || 1, 1), 2))}
+            required
+          />
+          <input
+            className="input"
+            type="password"
+            placeholder={t("Login.Password")}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button className="button" type="submit">
+            {t("Login.SignIn")}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+

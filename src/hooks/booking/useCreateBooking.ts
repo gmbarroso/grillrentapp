@@ -6,7 +6,7 @@ interface BookingResponse {
   booking: Booking
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
 
 export function useCreateBooking(token: string) {
   const [isLoading, setIsLoading] = useState(false)

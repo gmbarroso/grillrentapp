@@ -61,20 +61,15 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const handleConfirmDate = async () => {
     if (selectedResource && selectedDate) {
       const startTime = new Date(selectedDate)
+      const endTime = new Date(startTime)
 
       if (selectedOption === "tennis" && selectedTime) {
         const [hours] = selectedTime.split(":")
         startTime.setHours(Number.parseInt(hours, 10), 0, 0, 0)
-      } else {
-        startTime.setHours(10, 0, 0, 0)
-      }
-
-      const endTime = new Date(startTime)
-
-      if (selectedOption === "tennis") {
         endTime.setHours(startTime.getHours() + 1)
       } else {
-        endTime.setHours(22, 0, 0, 0)
+        startTime.setHours(7, 0, 0, 0)
+        endTime.setHours(19, 0, 0, 0)
       }
 
       try {
@@ -83,6 +78,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
         }
+        console.log(bookingData)
         await createBooking(bookingData)
         setIsDateAvailable(true)
         onBookingCreated()

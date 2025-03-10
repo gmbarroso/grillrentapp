@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 1000;
+  z-index: 1100;
   animation: slideUp 0.3s ease-out;
 }
 
@@ -39,6 +39,12 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .toast {
+    bottom: 70px;
   }
 }
 

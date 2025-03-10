@@ -95,7 +95,9 @@
     "DeleteError": "Erro ao excluir a reserva. Por favor, tente novamente.",
     "PreviousPage": "Anterior",
     "NextPage": "Próxima",
-    "PageInfo": "Página {{current}} de {{total}}"
+    "PageInfo": "Página {{current}} de {{total}}",
+    "Time": "Horário",
+    "AllDay": "Dia todo"
   },
   "Resource": {
     "grill": "Churrasqueira",

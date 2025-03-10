@@ -33,18 +33,24 @@
   background-color: var(--color-secondary-light);
 }
 
+.action-column {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  text-align: center;
+}
+
 .delete-button {
-  background-color: var(--color-error);
-  color: white;
+  background-color: transparent;
+  color: var(--color-error);
   border: none;
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
+  padding: 0;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: color 0.3s;
 }
 
 .delete-button:hover {
-  background-color: var(--color-error-dark);
+  color: var(--color-error-dark);
 }
 
 .pagination {
@@ -112,5 +118,67 @@
 
 .cancel-button:hover {
   background-color: var(--color-secondary-dark);
+}
+
+@media (max-width: 768px) {
+  .booking-list table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .booking-list th,
+  .booking-list td {
+    min-width: 80px;
+  }
+
+  .booking-list th.action-column,
+  .booking-list td.action-column {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+  }
+
+  .booking-list th:first-child,
+  .booking-list td:first-child,
+  .booking-list th.action-column,
+  .booking-list td.action-column {
+    position: sticky;
+    background-color: var(--color-card-background);
+    z-index: 1;
+  }
+
+  .booking-list th:first-child,
+  .booking-list td:first-child {
+    left: 0;
+  }
+
+  .booking-list th.action-column,
+  .booking-list td.action-column {
+    right: 0;
+  }
+
+  .booking-list table::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1));
+    pointer-events: none;
+  }
+
+  .booking-list table::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 5px;
+    background: linear-gradient(to left, transparent, rgba(0, 0, 0, 0.1));
+    pointer-events: none;
+    z-index: 2;
+  }
 }
 

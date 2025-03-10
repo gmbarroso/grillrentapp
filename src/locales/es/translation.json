@@ -95,7 +95,9 @@
     "DeleteError": "Error al eliminar la reserva. Por favor, inténtelo de nuevo.",
     "PreviousPage": "Anterior",
     "NextPage": "Siguiente",
-    "PageInfo": "Página {{current}} de {{total}}"
+    "PageInfo": "Página {{current}} de {{total}}",
+    "Time": "Hora",
+    "AllDay": "Todo el día"
   },
   "Resource": {
     "grill": "Parrilla",

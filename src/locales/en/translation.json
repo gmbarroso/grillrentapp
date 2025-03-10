@@ -95,7 +95,9 @@
     "DeleteError": "Error deleting booking. Please try again.",
     "PreviousPage": "Previous",
     "NextPage": "Next",
-    "PageInfo": "Page {{current}} of {{total}}"
+    "PageInfo": "Page {{current}} of {{total}}",
+    "Time": "Time",
+    "AllDay": "All day"
   },
   "Resource": {
     "grill": "Grill",

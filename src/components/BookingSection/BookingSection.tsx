@@ -102,6 +102,22 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     }
   }
 
+  const handleRulesForEachResource = (option: "grill" | "tennis") => {
+    const title = t(`Card.${option === "tennis" ? "TennisTitle" : "GrillTitle"}`)
+    const content = t(`Card.${option === "tennis" ? "TennisContent" : "GrillContent"}`, { returnObjects: true }) as string[]
+
+    return (
+      <div>
+        <h3 className="card-title">{title}</h3>
+        <ul className="card-content">
+          {content.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
   const canConfirmBooking = () => {
     if (selectedOption === "tennis") {
       return selectedDate && selectedTime
@@ -159,6 +175,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           {isCreatingBooking && <LoadingSpinner />}
         </div>
       )}
+      {selectedOption && handleRulesForEachResource(selectedResource.type)}
     </section>
   )
 }

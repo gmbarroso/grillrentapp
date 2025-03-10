@@ -111,6 +111,26 @@
     "Logout": "Sair",
     "Welcome": "Bem-vindo, {{name}}",
     "Login": "Entrar"
+  },
+  "ErrorBookingPastTime": "Não é possível fazer reservas para um horário passado. Por favor, selecione um horário futuro.",
+  "ErrorBookingClosedForToday": "As reservas estão encerradas para hoje. Por favor, selecione uma data futura.",
+  "Card": {
+    "TennisTitle": "Regras de uso para Quadra de Tênis:",
+    "TennisContent": [
+      "É proibida a utilização das quadras para atividades não relacionadas às modalidades esportivas correspondentes.",
+      "É proibido o uso de calçados inadequados que possam danificar a superfície das quadras.",
+      "O tempo máximo de permanência nas quadras é de 1 hora, caso haja outros condôminos aguardando.",
+      "É proibido consumir alimentos ou bebidas (exceto água) dentro das quadras.",
+      "Equipamentos esportivos pessoais devem ser utilizados com responsabilidade e retirados após o uso."
+    ],
+    "GrillTitle": "Regras de uso para a Churrasqueira:",
+    "GrillContent": [
+      "O uso da churrasqueira deve ser previamente agendado na administração do condomínio.",
+      "O local deve ser mantido limpo após o uso, incluindo a remoção de lixos e restos de alimentos.",
+      "O som ambiente deve respeitar as normas de volume moderado, evitando perturbação aos demais moradores.",
+      "É proibido utilizar recipientes de vidro na área da churrasqueira.",
+      "O uso da churrasqueira é restrito aos moradores e seus convidados, sendo vedada a realização de eventos de maior porte, sem autorização prévia."
+    ]
   }
 }
 

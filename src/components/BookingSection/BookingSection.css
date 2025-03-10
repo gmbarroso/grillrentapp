@@ -85,6 +85,29 @@
   margin-top: 0.5rem;
 }
 
+.card {
+  background-color: var(--color-card-background);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+.card-title {
+  color: var(--color-primary);
+  margin-bottom: 0.5rem;
+}
+
+.card-content {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.card-content li {
+  margin-bottom: 0.5rem;
+}
+
+
 @media (max-width: 768px) {
   .options {
     flex-direction: column;

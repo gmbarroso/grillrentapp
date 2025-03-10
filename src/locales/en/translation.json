@@ -111,6 +111,25 @@
     "Logout": "Logout",
     "Welcome": "Welcome, {{name}}",
     "Login": "Login"
-  }
+  },
+  "Card": {
+    "TennisTitle": "Rules for Tennis Court Use:",
+    "TennisContent": [
+      "The use of the courts for activities unrelated to the corresponding sports is prohibited.",
+      "Wearing inappropriate footwear that may damage the court surface is not allowed.",
+      "The maximum court usage time is 1 hour if other residents are waiting.",
+      "Consumption of food or beverages (except water) is not allowed on the courts.",
+      "Personal sports equipment must be used responsibly and removed after use."
+    ],
+    "GrillTitle": "Rules for Grill Area Use:",
+    "GrillContent": [
+      "The barbecue area must be reserved in advance with the condominium administration.",
+      "The area must be kept clean after use, including the removal of trash and food waste.",
+      "Ambient sound must comply with moderate volume regulations to avoid disturbing other residents.",
+      "Glass containers are not allowed in the barbecue area.",
+      "The use of the barbecue area is restricted to residents and their guests. Large-scale events are not permitted without prior authorization."
+    ]
+}
+
 }
 

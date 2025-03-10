@@ -62,26 +62,11 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     if (selectedResource && selectedDate) {
       const now = new Date()
       const startTime = new Date(selectedDate)
-<<<<<<< Updated upstream
-=======
       const endTime = new Date(selectedDate)
->>>>>>> Stashed changes
 
       if (selectedOption === "tennis" && selectedTime) {
         const [hours] = selectedTime.split(":")
         startTime.setHours(Number.parseInt(hours, 10), 0, 0, 0)
-<<<<<<< Updated upstream
-      } else {
-        startTime.setHours(10, 0, 0, 0)
-      }
-
-      const endTime = new Date(startTime)
-
-      if (selectedOption === "tennis") {
-        endTime.setHours(startTime.getHours() + 1)
-      } else {
-        endTime.setHours(22, 0, 0, 0)
-=======
         endTime.setHours(startTime.getHours() + 1, 0, 0, 0)
       } else {
         startTime.setHours(7, 0, 0, 0)
@@ -89,17 +74,13 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       }
 
       if (startTime.toDateString() === now.toDateString() && selectedOption === "grill") {
-        console.log('teste')
         const currentHour = now.getHours()
         if (currentHour >= 7 && currentHour < 22) {
-        console.log('teste2')
-
           startTime.setHours(currentHour + 1, 0, 0, 0)
         } else if (currentHour >= 22) {
           showToast(t("ErrorBookingClosedForToday"), "error")
           return
         }
->>>>>>> Stashed changes
       }
 
       try {

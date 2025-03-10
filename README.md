@@ -23,7 +23,7 @@ Grill Rent App is a web application that allows users to rent grills and tennis 
 - SWR (for data fetching)
 - CSS Modules (for styling)
 - Lucide React (for icons)
-- ESLint and Prettier (for code quality and formatting)
+- Prettier (for code formatting)
 
 ## Project Structure
 
@@ -52,7 +52,6 @@ Before you begin, ensure you have met the following requirements:
 
 - Node.js 20.x or later
 - npm 9.x or later
-- Docker and Docker Compose (for containerized development/deployment)
 
 ## Installation
 
@@ -69,7 +68,8 @@ Before you begin, ensure you have met the following requirements:
 
 3. Create a `.env` file in the root directory and add your environment variables:
    ```env
-   REACT_APP_API_URL=http://localhost:5000/api
+   REACT_APP_API_URL=https://grillrentapi.up.railway.app
+   REACT_APP_BFF_URL=https://grillrentbff.up.railway.app
    REACT_APP_AUTH_SECRET=your_auth_secret
    ```
 
@@ -91,16 +91,6 @@ To run tests, use the following command:
 ```sh
 npm test
 ```
-
-## Deployment
-
-To deploy the application, use Docker Compose:
-1. Build and start the containers:
-   ```sh
-   docker-compose up --build
-   ```
-
-2. The application will be available at `http://localhost:5173`.
 
 ## Contributing
 

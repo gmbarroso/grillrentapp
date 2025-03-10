@@ -13,6 +13,8 @@
   "BookingDeletedSuccess": "Booking deleted successfully",
   "BookingCreatedSuccess": "Booking created successfully",
   "ErrorLoadingBookings": "Error loading bookings. Please try again.",
+  "SelectTime": "What time would you like to book?",
+  "SelectTimeOption": "Select Time",
   "Contact": {
     "Title": "Contact Us",
     "Intro": "We'd love to hear from you! Here's how you can reach us:",

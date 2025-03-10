@@ -1,7 +1,7 @@
 import { useFetch } from "../useFetch"
 import type { UserResponse } from "../../types/User"
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
 
 export function useUserProfile(token: string | null) {
   const fetcher = (url: string): Promise<UserResponse> =>

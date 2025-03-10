@@ -1,8 +1,11 @@
+"use client"
+
 import type React from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import Calendar from "../Calendar/Calendar"
 import { LoadingSpinner } from "../"
+import TimeSlotSelector from "../TimeSlotSelector/TimeSlotSelector"
 import { useAllResources } from "../../hooks/resource/useAllResources"
 import { useCreateBooking } from "../../hooks/booking/useCreateBooking"
 import { useToast } from "../../context/ToastContext"
@@ -25,38 +28,54 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const { showToast } = useToast()
   const [selectedOption, setSelectedOption] = useState<"grill" | "tennis" | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [isDateAvailable, setIsDateAvailable] = useState<boolean | null>(null)
+  const [unavailableSlots, setUnavailableSlots] = useState<string[]>([])
+  const [userBookedSlots, setUserBookedSlots] = useState<string[]>([])
 
-  const {
-    data: resources,
-    isLoading: isResourcesLoading,
-    error: resourcesError
-  } = useAllResources(token)
-  const {
-    createBooking,
-    isLoading: isCreatingBooking,
-    error: createBookingError
-  } = useCreateBooking(token)
+  const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
+  const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
 
   const selectedResource = selectedOption ? resources?.find((r: Resource) => r.type === selectedOption) : null
 
   const handleOptionSelect = (option: "grill" | "tennis") => {
     setSelectedOption(option)
     setSelectedDate(null)
+    setSelectedTime(null)
     setIsDateAvailable(null)
+    setUnavailableSlots([])
+    setUserBookedSlots([])
   }
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date)
+    setSelectedTime(null)
     setIsDateAvailable(null)
+    setUnavailableSlots([])
+  }
+
+  const handleTimeSelect = (time: string) => {
+    setSelectedTime(time)
   }
 
   const handleConfirmDate = async () => {
     if (selectedResource && selectedDate) {
       const startTime = new Date(selectedDate)
-      startTime.setHours(10, 0, 0, 0)
-      const endTime = new Date(selectedDate)
-      endTime.setHours(22, 0, 0, 0)
+
+      if (selectedOption === "tennis" && selectedTime) {
+        const [hours] = selectedTime.split(":")
+        startTime.setHours(Number.parseInt(hours, 10), 0, 0, 0)
+      } else {
+        startTime.setHours(10, 0, 0, 0)
+      }
+
+      const endTime = new Date(startTime)
+
+      if (selectedOption === "tennis") {
+        endTime.setHours(startTime.getHours() + 1)
+      } else {
+        endTime.setHours(22, 0, 0, 0)
+      }
 
       try {
         const bookingData = {
@@ -75,6 +94,13 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         showToast(t("ErrorCreatingBooking"), "error")
       }
     }
+  }
+
+  const canConfirmBooking = () => {
+    if (selectedOption === "tennis") {
+      return selectedDate && selectedTime
+    }
+    return selectedDate
   }
 
   if (resourcesError) {
@@ -107,14 +133,24 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
             unavailableDates={unavailableDates}
             onDateSelect={handleDateSelect}
           />
-          {selectedDate && (
-            <div>
-              <button onClick={handleConfirmDate} disabled={isCreatingBooking} className="confirm-date-button">
-                {t("ConfirmDate")}
-              </button>
-              {isCreatingBooking && <LoadingSpinner />}
-            </div>
+
+          {selectedDate && selectedOption === "tennis" && (
+            <TimeSlotSelector
+              selectedTime={selectedTime}
+              onTimeSelect={handleTimeSelect}
+              resourceType={selectedOption}
+              unavailableSlots={unavailableSlots}
+              userBookedSlots={userBookedSlots}
+            />
           )}
+
+          {selectedDate && canConfirmBooking() && (
+            <button onClick={handleConfirmDate} disabled={isCreatingBooking} className="confirm-date-button">
+              {t("ConfirmDate")}
+            </button>
+          )}
+
+          {isCreatingBooking && <LoadingSpinner />}
         </div>
       )}
     </section>

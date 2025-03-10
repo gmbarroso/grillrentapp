@@ -1,0 +1,25 @@
+.time-slot-selector {
+    margin-top: 1rem;
+  }
+  
+  .time-slot-selector label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+  }
+  
+  .time-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    background-color: var(--color-card-background);
+    color: var(--color-text);
+  }
+  
+  .time-select option:disabled {
+    color: var(--color-secondary);
+    background-color: var(--color-background);
+  }
+  
+  

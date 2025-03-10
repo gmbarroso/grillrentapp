@@ -13,6 +13,8 @@
   "BookingDeletedSuccess": "Reserva excluída com sucesso",
   "BookingCreatedSuccess": "Reserva criada com sucesso",
   "ErrorLoadingBookings": "Erro ao carregar as reservas. Por favor, tente novamente.",
+  "SelectTime": "Que horas você gostaria de reservar?",
+  "SelectTimeOption": "Selecionar Horário",
   "Contact": {
     "Title": "Entre em Contato",
     "Intro": "Adoraríamos ouvir de você! Aqui está como você pode nos contatar:",

@@ -13,6 +13,8 @@
   "BookingDeletedSuccess": "Reserva eliminada con éxito",
   "BookingCreatedSuccess": "Reserva creada con éxito",
   "ErrorLoadingBookings": "Error al cargar las reservas. Por favor, inténtalo de nuevo.",
+  "SelectTime": "¿A qué hora te gustaría reservar?",
+  "SelectTimeOption": "Seleccionar Hora",
   "Contact": {
     "Title": "Contáctanos",
     "Intro": "¡Nos encantaría saber de ti! Aquí tienes cómo puedes contactarnos:",
@@ -93,7 +95,9 @@
     "DeleteError": "Error al eliminar la reserva. Por favor, inténtelo de nuevo.",
     "PreviousPage": "Anterior",
     "NextPage": "Siguiente",
-    "PageInfo": "Página {{current}} de {{total}}"
+    "PageInfo": "Página {{current}} de {{total}}",
+    "Time": "Hora",
+    "AllDay": "Todo el día"
   },
   "Resource": {
     "grill": "Parrilla",

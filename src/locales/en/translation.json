@@ -13,6 +13,8 @@
   "BookingDeletedSuccess": "Booking deleted successfully",
   "BookingCreatedSuccess": "Booking created successfully",
   "ErrorLoadingBookings": "Error loading bookings. Please try again.",
+  "SelectTime": "What time would you like to book?",
+  "SelectTimeOption": "Select Time",
   "Contact": {
     "Title": "Contact Us",
     "Intro": "We'd love to hear from you! Here's how you can reach us:",
@@ -93,7 +95,9 @@
     "DeleteError": "Error deleting booking. Please try again.",
     "PreviousPage": "Previous",
     "NextPage": "Next",
-    "PageInfo": "Page {{current}} of {{total}}"
+    "PageInfo": "Page {{current}} of {{total}}",
+    "Time": "Time",
+    "AllDay": "All day"
   },
   "Resource": {
     "grill": "Grill",

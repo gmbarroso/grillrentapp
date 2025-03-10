@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
@@ -7,10 +9,7 @@ import { Modal } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import "./BookingList.css"
-import type {
-  Booking,
-  BookingListProps
-} from "../../types/Booking"
+import type { Booking, BookingListProps } from "../../types/Booking"
 
 const BookingList: React.FC<BookingListProps> = ({
   bookings,
@@ -73,6 +72,19 @@ const BookingList: React.FC<BookingListProps> = ({
     return false
   }
 
+  const formatTimeInterval = (startTime: string, endTime: string) => {
+    const start = new Date(startTime)
+    const end = new Date(endTime)
+    const startHour = start.getHours()
+    const endHour = end.getHours()
+    return `${startHour}h - ${endHour}h`
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" })
+  }
+
   return (
     <div className="booking-list">
       <h3>{t("BookingList.Title")}</h3>
@@ -93,28 +105,36 @@ const BookingList: React.FC<BookingListProps> = ({
                   {currentSort === "startTime" &&
                     (currentOrder === "ASC" ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
                 </th>
+                <th onClick={() => handleSortChange("startTime")}>
+                  {t("BookingList.Time")}
+                  {currentSort === "startTime" &&
+                    (currentOrder === "ASC" ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                </th>
                 <th onClick={() => handleSortChange("apartment")}>
                   {t("BookingList.Apartment")}
                   {currentSort === "apartment" &&
                     (currentOrder === "ASC" ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
                 </th>
-                <th>{t("BookingList.Actions")}</th>
+                <th className="action-column"></th>
               </tr>
             </thead>
             <tbody>
               {bookings.map((booking) => (
                 <tr key={booking.id}>
                   <td>{t(`Resource.${booking.resourceType}`)}</td>
+                  <td>{formatDate(booking.startTime)}</td>
                   <td>
-                    {new Date(booking.startTime).toLocaleDateString()}{" "}
+                    {booking.resourceType === "grill"
+                      ? t("BookingList.AllDay")
+                      : formatTimeInterval(booking.startTime, booking.endTime)}
                   </td>
                   <td>{booking.userApartment}</td>
-                  <td>
+                  <td className="action-column">
                     {canDeleteBooking(booking) && (
                       <button
                         onClick={() => handleDeleteClick(booking.id)}
                         className="delete-button"
-                        aria-label="Delete"
+                        aria-label={t("BookingList.Delete")}
                       >
                         <Trash2 size={16} />
                       </button>

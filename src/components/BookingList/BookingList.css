@@ -145,7 +145,7 @@
   .booking-list td.action-column {
     position: sticky;
     background-color: var(--color-card-background);
-    z-index: 2;
+    z-index: 1;
   }
 
   .booking-list th:first-child,
@@ -167,7 +167,6 @@
     width: 5px;
     background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1));
     pointer-events: none;
-    z-index: 1;
   }
 
   .booking-list table::before {
@@ -179,7 +178,7 @@
     width: 5px;
     background: linear-gradient(to left, transparent, rgba(0, 0, 0, 0.1));
     pointer-events: none;
-    z-index: 1;
+    z-index: 2;
   }
 }
 

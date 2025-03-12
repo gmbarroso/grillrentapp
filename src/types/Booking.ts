@@ -6,6 +6,7 @@ export interface Booking {
   startTime: string
   endTime: string
   userApartment: string
+  needTablesAndChairs?: boolean
 }
 
 export interface BookingListInterface {
@@ -19,9 +20,9 @@ export interface BookingListInterface {
 }
 
 export interface BookingSectionProps {
-  token: string,
-  unavailableDates: Date[],
-  userId: string;
+  token: string
+  unavailableDates: Date[]
+  userId: string
 }
 
 export interface BookingListProps {
@@ -38,5 +39,4 @@ export interface BookingListProps {
   onChangeSort: (sort: string) => void
   onChangeOrder: (order: "ASC" | "DESC") => void
 }
-  
-  
+

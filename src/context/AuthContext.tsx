@@ -45,8 +45,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (apartment: string, block: number, password: string): Promise<boolean> => {
     const response = await loginMutate({ apartment, block, password })
-    if (response && "token" in response) {
-      const token = response.token as string
+    console.log(response)
+    if (response && "access_token" in response) {
+      const token = response.access_token as string
       localStorage.setItem("token", token)
       setIsAuthenticated(true)
       setToken(token)

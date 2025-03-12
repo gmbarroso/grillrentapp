@@ -81,7 +81,7 @@
     "Title": "Reservas Actuales",
     "Loading": "Cargando reservas...",
     "Error": "Error al cargar las reservas. Por favor, inténtelo de nuevo.",
-    "NoBookings": "No hay reservas.",
+    "NoBookings": "No hay reservas todavía.",
     "ResourceType": "Tipo de Recurso",
     "Date": "Fecha",
     "Apartment": "Apto.",
@@ -123,13 +123,12 @@
     ],
     "GrillTitle": "Reglas de Uso de la Parrilla:",
     "GrillContent": [
-      "El uso de la parrilla debe ser reservado previamente en la administración del condominio.",
+      "El área de parrilla debe ser reservada con anticipación en la administración del condominio.",
       "El área debe mantenerse limpia después de su uso, incluyendo la eliminación de basura y restos de comida.",
-      "El sonido ambiental debe respetar las normas de volumen moderado para evitar molestias a los demás residentes.",
-      "No se permite el uso de recipientes de vidrio en el área de la parrilla.",
-      "El uso de la parrilla está restringido a los residentes y sus invitados. No se permiten eventos de gran tamaño sin autorización previa."
+      "El sonido ambiental debe cumplir con las regulaciones de volumen moderado para evitar molestar a otros residentes.",
+      "No se permiten recipientes de vidrio en el área de la parrilla.",
+      "El uso del área de parrilla está restringido a residentes y sus invitados. No se permiten eventos de gran escala sin autorización previa."
     ]
+  },
+  "NeedTablesAndChairs": "Quiero mesas y sillas"
 }
-
-}
-

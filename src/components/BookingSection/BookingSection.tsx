@@ -32,6 +32,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [isDateAvailable, setIsDateAvailable] = useState<boolean | null>(null)
   const [unavailableSlots, setUnavailableSlots] = useState<string[]>([])
   const [userBookedSlots, setUserBookedSlots] = useState<string[]>([])
+  const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
@@ -45,6 +46,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     setIsDateAvailable(null)
     setUnavailableSlots([])
     setUserBookedSlots([])
+    setNeedTablesAndChairs(false) // Reset when changing options
   }
 
   const handleDateSelect = (date: Date) => {
@@ -88,11 +90,21 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           resourceId: selectedResource.id,
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
+          needTablesAndChairs: selectedOption === "grill" ? needTablesAndChairs : false,
         }
         await createBooking(bookingData)
         setIsDateAvailable(true)
         onBookingCreated()
         showToast(t("BookingCreatedSuccess"), "success")
+
+        // Reset form after successful booking
+        setSelectedDate(null)
+        setSelectedTime(null)
+        setNeedTablesAndChairs(false)
+        setSelectedOption(null)
+        setIsDateAvailable(null)
+        setUnavailableSlots([])
+        setUserBookedSlots([])
       } catch (error) {
         console.error("Error creating booking:", error)
         setIsDateAvailable(false)
@@ -104,7 +116,9 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
 
   const handleRulesForEachResource = (option: "grill" | "tennis") => {
     const title = t(`Card.${option === "tennis" ? "TennisTitle" : "GrillTitle"}`)
-    const content = t(`Card.${option === "tennis" ? "TennisContent" : "GrillContent"}`, { returnObjects: true }) as string[]
+    const content = t(`Card.${option === "tennis" ? "TennisContent" : "GrillContent"}`, {
+      returnObjects: true,
+    }) as string[]
 
     return (
       <div>
@@ -155,6 +169,20 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
             unavailableDates={unavailableDates}
             onDateSelect={handleDateSelect}
           />
+
+          {selectedDate && selectedOption === "grill" && (
+            <div className="tables-chairs-option">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={needTablesAndChairs}
+                  onChange={(e) => setNeedTablesAndChairs(e.target.checked)}
+                  className="checkbox-input"
+                />
+                <span className="checkbox-text">{t("NeedTablesAndChairs")}</span>
+              </label>
+            </div>
+          )}
 
           {selectedDate && selectedOption === "tennis" && (
             <TimeSlotSelector

@@ -1,5 +1,8 @@
+"use client"
+
 import { useState, useCallback, useMemo } from "react"
 import { useFetch } from "../useFetch"
+import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import type { Booking } from "../../types/Booking"
 
 const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
@@ -16,20 +19,22 @@ export function useAllBookings(token: string) {
   const [currentLimit, setCurrentLimit] = useState(10)
   const [currentSort, setCurrentSort] = useState("startTime")
   const [currentOrder, setCurrentOrder] = useState<"ASC" | "DESC">("ASC")
+  const authenticatedFetch = useAuthenticatedFetch()
 
   const fetcher = useCallback(
-    (url: string) =>
-      fetch(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }).then((res) => {
+    async (url: string) => {
+      try {
+        const res = await authenticatedFetch(url)
         if (!res.ok) {
           throw new Error("Failed to fetch bookings")
         }
         return res.json()
-      }),
-    [token],
+      } catch (error) {
+        console.error("Error fetching bookings:", error)
+        throw error
+      }
+    },
+    [authenticatedFetch],
   )
 
   const url = useMemo(

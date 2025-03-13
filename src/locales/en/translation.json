@@ -143,6 +143,12 @@
     ],
     "Confirm": "I Agree",
     "Cancel": "Cancel"
+  },
+  "Logout": {
+    "ConfirmTitle": "Are you sure you want to log out?",
+    "ConfirmMessage": "You will need to log in again to access your account.",
+    "Confirm": "Yes, log out",
+    "Cancel": "Cancel"
   }
 }
 

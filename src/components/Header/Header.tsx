@@ -1,20 +1,40 @@
-import { Link } from "react-router-dom"
+"use client"
+
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Clock } from "../"
+import { Modal } from "../"
 import { useAuth } from "../../context/AuthContext"
 import "./Header.css"
 
 const Header = () => {
   const { isAuthenticated, logout } = useAuth()
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+
+  const handleLogoutClick = () => {
+    setIsLogoutModalOpen(true)
+  }
+
+  const handleConfirmLogout = async () => {
+    await logout()
+    setIsLogoutModalOpen(false)
+    navigate("/login")
+  }
+
+  const handleCancelLogout = () => {
+    setIsLogoutModalOpen(false)
+  }
 
   return (
     <header className="header">
       <div className="header-content">
-      <h1>Condomínio Chácara Sacopã</h1>
-      <Clock />
-      {isAuthenticated &&
-        <nav>
+        <h1>Condomínio Chácara Sacopã</h1>
+        <Clock />
+        {isAuthenticated && (
+          <nav>
             <ul>
               <li>
                 <Link to="/">{t("Header.Home")}</Link>
@@ -26,12 +46,28 @@ const Header = () => {
                 <Link to="/contact">{t("Header.Contact")}</Link>
               </li>
               <li>
-                <button onClick={logout}>{t("Header.Logout")}</button>
+                <button onClick={handleLogoutClick}>{t("Header.Logout")}</button>
               </li>
             </ul>
-        </nav>
-      }
+          </nav>
+        )}
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <Modal isOpen={isLogoutModalOpen} onClose={handleCancelLogout}>
+        <div className="confirm-dialog">
+          <h2>{t("Logout.ConfirmTitle")}</h2>
+          <p>{t("Logout.ConfirmMessage")}</p>
+          <div className="dialog-actions">
+            <button onClick={handleConfirmLogout} className="delete-button">
+              {t("Logout.Confirm")}
+            </button>
+            <button onClick={handleCancelLogout} className="cancel-button">
+              {t("Logout.Cancel")}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </header>
   )
 }

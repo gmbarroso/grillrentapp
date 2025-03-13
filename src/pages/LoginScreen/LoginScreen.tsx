@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -29,6 +31,7 @@ export default function LoginScreen() {
         showToast(t("Login.Error"), "error")
       }
     } catch (err) {
+      console.error("Login error:", err)
       showToast(t("Login.Error"), "error")
     } finally {
       setIsLoading(false)

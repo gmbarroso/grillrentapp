@@ -145,6 +145,12 @@
     ],
     "Confirm": "Eu Concordo",
     "Cancel": "Cancelar"
+  },
+  "Logout": {
+    "ConfirmTitle": "Tem certeza que deseja sair?",
+    "ConfirmMessage": "Você precisará fazer login novamente para acessar sua conta.",
+    "Confirm": "Sim, sair",
+    "Cancel": "Cancelar"
   }
 }
 

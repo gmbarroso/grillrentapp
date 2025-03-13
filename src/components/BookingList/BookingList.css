@@ -33,6 +33,16 @@
   background-color: var(--color-secondary-light);
 }
 
+.sortable-column {
+  cursor: pointer;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .action-column {
   width: 40px;
   min-width: 40px;
@@ -118,6 +128,13 @@
 
 .cancel-button:hover {
   background-color: var(--color-secondary-dark);
+}
+
+.no-bookings-message {
+  text-align: center;
+  padding: 1rem;
+  color: var(--color-text);
+  font-style: italic;
 }
 
 @media (max-width: 768px) {

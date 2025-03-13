@@ -85,6 +85,13 @@ const BookingList: React.FC<BookingListProps> = ({
     return date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" })
   }
 
+  const renderSortIndicator = (column: string) => {
+    if (currentSort === column) {
+      return currentOrder === "ASC" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+    }
+    return null
+  }
+
   return (
     <div className="booking-list">
       <h3>{t("BookingList.Title")}</h3>
@@ -95,25 +102,29 @@ const BookingList: React.FC<BookingListProps> = ({
           <table>
             <thead>
               <tr>
-                <th onClick={() => handleSortChange("resourceType")}>
-                  {t("BookingList.ResourceType")}
-                  {currentSort === "resourceType" &&
-                    (currentOrder === "ASC" ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                <th onClick={() => handleSortChange("resourceType")} className="sortable-column">
+                  <div className="column-header">
+                    {t("BookingList.ResourceType")}
+                    {renderSortIndicator("resourceType")}
+                  </div>
                 </th>
-                <th onClick={() => handleSortChange("startTime")}>
-                  {t("BookingList.Date")}
-                  {currentSort === "startTime" &&
-                    (currentOrder === "ASC" ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                <th onClick={() => handleSortChange("startTime")} className="sortable-column">
+                  <div className="column-header">
+                    {t("BookingList.Date")}
+                    {renderSortIndicator("startTime")}
+                  </div>
                 </th>
-                <th onClick={() => handleSortChange("startTime")}>
-                  {t("BookingList.Time")}
-                  {currentSort === "startTime" &&
-                    (currentOrder === "ASC" ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                <th onClick={() => handleSortChange("startTime")} className="sortable-column">
+                  <div className="column-header">
+                    {t("BookingList.Time")}
+                    {renderSortIndicator("startTime")}
+                  </div>
                 </th>
-                <th onClick={() => handleSortChange("apartment")}>
-                  {t("BookingList.Apartment")}
-                  {currentSort === "apartment" &&
-                    (currentOrder === "ASC" ? <ChevronUp size={16} /> : <ChevronDown size={16} />)}
+                <th onClick={() => handleSortChange("userApartment")} className="sortable-column">
+                  <div className="column-header">
+                    {t("BookingList.Apartment")}
+                    {renderSortIndicator("userApartment")}
+                  </div>
                 </th>
                 <th className="action-column"></th>
               </tr>

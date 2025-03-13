@@ -9,8 +9,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 1000;
+  z-index: 9999;
   animation: slideUp 0.3s ease-out;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .toast-success {
@@ -39,6 +40,13 @@
   }
   to {
     transform: translateY(0);
+  }
+}
+
+/* Adjust positioning to account for the footer */
+@media (max-width: 768px) {
+  .toast {
+    bottom: 70px; /* Adjust this value based on your footer's height on mobile */
   }
 }
 

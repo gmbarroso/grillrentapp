@@ -132,6 +132,19 @@
       "O uso da churrasqueira é restrito aos moradores e seus convidados, sendo vedada a realização de eventos de maior porte, sem autorização prévia."
     ]
   },
-  "NeedTablesAndChairs": "Eu quero mesas e cadeiras"
+  "NeedTablesAndChairs": "Eu quero mesas e cadeiras",
+  "TablesAndChairsAgreement": {
+    "Title": "TERMOS DE ACORDO",
+    "Intro": "Eu, [User's Name], reconheço e concordo com as seguintes condições relativas ao uso de mesas e cadeiras fornecidas para o evento:",
+    "Terms": [
+      "Quantidade Disponível: Um total de X mesas e Y cadeiras serão disponibilizadas para uso.",
+      "Responsabilidade de Uso: Comprometo-me a utilizar os itens adequadamente e garantir sua preservação durante todo o evento.",
+      "Contagem e Verificação: Após o evento, será realizada uma verificação de inventário para confirmar a devolução e condição de todos os itens fornecidos.",
+      "Danos e Perdas: Em caso de qualquer dano, perda ou extravio de mesas e/ou cadeiras, aceito total responsabilidade pelo reparo ou substituição.",
+      "Aceitação do Acordo: Ao prosseguir, confirmo que li, entendi e concordo com os termos descritos neste documento."
+    ],
+    "Confirm": "Eu Concordo",
+    "Cancel": "Cancelar"
+  }
 }
 

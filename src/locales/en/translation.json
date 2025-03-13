@@ -130,6 +130,19 @@
       "The use of the barbecue area is restricted to residents and their guests. Large-scale events are not permitted without prior authorization."
     ]
   },
-  "NeedTablesAndChairs": "I want tables and chairs"
+  "NeedTablesAndChairs": "I want tables and chairs",
+  "TablesAndChairsAgreement": {
+    "Title": "TERMS OF AGREEMENT",
+    "Intro": "I, [User's Name], acknowledge and agree to the following conditions regarding the use of tables and chairs provided for the event:",
+    "Terms": [
+      "Available Quantity: A total of X tables and Y chairs will be made available for use.",
+      "Responsibility for Use: I commit to using the items properly and ensuring their preservation throughout the event.",
+      "Counting and Verification: After the event, an inventory check will be conducted to verify the return and condition of all provided items.",
+      "Damages and Loss: In the event of any damage, loss, or misplacement of tables and/or chairs, I accept full responsibility for their repair or replacement.",
+      "Agreement Acceptance: By proceeding, I confirm that I have read, understood, and agree to the terms outlined in this document."
+    ],
+    "Confirm": "I Agree",
+    "Cancel": "Cancel"
+  }
 }
 

@@ -4,11 +4,12 @@ import type React from "react"
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import Calendar from "../Calendar/Calendar"
-import { LoadingSpinner } from "../"
+import { LoadingSpinner, Modal } from "../"
 import TimeSlotSelector from "../TimeSlotSelector/TimeSlotSelector"
 import { useAllResources } from "../../hooks/resource/useAllResources"
 import { useCreateBooking } from "../../hooks/booking/useCreateBooking"
 import { useToast } from "../../context/ToastContext"
+import { useAuth } from "../../context/AuthContext"
 import "./BookingSection.css"
 import type { Resource } from "../../types/Resource"
 import type { BookingSectionProps } from "../../types/Booking"
@@ -26,6 +27,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
 }) => {
   const { t } = useTranslation()
   const { showToast } = useToast()
+  const { user } = useAuth()
   const [selectedOption, setSelectedOption] = useState<"grill" | "tennis" | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
@@ -33,6 +35,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [unavailableSlots, setUnavailableSlots] = useState<string[]>([])
   const [userBookedSlots, setUserBookedSlots] = useState<string[]>([])
   const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
+  const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false)
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
@@ -46,7 +49,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     setIsDateAvailable(null)
     setUnavailableSlots([])
     setUserBookedSlots([])
-    setNeedTablesAndChairs(false) // Reset when changing options
+    setNeedTablesAndChairs(false)
   }
 
   const handleDateSelect = (date: Date) => {
@@ -58,6 +61,20 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
 
   const handleTimeSelect = (time: string) => {
     setSelectedTime(time)
+  }
+
+  const handleTablesAndChairsChange = () => {
+    setIsAgreementModalOpen(true)
+  }
+
+  const handleAgreementConfirm = () => {
+    setNeedTablesAndChairs(true)
+    setIsAgreementModalOpen(false)
+  }
+
+  const handleAgreementCancel = () => {
+    setNeedTablesAndChairs(false)
+    setIsAgreementModalOpen(false)
   }
 
   const handleConfirmDate = async () => {
@@ -96,8 +113,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setIsDateAvailable(true)
         onBookingCreated()
         showToast(t("BookingCreatedSuccess"), "success")
-
-        // Reset form after successful booking
         setSelectedDate(null)
         setSelectedTime(null)
         setNeedTablesAndChairs(false)
@@ -125,7 +140,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         <h3 className="card-title">{title}</h3>
         <ul className="card-content">
           {content.map((item, index) => (
-            <li key={index}>{item}</li>
+            <li className="agreement-terms li" key={index}>{item}</li>
           ))}
         </ul>
       </div>
@@ -176,7 +191,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
                 <input
                   type="checkbox"
                   checked={needTablesAndChairs}
-                  onChange={(e) => setNeedTablesAndChairs(e.target.checked)}
+                  onChange={handleTablesAndChairsChange}
                   className="checkbox-input"
                 />
                 <span className="checkbox-text">{t("NeedTablesAndChairs")}</span>
@@ -204,6 +219,29 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         </div>
       )}
       {selectedOption && handleRulesForEachResource(selectedResource.type)}
+
+      {/* Agreement Modal */}
+      <Modal isOpen={isAgreementModalOpen} onClose={handleAgreementCancel}>
+        <div className="agreement-modal">
+          <h2 className="agreement-title">{t("TablesAndChairsAgreement.Title")}</h2>
+          <p className="agreement-intro">
+            {t("TablesAndChairsAgreement.Intro").replace("[User's Name]", user?.name || "")}
+          </p>
+          <ul className="agreement-terms">
+            {(t("TablesAndChairsAgreement.Terms", { returnObjects: true }) as string[]).map((term, index) => (
+              <li key={index}>{term}</li>
+            ))}
+          </ul>
+          <div className="agreement-actions">
+            <button onClick={handleAgreementConfirm} className="confirm-button">
+              {t("TablesAndChairsAgreement.Confirm")}
+            </button>
+            <button onClick={handleAgreementCancel} className="cancel-button">
+              {t("TablesAndChairsAgreement.Cancel")}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </section>
   )
 }

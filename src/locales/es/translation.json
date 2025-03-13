@@ -130,5 +130,19 @@
       "El uso del área de parrilla está restringido a residentes y sus invitados. No se permiten eventos de gran escala sin autorización previa."
     ]
   },
-  "NeedTablesAndChairs": "Quiero mesas y sillas"
+  "NeedTablesAndChairs": "Quiero mesas y sillas",
+  "TablesAndChairsAgreement": {
+    "Title": "TÉRMINOS DE ACUERDO",
+    "Intro": "Yo, [User's Name], reconozco y acepto las siguientes condiciones con respecto al uso de mesas y sillas proporcionadas para el evento:",
+    "Terms": [
+      "Cantidad Disponible: Se pondrán a disposición un total de X mesas y Y sillas para su uso.",
+      "Responsabilidad de Uso: Me comprometo a utilizar los artículos adecuadamente y asegurar su preservación durante todo el evento.",
+      "Conteo y Verificación: Después del evento, se realizará un control de inventario para verificar la devolución y el estado de todos los artículos proporcionados.",
+      "Daños y Pérdidas: En caso de cualquier daño, pérdida o extravío de mesas y/o sillas, acepto la plena responsabilidad de su reparación o reemplazo.",
+      "Aceptación del Acuerdo: Al proceder, confirmo que he leído, entendido y acepto los términos descritos en este documento."
+    ],
+    "Confirm": "Estoy de Acuerdo",
+    "Cancel": "Cancelar"
+  }
 }
+

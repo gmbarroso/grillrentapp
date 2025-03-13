@@ -28,17 +28,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { logout: logoutMutate, isLoading: isLogoutLoading } = useLogoutUser()
   const { setIsLoading } = useLoading()
 
-  // Check token on initial load
+  const [lastActivity, setLastActivity] = useState<number>(Date.now())
+  const INACTIVITY_TIMEOUT = 30 * 60 * 1000 // 30 minutes in milliseconds
+
+  const handleLogout = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      if (token) {
+        await logoutMutate(token)
+      }
+    } catch (error) {
+      console.error("Error during logout:", error)
+    } finally {
+      localStorage.removeItem("token")
+      setIsAuthenticated(false)
+      setToken(null)
+      setIsLoading(false)
+    }
+  }, [token, logoutMutate, setIsLoading])
+
+  // Check token on initial load - with more debugging
   useEffect(() => {
     const storedToken = localStorage.getItem("token")
-    if (storedToken && !isTokenExpired(storedToken)) {
-      setIsAuthenticated(true)
-      setToken(storedToken)
-    } else if (storedToken) {
-      // Token exists but is expired
-      handleLogout()
+    console.log("Checking stored token:", storedToken ? "Token exists" : "No token")
+
+    if (storedToken) {
+      try {
+        // Use a more lenient approach for token validation during initialization
+        const tokenParts = storedToken.split(".")
+        if (tokenParts.length === 3) {
+          // Basic format check passed
+          try {
+            const payload = JSON.parse(atob(tokenParts[1]))
+            console.log("Token payload:", payload)
+
+            // Check expiration if it exists
+            if (payload.exp) {
+              const now = Date.now() / 1000
+              if (payload.exp > now) {
+                console.log("Token is valid and not expired")
+                setIsAuthenticated(true)
+                setToken(storedToken)
+              } else {
+                console.log("Token is expired, logging out")
+                handleLogout()
+              }
+            } else {
+              // No expiration, assume valid
+              console.log("Token has no expiration, assuming valid")
+              setIsAuthenticated(true)
+              setToken(storedToken)
+            }
+          } catch (e) {
+            console.error("Error parsing token payload:", e)
+            // Even if parsing fails, try to use the token
+            setIsAuthenticated(true)
+            setToken(storedToken)
+          }
+        } else {
+          console.log("Token format invalid, logging out")
+          handleLogout()
+        }
+      } catch (error) {
+        console.error("Error during token validation:", error)
+        handleLogout()
+      }
     }
-  }, [])
+  }, [handleLogout])
 
   // Set up periodic token expiration check (every minute)
   useEffect(() => {
@@ -46,12 +102,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const checkInterval = setInterval(() => {
       if (isTokenExpired(token)) {
+        console.log("Periodic check: Token is expired, logging out")
         handleLogout()
       }
     }, 60000) // Check every minute
 
     return () => clearInterval(checkInterval)
-  }, [token])
+  }, [token, handleLogout])
+
+  // Track user activity
+  useEffect(() => {
+    const updateActivity = () => {
+      setLastActivity(Date.now())
+    }
+
+    // Events that indicate user activity
+    window.addEventListener("mousemove", updateActivity)
+    window.addEventListener("keydown", updateActivity)
+    window.addEventListener("click", updateActivity)
+    window.addEventListener("scroll", updateActivity)
+    window.addEventListener("touchstart", updateActivity)
+
+    return () => {
+      window.removeEventListener("mousemove", updateActivity)
+      window.removeEventListener("keydown", updateActivity)
+      window.removeEventListener("click", updateActivity)
+      window.removeEventListener("scroll", updateActivity)
+      window.removeEventListener("touchstart", updateActivity)
+    }
+  }, [])
+
+  // Check for user inactivity
+  useEffect(() => {
+    if (!token) return
+
+    const inactivityCheck = setInterval(() => {
+      const currentTime = Date.now()
+      const inactiveTime = currentTime - lastActivity
+
+      // Logout after inactivity timeout
+      if (inactiveTime > INACTIVITY_TIMEOUT) {
+        console.log("User inactive for too long, logging out")
+        handleLogout()
+      }
+    }, 60000) // Check every minute
+
+    return () => clearInterval(inactivityCheck)
+  }, [token, lastActivity, handleLogout])
 
   useEffect(() => {
     setIsLoading(isUserLoading || isLoginLoading || isLogoutLoading)
@@ -78,22 +175,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     return false
   }
-
-  const handleLogout = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      if (token) {
-        await logoutMutate(token)
-      }
-    } catch (error) {
-      console.error("Error during logout:", error)
-    } finally {
-      localStorage.removeItem("token")
-      setIsAuthenticated(false)
-      setToken(null)
-      setIsLoading(false)
-    }
-  }, [token, logoutMutate, setIsLoading])
 
   const handleDeleteUser = async () => {
     return

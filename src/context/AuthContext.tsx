@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { setIsLoading } = useLoading()
 
   const [lastActivity, setLastActivity] = useState<number>(Date.now())
-  const INACTIVITY_TIMEOUT = 30 * 60 * 1000 // 30 minutes in milliseconds
+  const INACTIVITY_TIMEOUT = 30 * 60 * 1000
 
   const handleLogout = useCallback(async () => {
     setIsLoading(true)
@@ -47,22 +47,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [token, logoutMutate, setIsLoading])
 
-  // Check token on initial load - with more debugging
   useEffect(() => {
     const storedToken = localStorage.getItem("token")
     console.log("Checking stored token:", storedToken ? "Token exists" : "No token")
 
     if (storedToken) {
       try {
-        // Use a more lenient approach for token validation during initialization
         const tokenParts = storedToken.split(".")
         if (tokenParts.length === 3) {
-          // Basic format check passed
           try {
             const payload = JSON.parse(atob(tokenParts[1]))
-            console.log("Token payload:", payload)
 
-            // Check expiration if it exists
             if (payload.exp) {
               const now = Date.now() / 1000
               if (payload.exp > now) {
@@ -74,14 +69,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 handleLogout()
               }
             } else {
-              // No expiration, assume valid
               console.log("Token has no expiration, assuming valid")
               setIsAuthenticated(true)
               setToken(storedToken)
             }
           } catch (e) {
             console.error("Error parsing token payload:", e)
-            // Even if parsing fails, try to use the token
             setIsAuthenticated(true)
             setToken(storedToken)
           }

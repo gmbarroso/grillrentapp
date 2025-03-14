@@ -3,7 +3,7 @@
 import type React from "react"
 import { Route, Routes, Navigate } from "react-router-dom"
 import { useAuth } from "./context/AuthContext"
-import { Home, LoginScreen, SignUp, Profile, Contact } from "./pages"
+import { Home, LoginScreen, SignUp, Profile, Contact, Notices } from "./pages"
 import { ToastProvider } from "./context/ToastContext"
 import { useState, useEffect } from "react"
 import { LoadingSpinner } from "./components"
@@ -41,6 +41,14 @@ export const AppRoutes = () => {
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/contact" element={<Contact />} />
+        <Route
+          path="/notices"
+          element={
+            <ProtectedRoute>
+              <Notices />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/"
           element={

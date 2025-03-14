@@ -110,7 +110,8 @@
     "Contact": "Contact",
     "Logout": "Logout",
     "Welcome": "Welcome, {{name}}",
-    "Login": "Login"
+    "Login": "Login",
+    "Notices": "Notices"
   },
   "Card": {
     "TennisTitle": "Rules for Tennis Court Use:",
@@ -144,11 +145,45 @@
     "Confirm": "I Agree",
     "Cancel": "Cancel"
   },
-  "Logout": {
-    "ConfirmTitle": "Are you sure you want to log out?",
-    "ConfirmMessage": "You will need to log in again to access your account.",
-    "Confirm": "Yes, log out",
-    "Cancel": "Cancel"
+  "Notices": {
+    "Title": "Community Notices"
+  },
+  "NoticeBoard": {
+    "Title": "Notices",
+    "NoNotices": "No notices available at the moment.",
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "ConfirmDeleteTitle": "Confirm Deletion",
+    "ConfirmDeleteMessage": "Are you sure you want to delete this notice?",
+    "ConfirmDelete": "Yes, delete",
+    "CancelDelete": "Cancel",
+    "DeleteSuccess": "Notice deleted successfully",
+    "DeleteError": "Error deleting notice. Please try again.",
+    "PreviousPage": "Previous",
+    "NextPage": "Next",
+    "PageInfo": "Page {{current}} of {{total}}",
+    "ErrorLoading": "Error loading notices. Please try again."
+  },
+  "NoticeForm": {
+    "Title": "Create New Notice",
+    "EditTitle": "Edit Notice",
+    "TitleLabel": "Title",
+    "TitlePlaceholder": "Enter notice title",
+    "SubtitleLabel": "Subtitle",
+    "SubtitlePlaceholder": "Enter notice subtitle (optional)",
+    "ContentLabel": "Content",
+    "ContentPlaceholder": "Enter notice content",
+    "Create": "Create Notice",
+    "Creating": "Creating...",
+    "Update": "Update Notice",
+    "Updating": "Updating...",
+    "Cancel": "Cancel",
+    "CreateSuccess": "Notice created successfully",
+    "CreateError": "Error creating notice. Please try again.",
+    "UpdateSuccess": "Notice updated successfully",
+    "UpdateError": "Error updating notice. Please try again.",
+    "ValidationError": "Please fill in all required fields",
+    "CreateNew": "Create New Notice"
   }
 }
 

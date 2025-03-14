@@ -40,6 +40,9 @@ const Header = () => {
                 <Link to="/">{t("Header.Home")}</Link>
               </li>
               <li>
+                <Link to="/notices">{t("Header.Notices")}</Link>
+              </li>
+              <li>
                 <Link to="/profile">{t("Header.Profile")}</Link>
               </li>
               <li>

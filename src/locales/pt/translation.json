@@ -110,7 +110,8 @@
     "Contact": "Contato",
     "Logout": "Sair",
     "Welcome": "Bem-vindo, {{name}}",
-    "Login": "Entrar"
+    "Login": "Entrar",
+    "Notices": "Avisos"
   },
   "ErrorBookingPastTime": "Não é possível fazer reservas para um horário passado. Por favor, selecione um horário futuro.",
   "ErrorBookingClosedForToday": "As reservas estão encerradas para hoje. Por favor, selecione uma data futura.",
@@ -146,11 +147,45 @@
     "Confirm": "Eu Concordo",
     "Cancel": "Cancelar"
   },
-  "Logout": {
-    "ConfirmTitle": "Tem certeza que deseja sair?",
-    "ConfirmMessage": "Você precisará fazer login novamente para acessar sua conta.",
-    "Confirm": "Sim, sair",
-    "Cancel": "Cancelar"
+  "Notices": {
+    "Title": "Avisos da Comunidade"
+  },
+  "NoticeBoard": {
+    "Title": "Avisos",
+    "NoNotices": "Não há avisos disponíveis no momento.",
+    "Delete": "Excluir",
+    "Edit": "Editar",
+    "ConfirmDeleteTitle": "Confirmar Exclusão",
+    "ConfirmDeleteMessage": "Tem certeza de que deseja excluir este aviso?",
+    "ConfirmDelete": "Sim, excluir",
+    "CancelDelete": "Cancelar",
+    "DeleteSuccess": "Aviso excluído com sucesso",
+    "DeleteError": "Erro ao excluir aviso. Por favor, tente novamente.",
+    "PreviousPage": "Anterior",
+    "NextPage": "Próximo",
+    "PageInfo": "Página {{current}} de {{total}}",
+    "ErrorLoading": "Erro ao carregar avisos. Por favor, tente novamente."
+  },
+  "NoticeForm": {
+    "Title": "Criar Novo Aviso",
+    "EditTitle": "Editar Aviso",
+    "TitleLabel": "Título",
+    "TitlePlaceholder": "Digite o título do aviso",
+    "SubtitleLabel": "Subtítulo",
+    "SubtitlePlaceholder": "Digite o subtítulo do aviso (opcional)",
+    "ContentLabel": "Conteúdo",
+    "ContentPlaceholder": "Digite o conteúdo do aviso",
+    "Create": "Criar Aviso",
+    "Creating": "Criando...",
+    "Update": "Atualizar Aviso",
+    "Updating": "Atualizando...",
+    "Cancel": "Cancelar",
+    "CreateSuccess": "Aviso criado com sucesso",
+    "CreateError": "Erro ao criar aviso. Por favor, tente novamente.",
+    "UpdateSuccess": "Aviso atualizado com sucesso",
+    "UpdateError": "Erro ao atualizar aviso. Por favor, tente novamente.",
+    "ValidationError": "Por favor, preencha todos os campos obrigatórios",
+    "CreateNew": "Criar Novo Aviso"
   }
 }
 

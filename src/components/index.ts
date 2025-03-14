@@ -9,4 +9,5 @@ export { default as SettingsBar } from "./SettingsBar/SettingsBar"
 export { default as Toast } from "./Toast/Toast"
 export { default as Tooltip } from "./Tooltip/Tooltip"
 export { default as Clock } from "./Clock/Clock"
-
+export { default as NoticeBoard } from "./NoticeBoard/NoticeBoard"
+export { default as NoticeForm } from "./NoticeForm/NoticeForm"

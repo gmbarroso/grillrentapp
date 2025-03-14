@@ -3,4 +3,5 @@ export { default as LoginScreen } from "./LoginScreen/LoginScreen"
 export { default as SignUp } from "./SignUp/SignUp"
 export { default as Profile } from "./Profile/Profile"
 export { default as Contact } from "./Contact/Contact"
+export { default as Notices } from "./Notices/Notices"
 

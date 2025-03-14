@@ -1,0 +1,19 @@
+.notices-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .notices-page h1 {
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .notices-page {
+      padding: 0.5rem;
+    }
+  }
+  
+  

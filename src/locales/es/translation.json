@@ -110,7 +110,8 @@
     "Contact": "Contacto",
     "Logout": "Cerrar Sesión",
     "Welcome": "Bienvenido, {{name}}",
-    "Login": "Iniciar Sesión"
+    "Login": "Iniciar Sesión",
+    "Notices": "Avisos"
   },
   "Card": {
     "TennisTitle": "Reglas de Uso de la Cancha de Tenis:",
@@ -128,27 +129,61 @@
       "El sonido ambiental debe cumplir con las regulaciones de volumen moderado para evitar molestar a otros residentes.",
       "No se permiten recipientes de vidrio en el área de la parrilla.",
       "El uso del área de parrilla está restringido a residentes y sus invitados. No se permiten eventos de gran escala sin autorización previa."
-    ],
-    "NeedTablesAndChairs": "Quiero mesas y sillas",
-    "TablesAndChairsAgreement": {
-      "Title": "TÉRMINOS DE ACUERDO",
-      "Intro": "Yo, [User's Name], reconozco y acepto las siguientes condiciones con respecto al uso de mesas y sillas proporcionadas para el evento:",
-      "Terms": [
-        "Cantidad Disponible: Se pondrán a disposición un total de X mesas y Y sillas para su uso.",
-        "Responsabilidad de Uso: Me comprometo a utilizar los artículos adecuadamente y asegurar su preservación durante todo el evento.",
-        "Conteo y Verificación: Después del evento, se realizará un control de inventario para verificar la devolución y el estado de todos los artículos proporcionados.",
-        "Daños y Pérdidas: En caso de cualquier daño, pérdida o extravío de mesas y/o sillas, acepto la plena responsabilidad de su reparación o reemplazo.",
-        "Aceptación del Acuerdo: Al proceder, confirmo que he leído, entendido y acepto los términos descritos en este documento."
-      ],
-      "Confirm": "Estoy de Acuerdo",
-      "Cancel": "Cancelar"
-    }
+    ]
   },
-  "Logout": {
-    "ConfirmTitle": "¿Estás seguro de que deseas cerrar sesión?",
-    "ConfirmMessage": "Necesitarás iniciar sesión nuevamente para acceder a tu cuenta.",
-    "Confirm": "Sí, cerrar sesión",
+  "NeedTablesAndChairs": "Quiero mesas y sillas",
+  "TablesAndChairsAgreement": {
+    "Title": "TÉRMINOS DE ACUERDO",
+    "Intro": "Yo, [User's Name], reconozco y acepto las siguientes condiciones con respecto al uso de mesas y sillas proporcionadas para el evento:",
+    "Terms": [
+      "Cantidad Disponible: Se pondrán a disposición un total de X mesas y Y sillas para su uso.",
+      "Responsabilidad de Uso: Me comprometo a utilizar los artículos adecuadamente y asegurar su preservación durante todo el evento.",
+      "Conteo y Verificación: Después del evento, se realizará un control de inventario para verificar la devolución y el estado de todos los artículos proporcionados.",
+      "Daños y Pérdidas: En caso de cualquier daño, pérdida o extravío de mesas y/o sillas, acepto la plena responsabilidad de su reparación o reemplazo.",
+      "Aceptación del Acuerdo: Al proceder, confirmo que he leído, entendido y acepto los términos descritos en este documento."
+    ],
+    "Confirm": "Estoy de Acuerdo",
     "Cancel": "Cancelar"
+  },
+  "Notices": {
+    "Title": "Avisos de la Comunidad"
+  },
+  "NoticeBoard": {
+    "Title": "Avisos",
+    "NoNotices": "No hay avisos disponibles en este momento.",
+    "Delete": "Eliminar",
+    "Edit": "Editar",
+    "ConfirmDeleteTitle": "Confirmar Eliminación",
+    "ConfirmDeleteMessage": "¿Está seguro de que desea eliminar este aviso?",
+    "ConfirmDelete": "Sí, eliminar",
+    "CancelDelete": "Cancelar",
+    "DeleteSuccess": "Aviso eliminado con éxito",
+    "DeleteError": "Error al eliminar el aviso. Por favor, inténtelo de nuevo.",
+    "PreviousPage": "Anterior",
+    "NextPage": "Siguiente",
+    "PageInfo": "Página {{current}} de {{total}}",
+    "ErrorLoading": "Error al cargar los avisos. Por favor, inténtelo de nuevo."
+  },
+  "NoticeForm": {
+    "Title": "Crear Nuevo Aviso",
+    "EditTitle": "Editar Aviso",
+    "TitleLabel": "Título",
+    "TitlePlaceholder": "Ingrese el título del aviso",
+    "SubtitleLabel": "Subtítulo",
+    "SubtitlePlaceholder": "Ingrese el subtítulo del aviso (opcional)",
+    "ContentLabel": "Contenido",
+    "ContentPlaceholder": "Ingrese el contenido del aviso",
+    "Create": "Crear Aviso",
+    "Creating": "Creando...",
+    "Update": "Actualizar Aviso",
+    "Updating": "Actualizando...",
+    "Cancel": "Cancelar",
+    "CreateSuccess": "Aviso creado con éxito",
+    "CreateError": "Error al crear el aviso. Por favor, inténtelo de nuevo.",
+    "UpdateSuccess": "Aviso actualizado con éxito",
+    "UpdateError": "Error al actualizar el aviso. Por favor, inténtelo de nuevo.",
+    "ValidationError": "Por favor, complete todos los campos obligatorios",
+    "CreateNew": "Crear Nuevo Aviso"
   }
 }
 

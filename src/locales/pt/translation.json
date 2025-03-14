@@ -134,6 +134,7 @@
     ]
   },
   "NeedTablesAndChairs": "Eu quero mesas e cadeiras",
+   "GrillRentWarning": "Atenção: Ao alugar a churrasqueira você está alugando também o salão de festas e a quadra poliesportiva.",
   "TablesAndChairsAgreement": {
     "Title": "TERMOS DE ACORDO",
     "Intro": "Eu, [User's Name], reconheço e concordo com as seguintes condições relativas ao uso de mesas e cadeiras fornecidas para o evento:",

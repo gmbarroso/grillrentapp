@@ -49,7 +49,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     setIsDateAvailable(null)
     setUnavailableSlots([])
     setUserBookedSlots([])
-    setNeedTablesAndChairs(false)
+    setNeedTablesAndChairs(false) // Reset when changing options
   }
 
   const handleDateSelect = (date: Date) => {
@@ -64,6 +64,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   }
 
   const handleTablesAndChairsChange = () => {
+    // Open the agreement modal when the checkbox is clicked
     setIsAgreementModalOpen(true)
   }
 
@@ -113,6 +114,8 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setIsDateAvailable(true)
         onBookingCreated()
         showToast(t("BookingCreatedSuccess"), "success")
+
+        // Reset form after successful booking
         setSelectedDate(null)
         setSelectedTime(null)
         setNeedTablesAndChairs(false)
@@ -196,6 +199,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
                 />
                 <span className="checkbox-text">{t("NeedTablesAndChairs")}</span>
               </label>
+              <p>{t("GrillRentWarning")}</p>
             </div>
           )}
 
@@ -229,7 +233,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           </p>
           <ul className="agreement-terms">
             {(t("TablesAndChairsAgreement.Terms", { returnObjects: true }) as string[]).map((term, index) => (
-              <li key={index}>{term}</li>
+              <li className="agreement-terms li" key={index}>{term}</li>
             ))}
           </ul>
           <div className="agreement-actions">

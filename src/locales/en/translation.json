@@ -132,6 +132,7 @@
     ]
   },
   "NeedTablesAndChairs": "I want tables and chairs",
+  "GrillRentWarning": "Attention: When renting the grill area, you are also renting the party hall and the sports court.",
   "TablesAndChairsAgreement": {
     "Title": "TERMS OF AGREEMENT",
     "Intro": "I, [User's Name], acknowledge and agree to the following conditions regarding the use of tables and chairs provided for the event:",

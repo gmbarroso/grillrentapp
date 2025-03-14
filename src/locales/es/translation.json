@@ -132,6 +132,7 @@
     ]
   },
   "NeedTablesAndChairs": "Quiero mesas y sillas",
+  "GrillRentWarning": "Atención: Al alquilar la parrilla, también está alquilando el salón de fiestas y la cancha deportiva.",
   "TablesAndChairsAgreement": {
     "Title": "TÉRMINOS DE ACUERDO",
     "Intro": "Yo, [User's Name], reconozco y acepto las siguientes condiciones con respecto al uso de mesas y sillas proporcionadas para el evento:",

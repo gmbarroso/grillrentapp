@@ -184,6 +184,12 @@
     "UpdateError": "Error updating notice. Please try again.",
     "ValidationError": "Please fill in all required fields",
     "CreateNew": "Create New Notice"
+  },
+  "Logout": {
+    "ConfirmTitle": "Confirm Logout",
+    "ConfirmMessage": "Are you sure you want to logout?",
+    "Confirm": "Logout",
+    "Cancel": "Cancel"
   }
 }
 

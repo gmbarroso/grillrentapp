@@ -184,6 +184,12 @@
     "UpdateError": "Error al actualizar el aviso. Por favor, inténtelo de nuevo.",
     "ValidationError": "Por favor, complete todos los campos obligatorios",
     "CreateNew": "Crear Nuevo Aviso"
+  },
+  "Logout": {
+    "ConfirmTitle": "Confirmar Cierre de Sesión",
+    "ConfirmMessage": "¿Está seguro de que desea cerrar la sesión?",
+    "Confirm": "Cerrar Sesión",
+    "Cancel": "Cancelar"
   }
 }
 

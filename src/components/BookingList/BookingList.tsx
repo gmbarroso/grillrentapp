@@ -5,7 +5,7 @@ import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
-import { Modal } from "../"
+import { Modal, LoadingSpinner } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import "./BookingList.css"
@@ -27,7 +27,7 @@ const BookingList: React.FC<BookingListProps> = ({
 }) => {
   const { t } = useTranslation()
   const { token, user } = useAuth()
-  const { deleteBooking } = useDeleteBooking(token ?? "")
+  const { deleteBooking, isLoading } = useDeleteBooking(token ?? "")
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null)
   const { showToast } = useToast()
@@ -174,12 +174,20 @@ const BookingList: React.FC<BookingListProps> = ({
         <h2>{t("BookingList.ConfirmDeleteTitle")}</h2>
         <p>{t("BookingList.ConfirmDeleteMessage")}</p>
         <div className="modal-actions">
-          <button onClick={handleConfirmDelete} className="confirm-delete-button">
-            {t("BookingList.ConfirmDelete")}
-          </button>
-          <button onClick={handleCloseModal} className="cancel-button">
-            {t("BookingList.CancelDelete")}
-          </button>
+          {isLoading ? (
+            <div className="loading-container">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <>
+              <button onClick={handleConfirmDelete} className="confirm-delete-button">
+                {t("BookingList.ConfirmDelete")}
+              </button>
+              <button onClick={handleCloseModal} className="cancel-button">
+                {t("BookingList.CancelDelete")}
+              </button>
+            </>
+          )}
         </div>
       </Modal>
     </div>

@@ -40,7 +40,7 @@
 .column-header {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 .action-column {
@@ -130,11 +130,12 @@
   background-color: var(--color-secondary-dark);
 }
 
-.no-bookings-message {
-  text-align: center;
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   padding: 1rem;
-  color: var(--color-text);
-  font-style: italic;
 }
 
 @media (max-width: 768px) {

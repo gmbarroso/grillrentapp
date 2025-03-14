@@ -13,6 +13,17 @@
   padding: 0 1rem;
 }
 
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-logo {
+  height: 40px;
+  width: auto;
+}
+
 .header h1 {
   margin: 0;
   font-size: 1.5rem;
@@ -44,7 +55,6 @@
   text-decoration: underline;
 }
 
-/* Logout Modal Styles */
 .logout-modal {
   padding: 1rem;
   max-width: 400px;
@@ -100,6 +110,18 @@
     align-items: center;
   }
 
+  .header-brand {
+    margin-bottom: 0.5rem;
+  }
+
+  .header-logo {
+    height: 30px;
+  }
+
+  .header h1 {
+    font-size: 1.2rem;
+  }
+
   .header nav ul {
     margin-top: 1rem;
   }
@@ -119,7 +141,6 @@
   }
 }
 
-/* Add these styles at the end of the file */
 .confirm-dialog {
   padding: 1.5rem;
 }

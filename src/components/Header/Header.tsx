@@ -31,7 +31,14 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-content">
-        <h1>Condomínio Chácara Sacopã</h1>
+        <div className="header-brand">
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo_n-vMvvALaTZX5Rtz4C8lRCnyzBqTwsBU.png"
+            alt="Chácara Sacopã Logo"
+            className="header-logo"
+          />
+          <h1>Condomínio Chácara Sacopã</h1>
+        </div>
         <Clock />
         {isAuthenticated && (
           <nav>
@@ -56,7 +63,6 @@ const Header = () => {
         )}
       </div>
 
-      {/* Logout Confirmation Modal */}
       <Modal isOpen={isLogoutModalOpen} onClose={handleCancelLogout}>
         <div className="confirm-dialog">
           <h2>{t("Logout.ConfirmTitle")}</h2>

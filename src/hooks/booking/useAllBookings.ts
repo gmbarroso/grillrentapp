@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback, useMemo, useRef } from "react"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import type { Booking } from "../../types/Booking"
@@ -15,97 +15,73 @@ interface BookingsResponse {
 }
 
 export function useAllBookings(token: string) {
+  // Add render counter for debugging
+  const renderCount = useRef(0)
+  renderCount.current++
+
+  console.log(`[useAllBookings] Render count: ${renderCount.current}`)
+
   const [currentPage, setCurrentPage] = useState(1)
   const [currentLimit, setCurrentLimit] = useState(10)
   const [currentSort, setCurrentSort] = useState("startTime")
   const [currentOrder, setCurrentOrder] = useState<"ASC" | "DESC">("ASC")
-  const [clientSideSorting, setClientSideSorting] = useState(false)
   const authenticatedFetch = useAuthenticatedFetch()
 
-  // Determine if we need client-side sorting
-  const needsClientSideSorting = currentSort === "resourceType" || currentSort === "userApartment"
-
-  // Use a server-side sort field that works
-  const serverSideSort = needsClientSideSorting ? "startTime" : currentSort
-
+  // Memoize the fetcher function to prevent recreation on every render
   const fetcher = useCallback(
     async (url: string) => {
+      console.log(`[useAllBookings] Fetching data from: ${url}`)
       try {
-        // Replace the sort parameter in the URL if needed
-        const finalUrl = needsClientSideSorting ? url.replace(`sort=${currentSort}`, `sort=${serverSideSort}`) : url
-
-        const res = await authenticatedFetch(finalUrl)
+        const res = await authenticatedFetch(url)
         if (!res.ok) {
           throw new Error("Failed to fetch bookings")
         }
-
         const data = await res.json()
-
-        // Apply client-side sorting if needed
-        if (needsClientSideSorting && data.data && data.data.length > 0) {
-          data.data = sortBookingsClientSide(data.data, currentSort, currentOrder)
-        }
-
+        console.log(`[useAllBookings] Fetch successful, received ${data?.data?.length || 0} bookings`)
         return data
       } catch (error) {
-        console.error("Error fetching bookings:", error)
+        console.error("[useAllBookings] Error fetching bookings:", error)
         throw error
       }
     },
-    [authenticatedFetch, currentSort, currentOrder, needsClientSideSorting, serverSideSort],
+    [authenticatedFetch],
   )
 
-  const url = useMemo(
-    () =>
-      `${API_BASE_URL}/bookings?page=${currentPage}&limit=${currentLimit}&sort=${currentSort}&order=${currentOrder}`,
-    [currentPage, currentLimit, currentSort, currentOrder],
-  )
+  // Memoize the URL construction to prevent it from changing on every render
+  const url = useMemo(() => {
+    const constructedUrl = `${API_BASE_URL}/bookings?page=${currentPage}&limit=${currentLimit}&sort=${currentSort}&order=${currentOrder}`
+    console.log(`[useAllBookings] URL constructed: ${constructedUrl}`)
+    return constructedUrl
+  }, [currentPage, currentLimit, currentSort, currentOrder])
 
   const { data, isError, isLoading, mutate } = useFetch<BookingsResponse>(url, { fetcher })
 
-  // Function to sort bookings on the client side. I don't like this function
-  // because it's not very flexible and doesn't handle all possible sort fields.
-  // It's also not very efficient for large datasets.
-  const sortBookingsClientSide = (bookings: Booking[], sortField: string, sortOrder: "ASC" | "DESC"): Booking[] => {
-    return [...bookings].sort((a, b) => {
-      let valueA, valueB
+  // Simple state setters. I will bring this logic to backend in the future
+  const changePage = useCallback((newPage: number) => {
+    console.log(`[useAllBookings] Changing page to: ${newPage}`)
+    setCurrentPage(newPage)
+  }, [])
 
-      if (sortField === "resourceType") {
-        valueA = a.resourceType
-        valueB = b.resourceType
-      } else if (sortField === "userApartment") {
-        valueA = a.userApartment
-        valueB = b.userApartment
-      } else {
-        return 0
-      }
-
-      if (typeof valueA === "string" && typeof valueB === "string") {
-        return sortOrder === "ASC" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA)
-      }
-
-      if (valueA < valueB) return sortOrder === "ASC" ? -1 : 1
-      if (valueA > valueB) return sortOrder === "ASC" ? 1 : -1
-      return 0
-    })
-  }
-
-  const changePage = (newPage: number) => setCurrentPage(newPage)
-  const changeLimit = (newLimit: number) => {
+  const changeLimit = useCallback((newLimit: number) => {
+    console.log(`[useAllBookings] Changing limit to: ${newLimit}`)
     setCurrentLimit(newLimit)
     setCurrentPage(1)
-  }
-  const changeSort = (newSort: string) => {
+  }, [])
+
+  const changeSort = useCallback((newSort: string) => {
+    console.log(`[useAllBookings] Changing sort to: ${newSort}`)
     setCurrentSort(newSort)
-    setClientSideSorting(newSort === "resourceType" || newSort === "userApartment")
     setCurrentPage(1)
-  }
-  const changeOrder = (newOrder: "ASC" | "DESC") => {
+  }, [])
+
+  const changeOrder = useCallback((newOrder: "ASC" | "DESC") => {
+    console.log(`[useAllBookings] Changing order to: ${newOrder}`)
     setCurrentOrder(newOrder)
     setCurrentPage(1)
-  }
+  }, [])
 
   const refreshBookings = useCallback(() => {
+    console.log(`[useAllBookings] Refreshing bookings data`)
     return mutate()
   }, [mutate])
 
@@ -124,7 +100,6 @@ export function useAllBookings(token: string) {
     changeSort,
     changeOrder,
     refreshBookings,
-    isClientSideSorting: clientSideSorting,
   }
 }
 

@@ -1,48 +1,49 @@
 "use client"
 
 import { useAuth } from "../context/AuthContext"
-import { isTokenExpired, isValidToken } from "../utils/jwt"
+import { isTokenExpired } from "../utils/jwt"
+import { useCallback, useRef } from "react"
 
-/**
- * A hook that provides an authenticated fetch function
- * that checks token expiration before making requests
- */
 export function useAuthenticatedFetch() {
+  // Add render counter for debugging
+  const renderCount = useRef(0)
+  renderCount.current++
+
+  console.log(`[useAuthenticatedFetch] Render count: ${renderCount.current}`)
+
   const { token, logout } = useAuth()
 
-  const authenticatedFetch = async (url: string, options: RequestInit = {}) => {
-    // Check if token exists and is valid
-    if (!token || !isValidToken(token)) {
-      logout()
-      throw new Error("Invalid authentication token")
-    }
+  // Memoize the authenticatedFetch function to prevent recreation on every render
+  const authenticatedFetch = useCallback(
+    async (url: string, options: RequestInit = {}) => {
+      console.log(`[useAuthenticatedFetch] Fetch request to: ${url}`)
 
-    // Check if token is expired
-    if (isTokenExpired(token)) {
-      logout()
-      throw new Error("Authentication token expired")
-    }
+      if (!token || isTokenExpired(token)) {
+        console.log(`[useAuthenticatedFetch] Token invalid or expired, logging out`)
+        logout()
+        throw new Error("Authentication token expired")
+      }
 
-    // Add authorization header
-    const headers = {
-      ...options.headers,
-      Authorization: `Bearer ${token}`,
-    }
+      const headers = {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      }
 
-    // Make the request
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    })
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      })
 
-    // Handle 401 Unauthorized responses
-    if (response.status === 401) {
-      logout()
-      throw new Error("Authentication failed")
-    }
+      if (response.status === 401) {
+        console.log(`[useAuthenticatedFetch] Received 401 response, logging out`)
+        logout()
+        throw new Error("Authentication failed")
+      }
 
-    return response
-  }
+      return response
+    },
+    [token, logout],
+  )
 
   return authenticatedFetch
 }

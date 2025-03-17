@@ -1,4 +1,5 @@
 {
+  "Loading": "Loading...",
   "Welcome": "Welcome",
   "ChooseRent": "What would you like to rent?",
   "Grill": "Grill",
@@ -15,6 +16,11 @@
   "ErrorLoadingBookings": "Error loading bookings. Please try again.",
   "SelectTime": "What time would you like to book?",
   "SelectTimeOption": "Select Time",
+  "TimeSlot": {
+    "Available": "Available",
+    "Booked": "Booked",
+    "YourBooking": "Your booking"
+  },
   "Contact": {
     "Title": "Contact Us",
     "Intro": "We'd love to hear from you! Here's how you can reach us:",
@@ -191,6 +197,12 @@
     "ConfirmMessage": "Are you sure you want to logout?",
     "Confirm": "Logout",
     "Cancel": "Cancel"
+  },
+  "ErrorFetchingSlots": "Error fetching available time slots. Please try again.",
+  "Calendar": {
+    "ReservedDaysMessage": "Some days are already reserved. Please select an available date.",
+    "Available": "Available",
+    "Reserved": "Reserved"
   }
 }
 

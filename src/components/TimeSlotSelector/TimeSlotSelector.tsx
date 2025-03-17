@@ -10,7 +10,7 @@ interface TimeSlotSelectorProps {
   onTimeSelect: (time: string) => void
   resourceType: "tennis" | "grill"
   unavailableSlots?: string[]
-  userBookedSlots?: string[]
+  isLoading?: boolean
 }
 
 const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
@@ -18,7 +18,7 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   onTimeSelect,
   resourceType,
   unavailableSlots = [],
-  userBookedSlots = [],
+  isLoading = false,
 }) => {
   const { t } = useTranslation()
 
@@ -29,32 +29,56 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
       label: `${hour}:00 - ${hour + 1}:00`,
     }
   })
-  
+
   const handleTimeSlotChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onTimeSelect(event.target.value)
   }
 
   const isSlotDisabled = (slot: string) => {
     if (resourceType === "tennis") {
-      if (userBookedSlots.length >= 2) {
-        return !userBookedSlots.includes(slot)
-      }
       return unavailableSlots.includes(slot)
     }
     return false
   }
 
+  const getSlotClassName = (slot: string) => {
+    if (unavailableSlots.includes(slot)) {
+      return "booked"
+    }
+    return "available"
+  }
+
   return (
     <div className="time-slot-selector">
       <label>{t("SelectTime")}</label>
-      <select value={selectedTime || ""} onChange={handleTimeSlotChange} className="time-select">
-        <option value="">{t("SelectTimeOption")}</option>
-        {timeSlots.map((slot) => (
-          <option key={slot.value} value={slot.value} disabled={isSlotDisabled(slot.value)}>
-            {slot.label}
-          </option>
-        ))}
-      </select>
+      {isLoading ? (
+        <div className="loading-indicator">{t("Loading")}</div>
+      ) : (
+        <select value={selectedTime || ""} onChange={handleTimeSlotChange} className="time-select">
+          <option value="">{t("SelectTimeOption")}</option>
+          {timeSlots.map((slot) => (
+            <option
+              key={slot.value}
+              value={slot.value}
+              disabled={isSlotDisabled(slot.value)}
+              className={getSlotClassName(slot.value)}
+            >
+              {slot.label} {unavailableSlots.includes(slot.value) ? `(${t("TimeSlot.Booked")})` : ""}
+            </option>
+          ))}
+        </select>
+      )}
+
+      <div className="time-slot-legend">
+        <div className="legend-item">
+          <div className="legend-color available"></div>
+          <span>{t("TimeSlot.Available")}</span>
+        </div>
+        <div className="legend-item">
+          <div className="legend-color booked"></div>
+          <span>{t("TimeSlot.Booked")}</span>
+        </div>
+      </div>
     </div>
   )
 }

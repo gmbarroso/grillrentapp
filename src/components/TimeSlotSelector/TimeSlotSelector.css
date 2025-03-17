@@ -1,25 +1,85 @@
 .time-slot-selector {
-    margin-top: 1rem;
-  }
-  
-  .time-slot-selector label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--color-primary);
-  }
-  
-  .time-select {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid var(--color-primary);
-    border-radius: 4px;
-    background-color: var(--color-card-background);
-    color: var(--color-text);
-  }
-  
-  .time-select option:disabled {
-    color: var(--color-secondary);
-    background-color: var(--color-background);
-  }
-  
-  
+  margin-top: 1rem;
+}
+
+.time-slot-selector label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+}
+
+.time-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  background-color: var(--color-card-background);
+  color: var(--color-text);
+}
+
+.time-select option:disabled {
+  color: var(--color-secondary);
+  background-color: var(--color-background);
+}
+
+/* Add these styles to show booked slots in the dropdown */
+.time-select option.booked {
+  background-color: var(--color-secondary-light);
+  color: var(--color-text);
+  font-style: italic;
+  position: relative;
+}
+
+.time-select option.available {
+  background-color: var(--color-card-background);
+  color: var(--color-text);
+}
+
+.time-select option.user-booked {
+  background-color: var(--color-primary-light);
+  color: white;
+}
+
+.time-slot-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-color.available {
+  background-color: var(--color-card-background);
+  border: 1px solid var(--color-primary);
+}
+
+.legend-color.booked {
+  background-color: var(--color-secondary-light);
+}
+
+.legend-color.user-booked {
+  background-color: var(--color-primary-light);
+}
+
+.loading-indicator {
+  padding: 0.5rem;
+  border: 1px solid var(--color-secondary);
+  border-radius: 4px;
+  background-color: var(--color-card-background);
+  color: var(--color-text);
+  text-align: center;
+  font-style: italic;
+}
+

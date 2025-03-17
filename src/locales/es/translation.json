@@ -1,4 +1,5 @@
 {
+  "Loading": "Cargando...",
   "Welcome": "Bienvenido",
   "ChooseRent": "¿Qué te gustaría alquilar?",
   "Grill": "Parrilla",
@@ -15,6 +16,11 @@
   "ErrorLoadingBookings": "Error al cargar las reservas. Por favor, inténtalo de nuevo.",
   "SelectTime": "¿A qué hora te gustaría reservar?",
   "SelectTimeOption": "Seleccionar Hora",
+  "TimeSlot": {
+    "Available": "Disponible",
+    "Booked": "Reservado",
+    "YourBooking": "Tu reserva"
+  },
   "Contact": {
     "Title": "Contáctanos",
     "Intro": "¡Nos encantaría saber de ti! Aquí tienes cómo puedes contactarnos:",
@@ -191,6 +197,7 @@
     "ConfirmMessage": "¿Está seguro de que desea cerrar la sesión?",
     "Confirm": "Cerrar Sesión",
     "Cancel": "Cancelar"
-  }
+  },
+  "ErrorFetchingSlots": "Error al obtener los horarios disponibles. Por favor, inténtalo de nuevo."
 }
 

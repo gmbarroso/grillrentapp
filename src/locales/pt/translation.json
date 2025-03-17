@@ -15,6 +15,11 @@
   "ErrorLoadingBookings": "Erro ao carregar as reservas. Por favor, tente novamente.",
   "SelectTime": "Que horas você gostaria de reservar?",
   "SelectTimeOption": "Selecionar Horário",
+  "TimeSlot": {
+    "Available": "Disponível",
+    "Booked": "Reservado",
+    "YourBooking": "Sua reserva"
+  },
   "Contact": {
     "Title": "Entre em Contato",
     "Intro": "Adoraríamos ouvir de você! Aqui está como você pode nos contatar:",
@@ -115,6 +120,7 @@
   },
   "ErrorBookingPastTime": "Não é possível fazer reservas para um horário passado. Por favor, selecione um horário futuro.",
   "ErrorBookingClosedForToday": "As reservas estão encerradas para hoje. Por favor, selecione uma data futura.",
+  "ErrorFetchingSlots": "Erro ao buscar horários disponíveis. Por favor, tente novamente.",
   "Card": {
     "TennisTitle": "Regras de uso para Quadra de Tênis:",
     "TennisContent": [
@@ -134,7 +140,7 @@
     ]
   },
   "NeedTablesAndChairs": "Eu quero mesas e cadeiras",
-   "GrillRentWarning": "Atenção: Ao alugar a churrasqueira você está alugando também o salão de festas e a quadra poliesportiva.",
+  "GrillRentWarning": "Atenção: Ao alugar a churrasqueira você está alugando também o salão de festas e a quadra poliesportiva.",
   "TablesAndChairsAgreement": {
     "Title": "TERMOS DE ACORDO",
     "Intro": "Eu, [User's Name], reconheço e concordo com as seguintes condições relativas ao uso de mesas e cadeiras fornecidas para o evento:",
@@ -193,6 +199,7 @@
     "ConfirmMessage": "Tem certeza que deseja sair?",
     "Confirm": "Sair",
     "Cancel": "Cancelar"
-  }
+  },
+  "Loading": "Carregando..."
 }
 

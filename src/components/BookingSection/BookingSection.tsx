@@ -13,6 +13,7 @@ import { useAuth } from "../../context/AuthContext"
 import "./BookingSection.css"
 import type { Resource } from "../../types/Resource"
 import type { BookingSectionProps } from "../../types/Booking"
+import { useReservedTimes } from "../../hooks/booking/useReservedTimes"
 
 interface ExtendedBookingSectionProps extends BookingSectionProps {
   onBookingCreated: () => void
@@ -32,10 +33,15 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [isDateAvailable, setIsDateAvailable] = useState<boolean | null>(null)
-  const [unavailableSlots, setUnavailableSlots] = useState<string[]>([])
-  const [userBookedSlots, setUserBookedSlots] = useState<string[]>([])
+  const {
+    reservedTimes: unavailableTimes,
+    reservedDays,
+    isLoading: isLoadingTimes,
+    error: timesError,
+  } = useReservedTimes(selectedOption as "tennis" | "grill" | undefined, selectedDate || undefined)
   const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
   const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
@@ -47,8 +53,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     setSelectedDate(null)
     setSelectedTime(null)
     setIsDateAvailable(null)
-    setUnavailableSlots([])
-    setUserBookedSlots([])
     setNeedTablesAndChairs(false) // Reset when changing options
   }
 
@@ -56,7 +60,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     setSelectedDate(date)
     setSelectedTime(null)
     setIsDateAvailable(null)
-    setUnavailableSlots([])
   }
 
   const handleTimeSelect = (time: string) => {
@@ -121,8 +124,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setNeedTablesAndChairs(false)
         setSelectedOption(null)
         setIsDateAvailable(null)
-        setUnavailableSlots([])
-        setUserBookedSlots([])
       } catch (error) {
         console.error("Error creating booking:", error)
         setIsDateAvailable(false)
@@ -143,7 +144,9 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         <h3 className="card-title">{title}</h3>
         <ul className="card-content">
           {content.map((item, index) => (
-            <li className="agreement-terms li" key={index}>{item}</li>
+            <li className="agreement-terms li" key={index}>
+              {item}
+            </li>
           ))}
         </ul>
       </div>
@@ -159,6 +162,10 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
 
   if (resourcesError) {
     showToast(t("ErrorLoadingResources"), "error")
+  }
+
+  if (timesError && !(selectedOption === "tennis" && !selectedDate)) {
+    showToast(t("ErrorFetchingSlots"), "error")
   }
 
   return (
@@ -208,8 +215,8 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
               selectedTime={selectedTime}
               onTimeSelect={handleTimeSelect}
               resourceType={selectedOption}
-              unavailableSlots={unavailableSlots}
-              userBookedSlots={userBookedSlots}
+              unavailableSlots={unavailableTimes}
+              isLoading={isLoadingTimes}
             />
           )}
 
@@ -233,7 +240,9 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           </p>
           <ul className="agreement-terms">
             {(t("TablesAndChairsAgreement.Terms", { returnObjects: true }) as string[]).map((term, index) => (
-              <li className="agreement-terms li" key={index}>{term}</li>
+              <li className="agreement-terms li" key={index}>
+                {term}
+              </li>
             ))}
           </ul>
           <div className="agreement-actions">

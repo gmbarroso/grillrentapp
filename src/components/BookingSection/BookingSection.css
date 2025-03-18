@@ -37,6 +37,21 @@
   margin-top: 1rem;
 }
 
+.calendar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 350px; /* Ensure consistent height during loading */
+}
+
+.calendar-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 350px;
+}
+
 .calendar-section h3 {
   color: var(--color-primary);
   margin-bottom: 1rem;

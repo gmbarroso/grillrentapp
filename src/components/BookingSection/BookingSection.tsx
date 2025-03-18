@@ -1,19 +1,17 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
-import Calendar from "../Calendar/Calendar"
-import { LoadingSpinner, Modal } from "../"
-import TimeSlotSelector from "../TimeSlotSelector/TimeSlotSelector"
 import { useAllResources } from "../../hooks/resource/useAllResources"
 import { useCreateBooking } from "../../hooks/booking/useCreateBooking"
+import { useReservedTimes } from "../../hooks/booking/useReservedTimes"
 import { useToast } from "../../context/ToastContext"
 import { useAuth } from "../../context/AuthContext"
-import "./BookingSection.css"
 import type { Resource } from "../../types/Resource"
 import type { BookingSectionProps } from "../../types/Booking"
-import { useReservedTimes } from "../../hooks/booking/useReservedTimes"
+import { LoadingSpinner, Modal, CustomCalendar, TimeSlotSelector } from "../"
+import "./BookingSection.css"
 
 interface ExtendedBookingSectionProps extends BookingSectionProps {
   onBookingCreated: () => void
@@ -42,18 +40,24 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
   const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
 
   const selectedResource = selectedOption ? resources?.find((r: Resource) => r.type === selectedOption) : null
 
+  // Force calendar re-render when resource type changes
+  useEffect(() => {
+    setCalendarKey(`${selectedOption}-${Date.now()}`)
+  }, [selectedOption])
+
   const handleOptionSelect = (option: "grill" | "tennis") => {
     setSelectedOption(option)
     setSelectedDate(null)
     setSelectedTime(null)
     setIsDateAvailable(null)
-    setNeedTablesAndChairs(false) // Reset when changing options
+    setNeedTablesAndChairs(false)
   }
 
   const handleDateSelect = (date: Date) => {
@@ -67,7 +71,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   }
 
   const handleTablesAndChairsChange = () => {
-    // Open the agreement modal when the checkbox is clicked
     setIsAgreementModalOpen(true)
   }
 
@@ -173,7 +176,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       <h2>{t("ChooseRent")}</h2>
       <div className="options">
         {isResourcesLoading ? (
-          <LoadingSpinner />
+          <LoadingSpinner inline />
         ) : resources ? (
           resources.map((resource: Resource) => (
             <button
@@ -188,12 +191,19 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       </div>
       {selectedOption && (
         <div className="calendar-section">
-          <Calendar
-            key={selectedOption}
-            availableDates={[]}
-            unavailableDates={unavailableDates}
-            onDateSelect={handleDateSelect}
-          />
+          <div className="calendar-container">
+            {selectedOption === "grill" && isLoadingTimes ? (
+              <div className="calendar-loading">
+                <LoadingSpinner inline />
+              </div>
+            ) : (
+              <CustomCalendar
+                key={calendarKey}
+                reservedDays={selectedOption === "grill" ? reservedDays : []}
+                onDateSelect={handleDateSelect}
+              />
+            )}
+          </div>
 
           {selectedDate && selectedOption === "grill" && (
             <div className="tables-chairs-option">

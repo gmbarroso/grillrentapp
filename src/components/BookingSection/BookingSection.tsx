@@ -41,16 +41,22 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
+  const [isFetchingAfterDateSelect, setIsFetchingAfterDateSelect] = useState(false)
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
 
   const selectedResource = selectedOption ? resources?.find((r: Resource) => r.type === selectedOption) : null
 
-  // Force calendar re-render when resource type changes
   useEffect(() => {
     setCalendarKey(`${selectedOption}-${Date.now()}`)
   }, [selectedOption])
+
+  useEffect(() => {
+    if (!isLoadingTimes && isFetchingAfterDateSelect) {
+      setIsFetchingAfterDateSelect(false)
+    }
+  }, [isLoadingTimes, isFetchingAfterDateSelect])
 
   const handleOptionSelect = (option: "grill" | "tennis") => {
     setSelectedOption(option)
@@ -64,6 +70,10 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     setSelectedDate(date)
     setSelectedTime(null)
     setIsDateAvailable(null)
+
+    if (selectedOption === "grill") {
+      setIsFetchingAfterDateSelect(true)
+    }
   }
 
   const handleTimeSelect = (time: string) => {
@@ -120,8 +130,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setIsDateAvailable(true)
         onBookingCreated()
         showToast(t("BookingCreatedSuccess"), "success")
-
-        // Reset form after successful booking
         setSelectedDate(null)
         setSelectedTime(null)
         setNeedTablesAndChairs(false)
@@ -176,7 +184,9 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       <h2>{t("ChooseRent")}</h2>
       <div className="options">
         {isResourcesLoading ? (
-          <LoadingSpinner inline />
+          <div className="options-loading">
+            <LoadingSpinner inline />
+          </div>
         ) : resources ? (
           resources.map((resource: Resource) => (
             <button
@@ -192,7 +202,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       {selectedOption && (
         <div className="calendar-section">
           <div className="calendar-container">
-            {selectedOption === "grill" && isLoadingTimes ? (
+            {selectedOption === "grill" && (isLoadingTimes || isFetchingAfterDateSelect) ? (
               <div className="calendar-loading">
                 <LoadingSpinner inline />
               </div>
@@ -201,11 +211,13 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
                 key={calendarKey}
                 reservedDays={selectedOption === "grill" ? reservedDays : []}
                 onDateSelect={handleDateSelect}
+                resourceType={selectedOption}
+                selectedDate={selectedDate}
               />
             )}
           </div>
 
-          {selectedDate && selectedOption === "grill" && (
+          {selectedDate && selectedOption === "grill" && !isLoadingTimes && !isFetchingAfterDateSelect && (
             <div className="tables-chairs-option">
               <label className="checkbox-label">
                 <input
@@ -241,7 +253,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       )}
       {selectedOption && handleRulesForEachResource(selectedResource.type)}
 
-      {/* Agreement Modal */}
       <Modal isOpen={isAgreementModalOpen} onClose={handleAgreementCancel}>
         <div className="agreement-modal">
           <h2 className="agreement-title">{t("TablesAndChairsAgreement.Title")}</h2>

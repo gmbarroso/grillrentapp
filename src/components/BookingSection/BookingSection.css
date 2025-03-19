@@ -41,7 +41,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 350px; /* Ensure consistent height during loading */
+  min-height: 350px;
 }
 
 .calendar-loading {
@@ -195,5 +195,12 @@
     width: 100%;
     margin-bottom: 0.5rem;
   }
+}
+
+.options-loading {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem 0;
 }
 

@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useTranslation } from "react-i18next"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import "./CustomCalendar.css"
 
@@ -11,6 +11,8 @@ interface CustomCalendarProps {
   onDateSelect: (date: Date) => void
   minDate?: Date
   maxDate?: Date
+  resourceType?: "grill" | "tennis"
+  selectedDate?: Date | null
 }
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
@@ -18,17 +20,36 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   onDateSelect,
   minDate = new Date(),
   maxDate,
+  resourceType = "grill",
+  selectedDate = null,
 }) => {
   const { t } = useTranslation()
 
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date())
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [internalSelectedDate, setInternalSelectedDate] = useState<Date | null>(selectedDate)
+
+  useEffect(() => {
+    setInternalSelectedDate(selectedDate)
+  }, [selectedDate])
 
   const reservedDaysSet = new Set(reservedDays)
 
   const defaultMaxDate = new Date()
   defaultMaxDate.setMonth(defaultMaxDate.getMonth() + 3)
   const effectiveMaxDate = maxDate || defaultMaxDate
+
+  useEffect(() => {
+    if (selectedDate) {
+      const selectedMonth = selectedDate.getMonth()
+      const selectedYear = selectedDate.getFullYear()
+      const currentViewMonth = currentMonth.getMonth()
+      const currentViewYear = currentMonth.getFullYear()
+
+      if (selectedMonth !== currentViewMonth || selectedYear !== currentViewYear) {
+        setCurrentMonth(new Date(selectedYear, selectedMonth, 1))
+      }
+    }
+  }, [selectedDate, currentMonth])
 
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate()
@@ -58,12 +79,22 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     return dateWithoutTime < minWithoutTime || dateWithoutTime > maxWithoutTime
   }
 
+  const isDateSelected = (date: Date): boolean => {
+    if (!internalSelectedDate) return false
+
+    return (
+      date.getDate() === internalSelectedDate.getDate() &&
+      date.getMonth() === internalSelectedDate.getMonth() &&
+      date.getFullYear() === internalSelectedDate.getFullYear()
+    )
+  }
+
   const handleDateClick = (date: Date) => {
     if (isDateReserved(date) || isDateOutOfRange(date)) {
       return
     }
 
-    setSelectedDate(date)
+    setInternalSelectedDate(date)
     onDateSelect(date)
   }
 
@@ -121,11 +152,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       const dateString = formatDateString(date)
       const isReserved = isDateReserved(date)
       const isOutOfRange = isDateOutOfRange(date)
-      const isSelected =
-        selectedDate &&
-        selectedDate.getDate() === day &&
-        selectedDate.getMonth() === month &&
-        selectedDate.getFullYear() === year
+      const isSelected = isDateSelected(date)
 
       const className = `calendar-day ${isReserved ? "reserved" : ""} ${isOutOfRange ? "out-of-range" : ""} ${isSelected ? "selected" : ""}`
 
@@ -163,16 +190,18 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
       <div className="calendar-grid">{renderCalendarDays()}</div>
 
-      <div className="calendar-legend">
-        <div className="legend-item">
-          <div className="legend-color available"></div>
-          <span>{t("TimeSlot.Available")}</span>
+      {resourceType === "grill" && (
+        <div className="calendar-legend">
+          <div className="legend-item">
+            <div className="legend-color available"></div>
+            <span>{t("TimeSlot.Available")}</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color reserved"></div>
+            <span>{t("TimeSlot.Booked")}</span>
+          </div>
         </div>
-        <div className="legend-item">
-          <div className="legend-color reserved"></div>
-          <span>{t("TimeSlot.Booked")}</span>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

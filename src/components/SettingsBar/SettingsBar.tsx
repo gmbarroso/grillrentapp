@@ -1,7 +1,10 @@
+"use client"
+
 import type React from "react"
 import { useTranslation } from "react-i18next"
 import { useTheme } from "../../context/ThemeContext"
 import "./SettingsBar.css"
+import "flag-icons/css/flag-icons.min.css"
 
 const SettingsBar: React.FC = () => {
   const { t, i18n } = useTranslation()
@@ -22,9 +25,15 @@ const SettingsBar: React.FC = () => {
           </label>
         </div>
         <div className="language-selector">
-          <button onClick={() => changeLanguage("pt")}>🇧🇷</button>
-          <button onClick={() => changeLanguage("en")}>🇺🇸</button>
-          <button onClick={() => changeLanguage("es")}>🇪🇸</button>
+          <button onClick={() => changeLanguage("pt")} aria-label="Português">
+            <span className="fi fi-br" title="Português"></span>
+          </button>
+          <button onClick={() => changeLanguage("en")} aria-label="English">
+            <span className="fi fi-us" title="English"></span>
+          </button>
+          <button onClick={() => changeLanguage("es")} aria-label="Español">
+            <span className="fi fi-es" title="Español"></span>
+          </button>
         </div>
       </div>
     </div>

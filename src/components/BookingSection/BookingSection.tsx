@@ -42,6 +42,12 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [isLoading, setIsLoading] = useState(false)
   const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
   const [isFetchingAfterDateSelect, setIsFetchingAfterDateSelect] = useState(false)
+  // New state for booking on behalf of another apartment
+  const [bookedForApartment, setBookedForApartment] = useState<string>("")
+
+  // Use the admin role instead of a specific apartment number
+  const isAdmin = user?.role === "admin"
+  const isAdminApartment = user?.apartment === "000"
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
@@ -57,6 +63,13 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       setIsFetchingAfterDateSelect(false)
     }
   }, [isLoadingTimes, isFetchingAfterDateSelect])
+
+  // Initialize bookedForApartment with user's apartment
+  useEffect(() => {
+    if (user?.apartment) {
+      setBookedForApartment(user.apartment)
+    }
+  }, [user?.apartment])
 
   const handleOptionSelect = (option: "grill" | "tennis") => {
     setSelectedOption(option)
@@ -125,6 +138,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           needTablesAndChairs: selectedOption === "grill" ? needTablesAndChairs : false,
+          bookedForApartment: isAdmin ? bookedForApartment : user?.apartment, // Include the bookedForApartment field
         }
         await createBooking(bookingData)
         setIsDateAvailable(true)
@@ -135,6 +149,10 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setNeedTablesAndChairs(false)
         setSelectedOption(null)
         setIsDateAvailable(null)
+        // Reset bookedForApartment to user's apartment
+        if (user?.apartment) {
+          setBookedForApartment(user.apartment)
+        }
       } catch (error) {
         console.error("Error creating booking:", error)
         setIsDateAvailable(false)
@@ -166,9 +184,9 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
 
   const canConfirmBooking = () => {
     if (selectedOption === "tennis") {
-      return selectedDate && selectedTime
+      return selectedDate && selectedTime && (isAdmin ? bookedForApartment : true)
     }
-    return selectedDate
+    return selectedDate && (isAdmin ? bookedForApartment : true)
   }
 
   if (resourcesError) {
@@ -199,6 +217,27 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           ))
         ) : null}
       </div>
+
+      {/* Admin apartment selector - only show for admin apartment */}
+      {isAdmin && selectedOption && (
+        <div className="admin-booking-section">
+          <h3>{t("AdminBooking.Title")}</h3>
+          <div className="form-group">
+            <label htmlFor="bookedForApartment">{t("AdminBooking.ApartmentLabel")}</label>
+            <input
+              id="bookedForApartment"
+              type="text"
+              value={bookedForApartment}
+              onChange={(e) => setBookedForApartment(e.target.value)}
+              placeholder={t("AdminBooking.ApartmentPlaceholder")}
+              className="apartment-input"
+              required
+            />
+            <p className="help-text">{t("AdminBooking.HelpText")}</p>
+          </div>
+        </div>
+      )}
+
       {selectedOption && (
         <div className="calendar-section">
           <div className="calendar-container">

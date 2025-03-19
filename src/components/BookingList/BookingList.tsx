@@ -92,6 +92,21 @@ const BookingList: React.FC<BookingListProps> = ({
     return null
   }
 
+  // Function to display apartment info with admin booking details
+  const renderApartmentInfo = (booking: Booking) => {
+    if (booking.bookedForApartment && booking.bookedForApartment !== booking.userApartment) {
+      return (
+        <span className="admin-booked">
+          {booking.bookedForApartment}{" "}
+          <span className="booked-by">
+            ({t("BookingList.BookedBy")} {booking.userApartment})
+          </span>
+        </span>
+      )
+    }
+    return booking.userApartment
+  }
+
   return (
     <div className="booking-list">
       <h3>{t("BookingList.Title")}</h3>
@@ -139,7 +154,7 @@ const BookingList: React.FC<BookingListProps> = ({
                       ? t("BookingList.AllDay")
                       : formatTimeInterval(booking.startTime, booking.endTime)}
                   </td>
-                  <td>{booking.userApartment}</td>
+                  <td>{renderApartmentInfo(booking)}</td>
                   <td className="action-column">
                     {canDeleteBooking(booking) && (
                       <button

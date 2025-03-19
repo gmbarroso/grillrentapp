@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react"
 import type { Booking } from "../../types/Booking"
 
@@ -16,6 +18,8 @@ export function useCreateBooking(token: string) {
     resourceId: string
     startTime: string
     endTime: string
+    needTablesAndChairs?: boolean
+    bookedForApartment?: string
   }): Promise<BookingResponse> => {
     setIsLoading(true)
     setError(null)

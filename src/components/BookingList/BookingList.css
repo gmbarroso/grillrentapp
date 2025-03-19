@@ -138,6 +138,18 @@
   padding: 1rem;
 }
 
+/* New styles for admin bookings */
+.admin-booked {
+  display: flex;
+  flex-direction: column;
+}
+
+.booked-by {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .booking-list table {
     display: block;

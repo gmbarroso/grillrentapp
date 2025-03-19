@@ -6,8 +6,10 @@ export interface Booking {
   startTime: string
   endTime: string
   userApartment: string
+  bookedForApartment?: string
   needTablesAndChairs?: boolean
 }
+
 
 export interface BookingListInterface {
   id: string

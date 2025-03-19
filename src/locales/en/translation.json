@@ -103,7 +103,8 @@
     "NextPage": "Next",
     "PageInfo": "Page {{current}} of {{total}}",
     "Time": "Time",
-    "AllDay": "All day"
+    "AllDay": "All day",
+    "BookedBy": "booked by"
   },
   "Resource": {
     "grill": "Grill",
@@ -203,6 +204,12 @@
     "ReservedDaysMessage": "Some days are already reserved. Please select an available date.",
     "Available": "Available",
     "Reserved": "Reserved"
+  },
+  "AdminBooking": {
+    "Title": "Admin Booking on Behalf of Resident",
+    "ApartmentLabel": "Apartment Number",
+    "ApartmentPlaceholder": "Enter apartment number",
+    "HelpText": "As an admin, you can book on behalf of any resident. Enter their apartment number here."
   }
 }
 

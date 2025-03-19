@@ -22,7 +22,7 @@ export function useAllBookings(token: string) {
   console.log(`[useAllBookings] Render count: ${renderCount.current}`)
 
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentLimit, setCurrentLimit] = useState(10)
+  const [currentLimit, setCurrentLimit] = useState(20)
   const [currentSort, setCurrentSort] = useState("startTime")
   const [currentOrder, setCurrentOrder] = useState<"ASC" | "DESC">("ASC")
   const authenticatedFetch = useAuthenticatedFetch()

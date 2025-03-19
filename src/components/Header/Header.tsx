@@ -37,7 +37,7 @@ const Header = () => {
             alt="Chácara Sacopã Logo"
             className="header-logo"
           />
-          <h1>Condomínio Chácara Sacopã</h1>
+          <h1>Chácara Sacopã</h1>
         </div>
         <Clock />
         {isAuthenticated && (

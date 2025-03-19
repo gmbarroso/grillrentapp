@@ -102,7 +102,8 @@
     "NextPage": "Próxima",
     "PageInfo": "Página {{current}} de {{total}}",
     "Time": "Horário",
-    "AllDay": "Dia todo"
+    "AllDay": "Dia todo",
+    "BookedOnBehalf": "Reservado para o apartamento {{apartment}}"
   },
   "Resource": {
     "grill": "Churrasqueira",
@@ -200,6 +201,9 @@
     "Confirm": "Sair",
     "Cancel": "Cancelar"
   },
-  "Loading": "Carregando..."
+  "Loading": "Carregando...",
+  "BookOnBehalf": "Reservar em nome do apartamento",
+  "BookOnBehalfTooltip": "Digite o apartamento ou nome do residente para o qual você está reservando",
+  "BookOnBehalfPlaceholder": "Digite o apartamento ou nome do residente"
 }
 

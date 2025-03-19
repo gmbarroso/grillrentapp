@@ -138,6 +138,17 @@
   padding: 1rem;
 }
 
+/* Add styles for the apartment with tooltip */
+.apartment-with-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.apartment-with-tooltip .tooltip-container {
+  margin-left: 0.25rem;
+}
+
 @media (max-width: 768px) {
   .booking-list table {
     display: block;

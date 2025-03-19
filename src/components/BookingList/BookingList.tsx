@@ -5,7 +5,7 @@ import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
-import { Modal, LoadingSpinner } from "../"
+import { Modal, LoadingSpinner, Tooltip } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import "./BookingList.css"
@@ -139,7 +139,16 @@ const BookingList: React.FC<BookingListProps> = ({
                       ? t("BookingList.AllDay")
                       : formatTimeInterval(booking.startTime, booking.endTime)}
                   </td>
-                  <td>{booking.userApartment}</td>
+                  <td>
+                    {booking.bookedOnBehalf ? (
+                      <div className="apartment-with-tooltip">
+                        {booking.userApartment}
+                        <Tooltip content={t("BookingList.BookedOnBehalf", { apartment: booking.bookedOnBehalf })} />
+                      </div>
+                    ) : (
+                      booking.userApartment
+                    )}
+                  </td>
                   <td className="action-column">
                     {canDeleteBooking(booking) && (
                       <button

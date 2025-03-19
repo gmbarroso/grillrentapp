@@ -7,6 +7,7 @@ export interface Booking {
   endTime: string
   userApartment: string
   needTablesAndChairs?: boolean
+  bookedOnBehalf?: string
 }
 
 export interface BookingListInterface {
@@ -17,6 +18,7 @@ export interface BookingListInterface {
   endTime: string
   userId: string
   userApartment: string
+  bookedOnBehalf?: string
 }
 
 export interface BookingSectionProps {

@@ -119,6 +119,31 @@
   color: var(--color-text);
 }
 
+/* Add styles for the admin booking field */
+.admin-booking-field {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-booking-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.admin-booking-input {
+  padding: 0.5rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  background-color: var(--color-card-background);
+  color: var(--color-text);
+}
+
 .agreement-modal {
   max-width: 600px;
   margin: 0 auto;

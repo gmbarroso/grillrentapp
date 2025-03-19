@@ -103,7 +103,8 @@
     "NextPage": "Siguiente",
     "PageInfo": "Página {{current}} de {{total}}",
     "Time": "Hora",
-    "AllDay": "Todo el día"
+    "AllDay": "Todo el día",
+    "BookedOnBehalf": "Reservado para el apartamento {{apartment}}"
   },
   "Resource": {
     "grill": "Parrilla",
@@ -198,6 +199,9 @@
     "Confirm": "Cerrar Sesión",
     "Cancel": "Cancelar"
   },
-  "ErrorFetchingSlots": "Error al obtener los horarios disponibles. Por favor, inténtalo de nuevo."
+  "ErrorFetchingSlots": "Error al obtener los horarios disponibles. Por favor, inténtalo de nuevo.",
+  "BookOnBehalf": "Reservar en nombre del apartamento",
+  "BookOnBehalfTooltip": "Ingrese el apartamento o nombre del residente para el que está reservando",
+  "BookOnBehalfPlaceholder": "Ingrese el apartamento o nombre del residente"
 }
 

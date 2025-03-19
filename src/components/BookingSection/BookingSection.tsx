@@ -10,7 +10,7 @@ import { useToast } from "../../context/ToastContext"
 import { useAuth } from "../../context/AuthContext"
 import type { Resource } from "../../types/Resource"
 import type { BookingSectionProps } from "../../types/Booking"
-import { LoadingSpinner, Modal, CustomCalendar, TimeSlotSelector } from "../"
+import { LoadingSpinner, Modal, CustomCalendar, TimeSlotSelector, Tooltip } from "../"
 import "./BookingSection.css"
 
 interface ExtendedBookingSectionProps extends BookingSectionProps {
@@ -42,6 +42,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [isLoading, setIsLoading] = useState(false)
   const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
   const [isFetchingAfterDateSelect, setIsFetchingAfterDateSelect] = useState(false)
+  const [bookedOnBehalf, setBookedOnBehalf] = useState<string>("")
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
@@ -125,6 +126,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           needTablesAndChairs: selectedOption === "grill" ? needTablesAndChairs : false,
+          ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
         }
         await createBooking(bookingData)
         setIsDateAvailable(true)
@@ -135,6 +137,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setNeedTablesAndChairs(false)
         setSelectedOption(null)
         setIsDateAvailable(null)
+        setBookedOnBehalf("")
       } catch (error) {
         console.error("Error creating booking:", error)
         setIsDateAvailable(false)
@@ -240,6 +243,24 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
               unavailableSlots={unavailableTimes}
               isLoading={isLoadingTimes}
             />
+          )}
+
+          {selectedDate && user?.role === "admin" && (
+            <div className="admin-booking-field">
+              <label htmlFor="bookedOnBehalf" className="admin-booking-label">
+                {t("BookOnBehalf")}
+                <Tooltip content={t("BookOnBehalfTooltip")} />
+              </label>
+              <input
+                id="bookedOnBehalf"
+                type="text"
+                value={bookedOnBehalf}
+                onChange={(e) => setBookedOnBehalf(e.target.value)}
+                className="admin-booking-input"
+                placeholder={t("BookOnBehalfPlaceholder")}
+                maxLength={50}
+              />
+            </div>
           )}
 
           {selectedDate && canConfirmBooking() && (

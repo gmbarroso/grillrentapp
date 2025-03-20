@@ -42,7 +42,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [isLoading, setIsLoading] = useState(false)
   const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
   const [isFetchingAfterDateSelect, setIsFetchingAfterDateSelect] = useState(false)
-  const [bookingOnBehalf, setBookingOnBehalf] = useState<string>("")
+  const [bookedOnBehalf, setBookedOnBehalf] = useState<string>("")
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
@@ -126,7 +126,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           needTablesAndChairs: selectedOption === "grill" ? needTablesAndChairs : false,
-          ...(bookingOnBehalf ? { bookingOnBehalf } : {}),
+          ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
         }
         await createBooking(bookingData)
         setIsDateAvailable(true)
@@ -137,7 +137,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setNeedTablesAndChairs(false)
         setSelectedOption(null)
         setIsDateAvailable(null)
-        setBookingOnBehalf("")
+        setBookedOnBehalf("")
       } catch (error) {
         console.error("Error creating booking:", error)
         setIsDateAvailable(false)
@@ -247,17 +247,17 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
 
           {selectedDate && user?.role === "admin" && (
             <div className="admin-booking-field">
-              <label htmlFor="bookingOnBehalf" className="admin-booking-label">
+              <label htmlFor="bookedOnBehalf" className="admin-booking-label">
                 {t("BookOnBehalf")}
                 <Tooltip content={t("BookOnBehalfTooltip")} />
               </label>
               <input
-                id="bookingOnBehalf"
+                id="bookedOnBehalf"
                 type="text"
-                value={bookingOnBehalf}
+                value={bookedOnBehalf}
                 onChange={(e) => {
                   const value = e.target.value.replace(/[^0-9]/g, "")
-                  setBookingOnBehalf(value)
+                  setBookedOnBehalf(value)
                 }}
                 className="admin-booking-input"
                 placeholder={t("BookOnBehalfPlaceholder")}

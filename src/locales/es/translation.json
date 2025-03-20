@@ -104,7 +104,8 @@
     "PageInfo": "Página {{current}} de {{total}}",
     "Time": "Hora",
     "AllDay": "Todo el día",
-    "BookedOnBehalf": "Reservado para el apartamento {{apartment}}"
+    "BookedOnBehalf": "Reservado para el apartamento {{apartment}}",
+    "TablesAndChairsIncluded": "Esta reserva incluye mesas y sillas"
   },
   "Resource": {
     "grill": "Parrilla",

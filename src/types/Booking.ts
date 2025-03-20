@@ -19,12 +19,15 @@ export interface BookingListInterface {
   userId: string
   userApartment: string
   bookedOnBehalf?: string
+  needTablesAndChairs?: boolean
 }
 
 export interface BookingSectionProps {
   token: string
   unavailableDates: Date[]
   userId: string
+  onBookingCreated: () => void
+  onBookingError: (errorMessage: string) => void
 }
 
 export interface BookingListProps {

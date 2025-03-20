@@ -5,7 +5,7 @@ import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
-import { Modal, LoadingSpinner,Tooltip } from "../"
+import { Modal, LoadingSpinner, Tooltip } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import "./BookingList.css"
@@ -132,7 +132,14 @@ const BookingList: React.FC<BookingListProps> = ({
             <tbody>
               {bookings.map((booking) => (
                 <tr key={booking.id}>
-                  <td>{t(`Resource.${booking.resourceType}`)}</td>
+                  <td>
+                    <div className="resource-with-tooltip">
+                      {t(`Resource.${booking.resourceType}`)}
+                      {booking.resourceType === "grill" && booking.needTablesAndChairs && (
+                        <Tooltip content={t("BookingList.TablesAndChairsIncluded")} />
+                      )}
+                    </div>
+                  </td>
                   <td>{formatDate(booking.startTime)}</td>
                   <td>
                     {booking.resourceType === "grill"
@@ -140,14 +147,12 @@ const BookingList: React.FC<BookingListProps> = ({
                       : formatTimeInterval(booking.startTime, booking.endTime)}
                   </td>
                   <td>
-                    {booking.bookedOnBehalf ? (
-                      <div className="apartment-with-tooltip">
-                        {booking.userApartment}
+                    <div className="apartment-with-tooltip">
+                      {booking.userApartment}
+                      {booking.bookedOnBehalf && (
                         <Tooltip content={t("BookingList.BookedOnBehalf", { apartment: booking.bookedOnBehalf })} />
-                      </div>
-                    ) : (
-                      booking.userApartment
-                    )}
+                      )}
+                    </div>
                   </td>
                   <td className="action-column">
                     {canDeleteBooking(booking) && (

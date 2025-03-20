@@ -42,7 +42,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [isLoading, setIsLoading] = useState(false)
   const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
   const [isFetchingAfterDateSelect, setIsFetchingAfterDateSelect] = useState(false)
-  const [bookedOnBehalf, setBookedOnBehalf] = useState<string>("")
+  const [bookingOnBehalf, setBookingOnBehalf] = useState<string>("")
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
@@ -126,7 +126,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
           needTablesAndChairs: selectedOption === "grill" ? needTablesAndChairs : false,
-          ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
+          ...(bookingOnBehalf ? { bookingOnBehalf } : {}),
         }
         await createBooking(bookingData)
         setIsDateAvailable(true)
@@ -137,7 +137,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setNeedTablesAndChairs(false)
         setSelectedOption(null)
         setIsDateAvailable(null)
-        setBookedOnBehalf("")
+        setBookingOnBehalf("")
       } catch (error) {
         console.error("Error creating booking:", error)
         setIsDateAvailable(false)
@@ -247,18 +247,20 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
 
           {selectedDate && user?.role === "admin" && (
             <div className="admin-booking-field">
-              <label htmlFor="bookedOnBehalf" className="admin-booking-label">
+              <label htmlFor="bookingOnBehalf" className="admin-booking-label">
                 {t("BookOnBehalf")}
                 <Tooltip content={t("BookOnBehalfTooltip")} />
               </label>
               <input
-                id="bookedOnBehalf"
+                id="bookingOnBehalf"
                 type="text"
-                value={bookedOnBehalf}
-                onChange={(e) => setBookedOnBehalf(e.target.value)}
+                value={bookingOnBehalf}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9]/g, "")
+                  setBookingOnBehalf(value)
+                }}
                 className="admin-booking-input"
                 placeholder={t("BookOnBehalfPlaceholder")}
-                maxLength={50}
               />
             </div>
           )}
@@ -274,19 +276,41 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       )}
       {selectedOption && handleRulesForEachResource(selectedResource.type)}
 
-      <Modal isOpen={isAgreementModalOpen} onClose={handleAgreementCancel}>
+      {/* I will separate all the Modals in this format in its own components in the future */}
+      <Modal isOpen={isAgreementModalOpen} onClose={handleAgreementCancel} wide={true}>
         <div className="agreement-modal">
           <h2 className="agreement-title">{t("TablesAndChairsAgreement.Title")}</h2>
-          <p className="agreement-intro">
-            {t("TablesAndChairsAgreement.Intro").replace("[User's Name]", user?.name || "")}
+          <p className="agreement-content">
+            {t("TablesAndChairsAgreement.Content")
+              .replace("[userName]", user?.name || "")
+              .replace("[userApartment]", `${user?.apartment || ""} - Bloco ${user?.block || ""}`)}
           </p>
-          <ul className="agreement-terms">
-            {(t("TablesAndChairsAgreement.Terms", { returnObjects: true }) as string[]).map((term, index) => (
-              <li className="agreement-terms li" key={index}>
-                {term}
-              </li>
-            ))}
-          </ul>
+
+          {(t("TablesAndChairsAgreement.Sections", { returnObjects: true }) as any[]).map((section, index) => (
+            <div className="agreement-section" key={index}>
+              <div className="agreement-section-title">{section.title}</div>
+              <div className="agreement-section-content">{section.content}</div>
+            </div>
+          ))}
+
+          <div className="agreement-date">
+            {t("TablesAndChairsAgreement.DatePrefix")} {formatDateInPortuguese()}
+          </div>
+
+          <div className="agreement-signatures">
+            <div className="agreement-signature">
+              <div className="agreement-signature-line"></div>
+              <div className="agreement-signature-name">{user?.name || ""}</div>
+              <div className="agreement-signature-title">{t("TablesAndChairsAgreement.SignatureUser")}</div>
+            </div>
+
+            <div className="agreement-signature">
+              <div className="agreement-signature-line"></div>
+              <div className="agreement-signature-name">{t("TablesAndChairsAgreement.SignatureAdmin")}</div>
+              <div className="agreement-signature-title">{t("TablesAndChairsAgreement.SignatureAdminTitle")}</div>
+            </div>
+          </div>
+
           <div className="agreement-actions">
             <button onClick={handleAgreementConfirm} className="confirm-button">
               {t("TablesAndChairsAgreement.Confirm")}
@@ -299,6 +323,30 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       </Modal>
     </section>
   )
+}
+
+// I will isolate this in a separate function to avoid cluttering the main component
+const formatDateInPortuguese = () => {
+  const now = new Date()
+  const day = now.getDate()
+  const monthNames = [
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro",
+  ]
+  const month = monthNames[now.getMonth()]
+  const year = now.getFullYear()
+
+  return `${day} de ${month} de ${year}`
 }
 
 export default BookingSection

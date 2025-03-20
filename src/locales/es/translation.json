@@ -141,15 +141,35 @@
   "NeedTablesAndChairs": "Quiero mesas y sillas",
   "GrillRentWarning": "Atención: Al alquilar la parrilla, también está alquilando el salón de fiestas y la cancha deportiva.",
   "TablesAndChairsAgreement": {
-    "Title": "TÉRMINOS DE ACUERDO",
-    "Intro": "Yo, [User's Name], reconozco y acepto las siguientes condiciones con respecto al uso de mesas y sillas proporcionadas para el evento:",
-    "Terms": [
-      "Cantidad Disponible: Se pondrán a disposición un total de X mesas y Y sillas para su uso.",
-      "Responsabilidad de Uso: Me comprometo a utilizar los artículos adecuadamente y asegurar su preservación durante todo el evento.",
-      "Conteo y Verificación: Después del evento, se realizará un control de inventario para verificar la devolución y el estado de todos los artículos proporcionados.",
-      "Daños y Pérdidas: En caso de cualquier daño, pérdida o extravío de mesas y/o sillas, acepto la plena responsabilidad de su reparación o reemplazo.",
-      "Aceptación del Acuerdo: Al proceder, confirmo que he leído, entendido y acepto los términos descritos en este documento."
+    "Title": "TÉRMINO DE RESPONSABILIDAD PARA MESAS Y SILLAS",
+    "Content": "Yo, [userName], unidad/apartamento No. [userApartment], residente en el Condominio Chácara Sacopã, declaro que estoy consciente y de acuerdo con los términos enumerados a continuación para el retiro temporal de mesas y sillas pertenecientes al condominio.",
+    "Sections": [
+      {
+        "title": "1. OBJETO",
+        "content": "1.1. Este término tiene como objetivo formalizar el retiro temporal de mesas y sillas del condominio para uso privado del residente identificado anteriormente."
+      },
+      {
+        "title": "2. CANTIDAD RETIRADA",
+        "content": "2.1. Informo que estoy retirando:\n• 12 Mesas\n• 48 Sillas"
+      },
+      {
+        "title": "3. CONDICIONES DE USO Y DEVOLUCIÓN",
+        "content": "3.1. Las mesas y sillas retiradas se utilizarán exclusivamente en las instalaciones del condominio, para fines privados. En ningún caso podrán ser cedidas a terceros o utilizadas indebidamente.\n3.2. Los artículos deben ser devueltos, en perfecto estado de conservación, al final del evento, para permitir el posible uso por parte de otros residentes.\n3.3. El residente es responsable de los daños, pérdidas o extravíos, asumiendo los costos de reparación o reposición."
+      },
+      {
+        "title": "4. RESPONSABILIDAD",
+        "content": "4.1. El incumplimiento de este término puede resultar en sanciones administrativas por parte del condominio.\n4.2. Este término se convierte en una pre-notificación para posibles infracciones relacionadas con el tema."
+      },
+      {
+        "title": "5. FIRMA",
+        "content": "5.1. Declaro que estoy consciente y de acuerdo con todas las cláusulas de este término."
+      }
     ],
+    "DatePrefix": "Rio de Janeiro,",
+    "DateFormat": "[day] de [month] de [year]",
+    "SignatureUser": "Residente",
+    "SignatureAdmin": "Andreane",
+    "SignatureAdminTitle": "Responsable del Condominio",
     "Confirm": "Estoy de Acuerdo",
     "Cancel": "Cancelar"
   },
@@ -201,7 +221,7 @@
   },
   "ErrorFetchingSlots": "Error al obtener los horarios disponibles. Por favor, inténtalo de nuevo.",
   "BookOnBehalf": "Reservar en nombre del apartamento",
-  "BookOnBehalfTooltip": "Ingrese el apartamento o nombre del residente para el que está reservando",
-  "BookOnBehalfPlaceholder": "Ingrese el apartamento o nombre del residente"
+  "BookOnBehalfTooltip": "Ingrese el número de apartamento para el que está reservando",
+  "BookOnBehalfPlaceholder": "Ingrese el número de apartamento"
 }
 

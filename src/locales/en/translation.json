@@ -141,15 +141,35 @@
   "NeedTablesAndChairs": "I want tables and chairs",
   "GrillRentWarning": "Attention: When renting the grill area, you are also renting the party hall and the sports court.",
   "TablesAndChairsAgreement": {
-    "Title": "TERMS OF AGREEMENT",
-    "Intro": "I, [User's Name], acknowledge and agree to the following conditions regarding the use of tables and chairs provided for the event:",
-    "Terms": [
-      "Available Quantity: A total of X tables and Y chairs will be made available for use.",
-      "Responsibility for Use: I commit to using the items properly and ensuring their preservation throughout the event.",
-      "Counting and Verification: After the event, an inventory check will be conducted to verify the return and condition of all provided items.",
-      "Damages and Loss: In the event of any damage, loss, or misplacement of tables and/or chairs, I accept full responsibility for their repair or replacement.",
-      "Agreement Acceptance: By proceeding, I confirm that I have read, understood, and agree to the terms outlined in this document."
+    "Title": "RESPONSIBILITY TERM FOR TABLES AND CHAIRS",
+    "Content": "I, [userName], unit/apartment No. [userApartment], resident at Condomínio Chácara Sacopã, declare that I am aware of and agree with the terms listed below for the temporary use of tables and chairs belonging to the condominium.",
+    "Sections": [
+      {
+        "title": "1. OBJECT",
+        "content": "1.1. This term aims to formalize the temporary withdrawal of condominium tables and chairs for the private use of the above-identified resident."
+      },
+      {
+        "title": "2. QUANTITY WITHDRAWN",
+        "content": "2.1. I inform that I am withdrawing:\n• 12 Tables\n• 48 Chairs"
+      },
+      {
+        "title": "3. CONDITIONS OF USE AND RETURN",
+        "content": "3.1. The tables and chairs withdrawn will be used exclusively on the condominium premises, for private purposes. Under no circumstances may they be given to third parties or used improperly.\n3.2. The items must be returned, in perfect condition, at the end of the event, in order to enable possible use by other residents.\n3.3. The resident is responsible for damages, losses or misplacements, bearing the costs of repair or replacement."
+      },
+      {
+        "title": "4. RESPONSIBILITY",
+        "content": "4.1. Failure to comply with this term may result in administrative sanctions by the condominium.\n4.2. This term becomes a pre-notification for possible infractions related to the subject."
+      },
+      {
+        "title": "5. SIGNATURE",
+        "content": "5.1. I declare that I am aware of and agree with all the clauses of this term."
+      }
     ],
+    "DatePrefix": "Rio de Janeiro,",
+    "DateFormat": "[day] of [month], [year]",
+    "SignatureUser": "Resident",
+    "SignatureAdmin": "Andreane",
+    "SignatureAdminTitle": "Condominium Manager",
     "Confirm": "I Agree",
     "Cancel": "Cancel"
   },
@@ -206,7 +226,7 @@
     "Reserved": "Reserved"
   },
   "BookOnBehalf": "Book on behalf of apartment",
-  "BookOnBehalfTooltip": "Enter the apartment or resident name you are booking for",
-  "BookOnBehalfPlaceholder": "Enter apartment or resident name"
+  "BookOnBehalfTooltip": "Enter the apartment number you are booking for",
+  "BookOnBehalfPlaceholder": "Enter apartment number"
 }
 

@@ -143,15 +143,35 @@
   "NeedTablesAndChairs": "Eu quero mesas e cadeiras",
   "GrillRentWarning": "Atenção: Ao alugar a churrasqueira você está alugando também o salão de festas e a quadra poliesportiva.",
   "TablesAndChairsAgreement": {
-    "Title": "TERMOS DE ACORDO",
-    "Intro": "Eu, [User's Name], reconheço e concordo com as seguintes condições relativas ao uso de mesas e cadeiras fornecidas para o evento:",
-    "Terms": [
-      "Quantidade Disponível: Um total de X mesas e Y cadeiras serão disponibilizadas para uso.",
-      "Responsabilidade de Uso: Comprometo-me a utilizar os itens adequadamente e garantir sua preservação durante todo o evento.",
-      "Contagem e Verificação: Após o evento, será realizada uma verificação de inventário para confirmar a devolução e condição de todos os itens fornecidos.",
-      "Danos e Perdas: Em caso de qualquer dano, perda ou extravio de mesas e/ou cadeiras, aceito total responsabilidade pelo reparo ou substituição.",
-      "Aceitação do Acordo: Ao prosseguir, confirmo que li, entendi e concordo com os termos descritos neste documento."
+    "Title": "TERMO DE RESPONSABILIDADE PARA RETIRADA DE MESAS E CADEIRAS",
+    "Content": "Eu, [userName], unidade/apartamento nº [userApartment], residente no Condomínio Chácara Sacopã, declaro estar ciente e de acordo com os termos abaixo relacionados para a retirada de mesas e cadeiras pertencentes ao condomínio.",
+    "Sections": [
+      {
+        "title": "1. OBJETO",
+        "content": "1.1. O presente termo tem por objetivo formalizar a retirada temporária de mesas e cadeiras do condomínio para uso particular do condômino acima identificado."
+      },
+      {
+        "title": "2. QUANTIDADE RETIRADA",
+        "content": "2.1. Informo que estou retirando:\n• 12 Mesas\n• 48 Cadeiras"
+      },
+      {
+        "title": "3. CONDIÇÕES DE USO E DEVOLUÇÃO",
+        "content": "3.1. As mesas e cadeiras retiradas serão utilizadas, exclusivamente, nas dependências do condomínio, para fins particulares. Em nenhuma hipótese poderão ser cedidas a terceiros ou utilizadas de forma indevida.\n3.2. Os itens deverão ser devolvidos, em perfeito estado de conservação, no final do evento, a fim de viabilizar eventual uso de outros condôminos.\n3.3. O condômino se responsabiliza por danos, perdas ou extravios, arcando com os custos de reparo ou reposição."
+      },
+      {
+        "title": "4. RESPONSABILIDADE",
+        "content": "4.1. O não cumprimento deste termo poderá resultar em sanções administrativas pelo condomínio.\n4.2. Este termo se converte em pré-notificação para possíveis infrações ligadas ao assunto."
+      },
+      {
+        "title": "5. ASSINATURA",
+        "content": ""
+      }
     ],
+    "DatePrefix": "Rio de Janeiro,",
+    "DateFormat": "[day] de [month] de [year]",
+    "SignatureUser": "Condômino",
+    "SignatureAdmin": "Andreane",
+    "SignatureAdminTitle": "Responsável pelo Condomínio",
     "Confirm": "Eu Concordo",
     "Cancel": "Cancelar"
   },
@@ -203,7 +223,7 @@
   },
   "Loading": "Carregando...",
   "BookOnBehalf": "Reservar em nome do apartamento",
-  "BookOnBehalfTooltip": "Digite o apartamento ou nome do residente para o qual você está reservando",
-  "BookOnBehalfPlaceholder": "Digite o apartamento ou nome do residente"
+  "BookOnBehalfTooltip": "Digite o número do apartamento para o qual você está reservando",
+  "BookOnBehalfPlaceholder": "Digite o número do apartamento"
 }
 

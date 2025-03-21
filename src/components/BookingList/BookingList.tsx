@@ -25,6 +25,7 @@ const BookingList: React.FC<BookingListProps> = ({
   onChangeSort,
   onChangeOrder,
 }) => {
+  console.log('lalalala', bookings)
   const { t } = useTranslation()
   const { token, user } = useAuth()
   const { deleteBooking, isLoading } = useDeleteBooking(token ?? "")
@@ -148,7 +149,7 @@ const BookingList: React.FC<BookingListProps> = ({
                   </td>
                   <td>
                     <div className="apartment-with-tooltip">
-                      {booking.userApartment}
+                      {`${booking.userApartment} bl. ${booking.userBlock}`}
                       {booking.bookedOnBehalf && (
                         <Tooltip content={t("BookingList.BookedOnBehalf", { apartment: booking.bookedOnBehalf })} />
                       )}

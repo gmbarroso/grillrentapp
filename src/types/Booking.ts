@@ -6,6 +6,7 @@ export interface Booking {
   startTime: string
   endTime: string
   userApartment: string
+  userBlock: string
   needTablesAndChairs?: boolean
   bookedOnBehalf?: string
 }

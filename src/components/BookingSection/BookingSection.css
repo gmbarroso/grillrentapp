@@ -224,6 +224,10 @@
   border-top: 1px solid var(--color-secondary-light);
 }
 
+.card-content li {
+  padding-bottom: 0.5rem;
+}
+
 .confirm-button,
 .cancel-button {
   padding: 0.5rem 1rem;

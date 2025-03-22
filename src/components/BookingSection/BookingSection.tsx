@@ -158,7 +158,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         <h3 className="card-title">{title}</h3>
         <ul className="card-content">
           {content.map((item, index) => (
-            <li className="agreement-terms li" key={index}>
+            <li key={index}>
               {item}
             </li>
           ))}

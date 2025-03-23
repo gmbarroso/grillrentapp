@@ -25,7 +25,16 @@ const BookingList: React.FC<BookingListProps> = ({
   onChangeSort,
   onChangeOrder,
 }) => {
-  console.log('lalalala', bookings)
+  // Filter out past bookings
+  const now = new Date()
+  now.setHours(0, 0, 0, 0) // Set to beginning of today
+
+  const filteredBookings = bookings.filter((booking) => {
+    const bookingDate = new Date(booking.startTime)
+    return bookingDate >= now
+  })
+
+  console.log("lalalala", filteredBookings)
   const { t } = useTranslation()
   const { token, user } = useAuth()
   const { deleteBooking, isLoading } = useDeleteBooking(token ?? "")
@@ -96,7 +105,7 @@ const BookingList: React.FC<BookingListProps> = ({
   return (
     <div className="booking-list">
       <h3>{t("BookingList.Title")}</h3>
-      {bookings.length === 0 ? (
+      {filteredBookings.length === 0 ? (
         <div className="no-bookings-message">{t("BookingList.NoBookings")}</div>
       ) : (
         <>
@@ -131,7 +140,7 @@ const BookingList: React.FC<BookingListProps> = ({
               </tr>
             </thead>
             <tbody>
-              {bookings.map((booking) => (
+              {filteredBookings.map((booking) => (
                 <tr key={booking.id}>
                   <td>
                     <div className="resource-with-tooltip">

@@ -25,9 +25,8 @@ const BookingList: React.FC<BookingListProps> = ({
   onChangeSort,
   onChangeOrder,
 }) => {
-  // Filter out past bookings
   const now = new Date()
-  now.setHours(0, 0, 0, 0) // Set to beginning of today
+  now.setHours(0, 0, 0, 0)
 
   const filteredBookings = bookings.filter((booking) => {
     const bookingDate = new Date(booking.startTime)

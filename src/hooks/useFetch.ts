@@ -4,6 +4,10 @@ import useSWR, { type SWRConfiguration } from "swr"
 import { swrConfig } from "../config/swr-config"
 import { useRef } from "react"
 
+// I had some problems dealing with re-renders loop.
+// So I added a throttle mechanism to prevent excessive renders and
+// I commented out the code below for future reference.
+
 export function useFetch<Data = any, Error = any>(key: string | null, config?: SWRConfiguration<Data, Error>) {
   // Add render counter for debugging
   const renderCount = useRef(0)

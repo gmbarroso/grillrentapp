@@ -56,7 +56,7 @@ export function useAllBookings(token: string) {
 
   const { data, isError, isLoading, mutate } = useFetch<BookingsResponse>(url, { fetcher })
 
-  // Simple state setters. I will bring this logic to backend in the future
+  //I will bring this logic to backend in the future
   const changePage = useCallback((newPage: number) => {
     console.log(`[useAllBookings] Changing page to: ${newPage}`)
     setCurrentPage(newPage)

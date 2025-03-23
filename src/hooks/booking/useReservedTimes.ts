@@ -18,8 +18,6 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
   const authenticatedFetch = useAuthenticatedFetch()
 
   useEffect(() => {
-    // Update the fetchReservedTimes function to handle the case where date is required for tennis
-
     const fetchReservedTimes = async () => {
       // For tennis, only fetch if both resourceType and date are provided
       if (!resourceType || (resourceType === "tennis" && !date)) {
@@ -33,8 +31,6 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
 
       try {
         let url = `${API_BASE_URL}/bookings/reserved-times?resourceType=${resourceType}`
-
-        // Add date parameter for tennis courts
         if (resourceType === "tennis" && date) {
           const formattedDate = date.toISOString().split("T")[0]
           url += `&date=${formattedDate}`
@@ -49,7 +45,6 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
         const data: ReservedTimesResponse = await response.json()
 
         if (resourceType === "tennis" && data.reservedTimes) {
-          // Process the reserved times for tennis
           const bookedTimes: string[] = []
 
           data.reservedTimes.forEach((slot) => {

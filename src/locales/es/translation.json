@@ -22,12 +22,12 @@
     "YourBooking": "Tu reserva"
   },
   "Contact": {
-    "Title": "Contáctanos",
-    "Intro": "¡Nos encantaría saber de ti! Aquí tienes cómo puedes contactarnos:",
-    "Email": "Correo electrónico: info@grillrentapp.com",
-    "Phone": "Teléfono: (555) 123-4567",
-    "Address": "Dirección: Calle Parrilla 123, Ciudad BBQ, Estado Ahumado 12345",
-    "Hours": "Nuestro horario de atención al cliente es de lunes a viernes, de 9am a 5pm EST."
+    "Title": "Contáctenos",
+    "Intro": "Para contactar con el condominio, puede enviarnos un mensaje a través de los siguientes medios de comunicación:",
+    "Email": "Correo electrónico: faleconosco.chacara@gmail.com",
+    "Phone": "WhatsApp: -",
+    "Address": "Rua Sacopã, 852, Rio de Janeiro, RJ - CP 22471-180",
+    "Hours": "El horario de atención de la administración es de lunes a viernes, de 9h a 18h."
   },
   "Login": {
     "Title": "Inicia sesión en tu cuenta",

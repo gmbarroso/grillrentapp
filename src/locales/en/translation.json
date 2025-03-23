@@ -21,14 +21,14 @@
     "Booked": "Booked",
     "YourBooking": "Your booking"
   },
-  "Contact": {
-    "Title": "Contact Us",
-    "Intro": "We'd love to hear from you! Here's how you can reach us:",
-    "Email": "Email: info@grillrentapp.com",
-    "Phone": "Phone: (555) 123-4567",
-    "Address": "Address: 123 Grill Street, BBQ City, Smoky State 12345",
-    "Hours": "Our customer service hours are Monday to Friday, 9am to 5pm EST."
-  },
+"Contact": {
+  "Title": "Contact Us",
+  "Intro": "To contact the condominium, you can send us a message through the following communication channels below:",
+  "Email": "Email: faleconosco.chacara@gmail.com",
+  "Phone": "WhatsApp: -",
+  "Address": "Rua Sacopã, 852, Rio de Janeiro, RJ - ZIP 22471-180",
+  "Hours": "The administration office hours are Monday to Friday, from 9am to 6pm."
+},
   "Login": {
     "Title": "Sign in to your account",
     "Email": "Email address",

@@ -35,7 +35,6 @@ const Notices = () => {
 
   const handleNoticeDeleted = useCallback(
     async (noticeId: string) => {
-      // Force a refresh of the notices list
       await refreshNotices()
       showToast(t("NoticeBoard.DeleteSuccess"), "success")
     },
@@ -43,13 +42,11 @@ const Notices = () => {
   )
 
   const handleNoticeCreated = useCallback(async () => {
-    // Force a refresh of the notices list
     await refreshNotices()
     showToast(t("NoticeForm.CreateSuccess"), "success")
   }, [refreshNotices, showToast, t])
 
   const handleNoticeUpdated = useCallback(async () => {
-    // Force a refresh of the notices list
     await refreshNotices()
     showToast(t("NoticeForm.UpdateSuccess"), "success")
   }, [refreshNotices, showToast, t])

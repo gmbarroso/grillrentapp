@@ -21,14 +21,14 @@
     "Booked": "Booked",
     "YourBooking": "Your booking"
   },
-"Contact": {
-  "Title": "Contact Us",
-  "Intro": "To contact the condominium, you can send us a message through the following communication channels below:",
-  "Email": "Email: faleconosco.chacara@gmail.com",
-  "Phone": "WhatsApp: -",
-  "Address": "Rua Sacopã, 852, Rio de Janeiro, RJ - ZIP 22471-180",
-  "Hours": "The administration office hours are Monday to Friday, from 9am to 6pm."
-},
+  "Contact": {
+    "Title": "Contact Us",
+    "Intro": "To contact the condominium, you can send us a message through the following communication channels below:",
+    "Email": "Email: faleconosco.chacara@gmail.com",
+    "Phone": "WhatsApp: -",
+    "Address": "Rua Sacopã, 852, Rio de Janeiro, RJ - ZIP 22471-180",
+    "Hours": "The administration office hours are Monday to Friday, from 9am to 6pm."
+  },
   "Login": {
     "Title": "Sign in to your account",
     "Email": "Email address",
@@ -175,10 +175,9 @@
     "Cancel": "Cancel"
   },
   "Notices": {
-    "Title": "Community Notices"
+    "Title": "Notices"
   },
   "NoticeBoard": {
-    "Title": "Notices",
     "NoNotices": "No notices available at the moment.",
     "Delete": "Delete",
     "Edit": "Edit",

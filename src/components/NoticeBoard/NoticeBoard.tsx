@@ -102,7 +102,7 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
       onChangeOrder(currentOrder === "ASC" ? "DESC" : "ASC")
     } else {
       onChangeSort(column)
-      onChangeOrder("DESC") // Default to newest first when changing sort
+      onChangeOrder("DESC")
     }
   }
 
@@ -119,7 +119,6 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
     })
   }
 
-  // If we're editing a notice, show the edit form instead of the notice list
   if (editingNotice) {
     return (
       <EditNoticeForm
@@ -135,7 +134,6 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
 
   return (
     <div className="notice-board">
-      <h3>{t("NoticeBoard.Title")}</h3>
       {notices.length === 0 ? (
         <div className="no-notices-message">{t("NoticeBoard.NoNotices")}</div>
       ) : (

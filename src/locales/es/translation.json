@@ -175,10 +175,9 @@
     "Cancel": "Cancelar"
   },
   "Notices": {
-    "Title": "Avisos de la Comunidad"
+    "Title": "Avisos"
   },
   "NoticeBoard": {
-    "Title": "Avisos",
     "NoNotices": "No hay avisos disponibles en este momento.",
     "Delete": "Eliminar",
     "Edit": "Editar",

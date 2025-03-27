@@ -13,6 +13,10 @@
   --color-error-dark: #7f1d1d;
   --color-success: #2d6a4f;
   --color-border: #b7e4c7;
+
+  /* Button specific variables */
+  --button-border-radius: 4px;
+  --button-transition: all 0.3s ease;
 }
 
 .dark {

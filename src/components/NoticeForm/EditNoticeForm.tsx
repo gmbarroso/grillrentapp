@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useUpdateNotice } from "../../hooks/notice/useUpdateNotice"
 import { useToast } from "../../context/ToastContext"
+import { Button } from "../"
 import type { Notice } from "../../types/Notice"
 import "./NoticeForm.css"
 import { useLoading } from "../../context/LoadingContext"
@@ -97,12 +98,12 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
           />
         </div>
         <div className="form-actions">
-          <button type="button" className="cancel-button" onClick={onCancel}>
-            {t("NoticeForm.Cancel")}
-          </button>
-          <button type="submit" className="submit-button" disabled={isLoading}>
+          <Button variant="secondary" type="submit" disabled={isLoading} >
             {isLoading ? t("NoticeForm.Updating") : t("NoticeForm.Update")}
-          </button>
+          </Button>
+          <Button variant="danger" type="button" onClick={onCancel} >
+            {t("NoticeForm.Cancel")}
+          </Button>
         </div>
       </form>
     </div>

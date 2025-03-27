@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useCreateNotice } from "../../hooks/notice/useCreateNotice"
 import { useToast } from "../../context/ToastContext"
+import { Button } from "../"
 import "./NoticeForm.css"
 import { useLoading } from "../../context/LoadingContext"
 
@@ -56,9 +57,9 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated }) => {
   return (
     <div className="notice-form-container">
       {!isExpanded ? (
-        <button className="expand-form-button" onClick={() => setIsExpanded(true)}>
+        <Button variant="secondary" onClick={() => setIsExpanded(true)} fullWidth className="expand-form-button">
           {t("NoticeForm.CreateNew")}
-        </button>
+        </Button>
       ) : (
         <form className="notice-form" onSubmit={handleSubmit}>
           <h3>{t("NoticeForm.Title")}</h3>
@@ -98,12 +99,12 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated }) => {
             />
           </div>
           <div className="form-actions">
-            <button type="button" className="cancel-button" onClick={() => setIsExpanded(false)}>
-              {t("NoticeForm.Cancel")}
-            </button>
-            <button type="submit" className="submit-button" disabled={isLoading}>
+            <Button variant="secondary" type="submit" disabled={isLoading} >
               {isLoading ? t("NoticeForm.Creating") : t("NoticeForm.Create")}
-            </button>
+            </Button>
+            <Button variant="danger" type="button" onClick={() => setIsExpanded(false)} >
+              {t("NoticeForm.Cancel")}
+            </Button>
           </div>
         </form>
       )}

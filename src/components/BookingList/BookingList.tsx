@@ -5,7 +5,7 @@ import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
-import { Modal, LoadingSpinner, Tooltip } from "../"
+import { Modal, LoadingSpinner, Tooltip, Button } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import "./BookingList.css"
@@ -33,7 +33,6 @@ const BookingList: React.FC<BookingListProps> = ({
     return bookingDate >= now
   })
 
-  console.log("lalalala", filteredBookings)
   const { t } = useTranslation()
   const { token, user } = useAuth()
   const { deleteBooking, isLoading } = useDeleteBooking(token ?? "")
@@ -179,13 +178,13 @@ const BookingList: React.FC<BookingListProps> = ({
             </tbody>
           </table>
           <div className="pagination">
-            <button onClick={() => onChangePage(currentPage - 1)} disabled={currentPage === 1}>
+            <Button variant="secondary" onClick={() => onChangePage(currentPage - 1)} disabled={currentPage === 1}>
               {t("BookingList.PreviousPage")}
-            </button>
+            </Button>
             <span>{t("BookingList.PageInfo", { current: currentPage, total: lastPage })}</span>
-            <button onClick={() => onChangePage(currentPage + 1)} disabled={currentPage === lastPage}>
+            <Button variant="secondary" onClick={() => onChangePage(currentPage + 1)} disabled={currentPage === lastPage}>
               {t("BookingList.NextPage")}
-            </button>
+            </Button>
             <select value={currentLimit} onChange={(e) => onChangeLimit(Number(e.target.value))}>
               <option value="5">5</option>
               <option value="10">10</option>
@@ -205,12 +204,12 @@ const BookingList: React.FC<BookingListProps> = ({
             </div>
           ) : (
             <>
-              <button onClick={handleConfirmDelete} className="confirm-delete-button">
+              <Button variant="danger" onClick={handleConfirmDelete}>
                 {t("BookingList.ConfirmDelete")}
-              </button>
-              <button onClick={handleCloseModal} className="cancel-button">
+              </Button>
+              <Button variant="secondary" onClick={handleCloseModal}>
                 {t("BookingList.CancelDelete")}
-              </button>
+              </Button>
             </>
           )}
         </div>

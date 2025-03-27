@@ -10,7 +10,7 @@ import { useToast } from "../../context/ToastContext"
 import { useAuth } from "../../context/AuthContext"
 import type { Resource } from "../../types/Resource"
 import type { BookingSectionProps } from "../../types/Booking"
-import { LoadingSpinner, Modal, CustomCalendar, TimeSlotSelector, Tooltip } from "../"
+import { LoadingSpinner, Modal, CustomCalendar, TimeSlotSelector, Tooltip, Button } from "../"
 import "./BookingSection.css"
 
 interface ExtendedBookingSectionProps extends BookingSectionProps {
@@ -158,9 +158,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         <h3 className="card-title">{title}</h3>
         <ul className="card-content">
           {content.map((item, index) => (
-            <li key={index}>
-              {item}
-            </li>
+            <li key={index}>{item}</li>
           ))}
         </ul>
       </div>
@@ -192,13 +190,14 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           </div>
         ) : resources ? (
           resources.map((resource: Resource) => (
-            <button
+            <Button
               key={resource.id}
-              className={`option ${selectedOption === resource.type ? "selected" : ""}`}
+              variant="secondary"
+              className={selectedOption === resource.type ? "selected" : ""}
               onClick={() => handleOptionSelect(resource.type)}
             >
               {t(`Resource.${resource.type}`)}
-            </button>
+            </Button>
           ))
         ) : null}
       </div>
@@ -266,9 +265,14 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           )}
 
           {selectedDate && canConfirmBooking() && (
-            <button onClick={handleConfirmDate} disabled={isCreatingBooking} className="confirm-date-button">
+            <Button
+              variant="primary"
+              onClick={handleConfirmDate}
+              disabled={isCreatingBooking}
+              className="confirm-date-button"
+            >
               {t("ConfirmDate")}
-            </button>
+            </Button>
           )}
 
           {isCreatingBooking && <LoadingSpinner />}
@@ -312,12 +316,12 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           </div>
 
           <div className="agreement-actions">
-            <button onClick={handleAgreementConfirm} className="confirm-button">
+            <Button variant="primary" onClick={handleAgreementConfirm} className="confirm-button">
               {t("TablesAndChairsAgreement.Confirm")}
-            </button>
-            <button onClick={handleAgreementCancel} className="cancel-button">
+            </Button>
+            <Button variant="danger" onClick={handleAgreementCancel} className="cancel-button">
               {t("TablesAndChairsAgreement.Cancel")}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>

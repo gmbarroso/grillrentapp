@@ -50,43 +50,11 @@
   text-align: center;
 }
 
-.delete-button {
-  background-color: transparent;
-  color: var(--color-error);
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-.delete-button:hover {
-  color: var(--color-error-dark);
-}
-
 .pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 1rem;
-}
-
-.pagination button {
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.pagination button:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
-}
-
-.pagination button:disabled {
-  background-color: var(--color-secondary);
-  cursor: not-allowed;
 }
 
 .pagination select {
@@ -101,33 +69,6 @@
   justify-content: flex-end;
   gap: 0.5rem;
   margin-top: 1rem;
-}
-
-.confirm-delete-button,
-.cancel-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.confirm-delete-button {
-  background-color: var(--color-error);
-  color: white;
-}
-
-.cancel-button {
-  background-color: var(--color-secondary);
-  color: var(--color-text);
-}
-
-.confirm-delete-button:hover {
-  background-color: var(--color-error-dark);
-}
-
-.cancel-button:hover {
-  background-color: var(--color-secondary-dark);
 }
 
 .loading-container {

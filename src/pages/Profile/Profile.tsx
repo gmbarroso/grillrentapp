@@ -1,3 +1,5 @@
+"use client"
+
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
@@ -5,27 +7,13 @@ import { useAuth } from "../../context/AuthContext"
 import { useUserProfile } from "../../hooks/user/useUserProfile"
 import { useUpdateProfile } from "../../hooks/user/useUpdateProfile"
 import { useLoading } from "../../context/LoadingContext"
-import {
-  LoadingSpinner,
-  Tooltip,
-  Toast
-} from "../../components"
+import { LoadingSpinner, Tooltip, Toast, Button } from "../../components"
 import "./Profile.css"
 
 const Profile: React.FC = () => {
   const { token, logout } = useAuth()
-  const {
-    data: userResponse,
-    error: userError,
-    isLoading: isUserLoading,
-    fetchProfile
-  } = useUserProfile(token)
-  const {
-    updateProfile,
-    isLoading: isUpdating,
-    error: updateError,
-    canDeleteProfile
-  } = useUpdateProfile(token ?? "")
+  const { data: userResponse, error: userError, isLoading: isUserLoading, fetchProfile } = useUserProfile(token)
+  const { updateProfile, isLoading: isUpdating, error: updateError, canDeleteProfile } = useUpdateProfile(token ?? "")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -109,20 +97,6 @@ const Profile: React.FC = () => {
     }
   }
 
-  // const handleDeleteUser = async () => {
-  //   // Implement user deletion logic here
-  //   setIsLoading(true)
-  //   try {
-  //     // Call delete user API
-  //     logout()
-  //     // Redirect to login page or show a success message
-  //   } catch (err) {
-  //     setToast({ message: t("Profile.DeleteError"), type: "error" })
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[0-9]/g, "")
     setName(value)
@@ -178,25 +152,10 @@ const Profile: React.FC = () => {
           <input type="text" placeholder={t("Profile.Block")} value={user.block} disabled />
           <Tooltip content={t("Profile.BlockTooltip")} />
         </div>
-        <button type="submit">{t("Profile.Update")}</button>
+        <Button variant="secondary" type="submit" fullWidth>
+          {t("Profile.Update")}
+        </Button>
       </form>
-      {/* {canDeleteProfile(user.role) && (
-        <button onClick={() => setIsDeleteModalOpen(true)} className="button delete-account-button">
-          {t("Profile.DeleteAccount")}
-        </button>
-      )} */}
-      {/* <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
-        <h3>{t("Profile.DeleteWarningTitle")}</h3>
-        <p>{t("Profile.DeleteWarningMessage")}</p>
-        <div className="modal-actions">
-          <button onClick={handleDeleteUser} className="button delete-confirm-button">
-            {t("Profile.ConfirmDelete")}
-          </button>
-          <button onClick={() => setIsDeleteModalOpen(false)} className="button cancel-button">
-            {t("Profile.CancelDelete")}
-          </button>
-        </div>
-      </Modal> */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   )

@@ -5,7 +5,7 @@ import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useDeleteNotice } from "../../hooks/notice/useDeleteNotice"
-import { Modal } from "../"
+import { Modal, Button } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, Edit } from "lucide-react"
 import EditNoticeForm from "../NoticeForm/EditNoticeForm"
@@ -172,13 +172,13 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
             ))}
           </div>
           <div className="pagination">
-            <button onClick={() => onChangePage(currentPage - 1)} disabled={currentPage === 1}>
+            <Button variant="secondary" onClick={() => onChangePage(currentPage - 1)} disabled={currentPage === 1}>
               {t("NoticeBoard.PreviousPage")}
-            </button>
+            </Button>
             <span>{t("NoticeBoard.PageInfo", { current: currentPage, total: lastPage })}</span>
-            <button onClick={() => onChangePage(currentPage + 1)} disabled={currentPage === lastPage}>
+            <Button variant="secondary" onClick={() => onChangePage(currentPage + 1)} disabled={currentPage === lastPage}>
               {t("NoticeBoard.NextPage")}
-            </button>
+            </Button>
             <select value={currentLimit} onChange={(e) => onChangeLimit(Number(e.target.value))}>
               <option value="5">5</option>
               <option value="10">10</option>
@@ -191,12 +191,12 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
         <h2>{t("NoticeBoard.ConfirmDeleteTitle")}</h2>
         <p>{t("NoticeBoard.ConfirmDeleteMessage")}</p>
         <div className="modal-actions">
-          <button onClick={handleConfirmDelete} className="confirm-delete-button">
+          <Button variant="danger" onClick={handleConfirmDelete} className="confirm-delete-button">
             {t("NoticeBoard.ConfirmDelete")}
-          </button>
-          <button onClick={handleCloseModal} className="cancel-button">
+          </Button>
+          <Button variant="secondary" onClick={handleCloseModal} className="cancel-button">
             {t("NoticeBoard.CancelDelete")}
-          </button>
+          </Button>
         </div>
       </Modal>
     </div>

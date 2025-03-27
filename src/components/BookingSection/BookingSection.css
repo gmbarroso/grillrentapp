@@ -17,7 +17,7 @@
   margin-bottom: 1rem;
 }
 
-.option {
+/* .option {
   padding: 0.5rem 1rem;
   background-color: var(--color-secondary);
   border: none;
@@ -31,7 +31,7 @@
 .option.selected {
   background-color: var(--color-primary);
   color: white;
-}
+} */
 
 .calendar-section {
   margin-top: 1rem;
@@ -55,27 +55,6 @@
 .calendar-section h3 {
   color: var(--color-primary);
   margin-bottom: 1rem;
-}
-
-.confirm-date-button {
-  padding: 0.5rem 1rem;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  font-weight: bold;
-  margin-top: 1rem;
-}
-
-.confirm-date-button:hover {
-  background-color: var(--color-primary-dark);
-}
-
-.confirm-date-button:disabled {
-  background-color: var(--color-secondary);
-  cursor: not-allowed;
 }
 
 .selected-date {
@@ -228,33 +207,6 @@
   padding-bottom: 0.5rem;
 }
 
-.confirm-button,
-.cancel-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.confirm-button {
-  background-color: var(--color-primary);
-  color: white;
-}
-
-.confirm-button:hover {
-  background-color: var(--color-primary-dark);
-}
-
-.cancel-button {
-  background-color: var(--color-secondary);
-  color: var(--color-text);
-}
-
-.cancel-button:hover {
-  background-color: var(--color-secondary-dark);
-}
-
 @media (max-width: 768px) {
   .options {
     flex-direction: column;
@@ -267,12 +219,6 @@
 
   .agreement-actions {
     flex-direction: column;
-  }
-
-  .confirm-button,
-  .cancel-button {
-    width: 100%;
-    margin-bottom: 0.5rem;
   }
 }
 

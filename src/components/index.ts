@@ -13,3 +13,5 @@ export { default as NoticeBoard } from "./NoticeBoard/NoticeBoard"
 export { default as NoticeForm } from "./NoticeForm/NoticeForm"
 export { default as CustomCalendar } from "./CustomCalendar/CustomCalendar"
 export { default as TimeSlotSelector } from "./TimeSlotSelector/TimeSlotSelector"
+export { default as Button } from "./Button/Button"
+

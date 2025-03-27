@@ -3,8 +3,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Clock } from "../"
-import { Modal } from "../"
+import { Clock, Modal, Button } from "../"
 import { useAuth } from "../../context/AuthContext"
 import "./Header.css"
 
@@ -68,12 +67,12 @@ const Header = () => {
           <h2>{t("Logout.ConfirmTitle")}</h2>
           <p>{t("Logout.ConfirmMessage")}</p>
           <div className="dialog-actions">
-            <button onClick={handleConfirmLogout} className="delete-button">
+            <Button variant="danger" onClick={handleConfirmLogout} className="delete-button">
               {t("Logout.Confirm")}
-            </button>
-            <button onClick={handleCancelLogout} className="cancel-button">
+            </Button>
+            <Button variant="secondary" onClick={handleCancelLogout} className="cancel-button">
               {t("Logout.Cancel")}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>

@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useLoading } from "../../context/LoadingContext"
 import { useToast } from "../../context/ToastContext"
+import { Button } from "../../components"
 import "./LoginScreen.css"
 
 export default function LoginScreen() {
@@ -69,9 +70,9 @@ export default function LoginScreen() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button className="button" type="submit">
+          <Button variant="primary" type="submit" fullWidth>
             {t("Login.SignIn")}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

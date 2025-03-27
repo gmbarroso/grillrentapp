@@ -13,8 +13,6 @@
   --color-error-dark: #7f1d1d;
   --color-success: #2d6a4f;
   --color-border: #b7e4c7;
-
-  /* Button specific variables */
   --button-border-radius: 4px;
   --button-transition: all 0.3s ease;
 }
@@ -22,16 +20,16 @@
 .dark {
   --color-background: #585555;
   --color-text: #f0f7f4;
-  --color-primary: #14382c;
+  --color-primary: #40916c;
   --color-primary-light: #95d5b2;
-  --color-primary-dark: #40916c;
+  --color-primary-dark: #2d6a4f;
   --color-secondary: #2d6a4f;
-  --color-secondary-light: #d0d4d3;
+  --color-secondary-light: #40916c;
   --color-accent: #b7e4c7;
   --color-error: #ef4444;
   --color-card-background: #14342b;
   --color-error-dark: #dc2626;
   --color-success: #95d5b2;
-  --color-border: #2d6a4f;
+  --color-border: #40916c;
 }
 

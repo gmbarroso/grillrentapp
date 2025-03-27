@@ -88,3 +88,54 @@
   }
 }
 
+.dark .modal-content {
+  background-color: var(--color-card-background);
+  color: #f0f7f4;
+}
+
+.dark .modal-close {
+  color: #f0f7f4;
+}
+
+.dark .modal-actions button {
+  background-color: #40916c;
+  color: white;
+}
+
+.dark .modal-actions button:hover {
+  background-color: #52b788;
+}
+
+.dark .modal-actions .cancel-button {
+  background-color: #2d6a4f;
+}
+
+.dark .modal-actions .cancel-button:hover {
+  background-color: #40916c;
+}
+
+.dark .confirm-dialog h2 {
+  color: #95d5b2;
+}
+
+.dark .confirm-dialog p {
+  color: #f0f7f4;
+}
+
+.dark .dialog-actions .delete-button {
+  background-color: #ef4444;
+}
+
+.dark .dialog-actions .delete-button:hover {
+  background-color: #dc2626;
+}
+
+.dark .dialog-actions .cancel-button {
+  background-color: #2d6a4f;
+  color: #f0f7f4;
+}
+
+.dark .dialog-actions .cancel-button:hover {
+  background-color: #40916c;
+}
+

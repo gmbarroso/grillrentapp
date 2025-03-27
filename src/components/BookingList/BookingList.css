@@ -162,3 +162,47 @@
   }
 }
 
+.dark .booking-list {
+  color: #f0f7f4;
+}
+
+.dark .booking-list th,
+.dark .booking-list td {
+  color: #f0f7f4;
+  border-bottom: 1px solid var(--color-secondary);
+}
+
+.dark .booking-list th {
+  color: #95d5b2;
+}
+
+.dark .booking-list h3 {
+  color: #95d5b2;
+}
+
+.dark .booking-list .no-bookings-message {
+  color: #f0f7f4;
+}
+
+.dark .booking-list th:first-child,
+.dark .booking-list td:first-child,
+.dark .booking-list th.action-column,
+.dark .booking-list td.action-column {
+  background-color: var(--color-card-background);
+}
+
+.dark .pagination {
+  color: #f0f7f4;
+}
+
+.dark .pagination select {
+  background-color: #2d6a4f;
+  color: #f0f7f4;
+  border-color: #40916c;
+}
+
+.dark .apartment-with-tooltip,
+.dark .resource-with-tooltip {
+  color: #f0f7f4;
+}
+

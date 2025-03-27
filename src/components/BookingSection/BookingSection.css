@@ -229,3 +229,79 @@
   padding: 1rem 0;
 }
 
+.dark .booking-section {
+  color: #f0f7f4;
+}
+
+.dark .booking-section h2 {
+  color: #95d5b2;
+}
+
+.dark .calendar-section h3 {
+  color: #95d5b2;
+}
+
+.dark .checkbox-text {
+  color: #f0f7f4;
+}
+
+.dark .card-title {
+  color: #95d5b2;
+}
+
+.dark .card-content {
+  color: #f0f7f4;
+}
+
+.dark .tables-chairs-option {
+  color: #f0f7f4;
+}
+
+.dark .admin-booking-label {
+  color: #95d5b2;
+}
+
+.dark .admin-booking-input {
+  background-color: #2d6a4f;
+  color: #f0f7f4;
+  border-color: #40916c;
+}
+
+.dark .admin-booking-input::placeholder {
+  color: #b7e4c7;
+  opacity: 0.7;
+}
+
+.dark .agreement-modal {
+  color: #f0f7f4;
+}
+
+.dark .agreement-title {
+  color: #95d5b2;
+}
+
+.dark .agreement-section-title {
+  color: #95d5b2;
+}
+
+.dark .agreement-signature-line {
+  border-top-color: #f0f7f4;
+}
+
+.dark .agreement-actions button {
+  background-color: #40916c;
+  color: white;
+}
+
+.dark .agreement-actions button:hover {
+  background-color: #52b788;
+}
+
+.dark .agreement-actions .cancel-button {
+  background-color: #2d6a4f;
+}
+
+.dark .agreement-actions .cancel-button:hover {
+  background-color: #40916c;
+}
+

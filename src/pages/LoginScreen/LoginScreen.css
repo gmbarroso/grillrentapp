@@ -12,9 +12,10 @@
   width: 100%;
   max-width: 400px;
   padding: 2rem;
-  background-color: white;
+  background-color: var(--color-card-background);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: var(--color-text);
 }
 
 .title {
@@ -33,6 +34,8 @@
   padding: 0.5rem;
   border: 1px solid var(--color-primary-light);
   border-radius: 4px;
+  background-color: var(--color-card-background);
+  color: var(--color-text);
 }
 
 .error-message {
@@ -53,5 +56,38 @@
 
 .signup-link a:hover {
   text-decoration: underline;
+}
+
+.dark .form-container {
+  background-color: var(--color-card-background);
+  color: var(--color-text);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark .title {
+  color: #95d5b2;
+}
+
+.dark .input {
+  background-color: #2d6a4f;
+  color: #f0f7f4;
+  border-color: #40916c;
+}
+
+.dark .input::placeholder {
+  color: #b7e4c7;
+  opacity: 0.7;
+}
+
+.dark .signup-link a {
+  color: #95d5b2;
+}
+
+.dark .signup-link a:hover {
+  color: #b7e4c7;
+}
+
+.dark .error-message {
+  color: #ef4444;
 }
 

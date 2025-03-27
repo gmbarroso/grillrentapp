@@ -1,24 +1,38 @@
 .contact-container {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .contact-container h2 {
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-  
-  .contact-container ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .contact-container li {
-    margin-bottom: 0.5rem;
-  }
-  
-  
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--color-card-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: var(--color-text);
+}
+
+.contact-container h2 {
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.contact-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.contact-container li {
+  margin-bottom: 0.5rem;
+}
+
+.dark .contact-container {
+  background-color: var(--color-card-background);
+  color: var(--color-text);
+}
+
+.dark .contact-container h2 {
+  color: #95d5b2;
+}
+
+.dark .contact-container p,
+.dark .contact-container li {
+  color: #f0f7f4;
+}
+

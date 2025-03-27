@@ -90,3 +90,45 @@
   color: white;
 }
 
+.dark .button-primary {
+  background-color: #40916c;
+  color: white;
+}
+
+.dark .button-primary:hover:not(:disabled) {
+  background-color: #52b788;
+}
+
+.dark .button-secondary:not(:disabled) {
+  background-color: #2d6a4f;
+  color: white;
+}
+
+.dark .button-secondary:hover:not(:disabled) {
+  background-color: #40916c;
+  color: white;
+}
+
+.dark .button-secondary.selected {
+  background-color: #40916c;
+  color: white;
+  border: 1px solid #95d5b2;
+}
+
+.dark .button-danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.dark .button-danger:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.dark .button-link {
+  color: #95d5b2;
+}
+
+.dark .button-link:hover:not(:disabled) {
+  color: #b7e4c7;
+}
+

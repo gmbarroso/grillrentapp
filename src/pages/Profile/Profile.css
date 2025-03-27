@@ -2,7 +2,7 @@
   max-width: 400px;
   margin: 2rem auto;
   padding: 2rem;
-  background-color: white;
+  background-color: var(--color-card-background);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -35,6 +35,8 @@
   border-radius: 4px;
   font-size: 1rem;
   width: calc(100% - 24px);
+  background-color: var(--color-card-background);
+  color: var(--color-text);
 }
 
 .input-group input:disabled {
@@ -121,5 +123,69 @@
 
 .cancel-button:hover {
   background-color: var(--color-secondary-dark);
+}
+
+.dark .profile-container {
+  background-color: var(--color-card-background);
+  color: var(--color-text);
+}
+
+.dark .profile-container h2 {
+  color: #95d5b2;
+}
+
+.dark .input-group input {
+  background-color: #2d6a4f;
+  color: #f0f7f4;
+  border-color: #40916c;
+}
+
+.dark .input-group input::placeholder {
+  color: #b7e4c7;
+  opacity: 0.7;
+}
+
+.dark .input-group input:disabled {
+  background-color: #1b4332;
+  color: #95d5b2;
+  border-color: #2d6a4f;
+}
+
+.dark .input-group .tooltip-icon {
+  background-color: #40916c;
+}
+
+.dark .profile-form button {
+  background-color: #40916c;
+  color: white;
+}
+
+.dark .profile-form button:hover {
+  background-color: #52b788;
+}
+
+.dark .delete-account-button {
+  background-color: #ef4444;
+}
+
+.dark .delete-account-button:hover {
+  background-color: #dc2626;
+}
+
+.dark .modal-actions .delete-confirm-button {
+  background-color: #ef4444;
+}
+
+.dark .modal-actions .delete-confirm-button:hover {
+  background-color: #dc2626;
+}
+
+.dark .modal-actions .cancel-button {
+  background-color: #2d6a4f;
+  color: #f0f7f4;
+}
+
+.dark .modal-actions .cancel-button:hover {
+  background-color: #40916c;
 }
 

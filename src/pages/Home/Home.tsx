@@ -9,17 +9,14 @@ import { useToast } from "../../context/ToastContext"
 import "./Home.css"
 
 const Home = () => {
-  // Add render counter for debugging
   const renderCount = useRef(0)
   renderCount.current++
 
   console.log(`[Home] Render count: ${renderCount.current}`)
 
-  // Add a throttle mechanism to prevent excessive renders
   const lastRenderTime = useRef(Date.now())
   const shouldRender = useRef(true)
 
-  // If we're rendering too frequently, skip some renders
   const now = Date.now()
   if (now - lastRenderTime.current < 100) {
     shouldRender.current = false

@@ -18,6 +18,18 @@
   color: var(--color-text);
 }
 
+.login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.login-logo {
+  height: 120px;
+  width: auto;
+}
+
 .title {
   text-align: center;
   color: var(--color-primary);

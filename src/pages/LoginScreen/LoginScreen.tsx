@@ -42,6 +42,9 @@ export default function LoginScreen() {
   return (
     <div className="container">
       <div className="form-container">
+        <div className="login-brand">
+          <img src="/images/logo.png" alt="Chácara Sacopã Logo" className="login-logo" />
+        </div>
         <h2 className="title">{t("Login.Title")}</h2>
         <form className="form" onSubmit={handleSubmit}>
           <input
@@ -54,7 +57,7 @@ export default function LoginScreen() {
           />
           <input
             className="input"
-            type="number"
+            type="text"
             min="1"
             max="2"
             placeholder={t("Login.Block")}

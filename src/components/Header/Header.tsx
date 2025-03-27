@@ -31,11 +31,7 @@ const Header = () => {
     <header className="header">
       <div className="header-content">
         <div className="header-brand">
-          <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo_n-vMvvALaTZX5Rtz4C8lRCnyzBqTwsBU.png"
-            alt="Chácara Sacopã Logo"
-            className="header-logo"
-          />
+          <img src="/images/logo.png" alt="Chácara Sacopã Logo" className="header-logo" />
           <h1>Chácara Sacopã</h1>
         </div>
         <Clock />

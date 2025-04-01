@@ -12,7 +12,7 @@ import "./LoginScreen.css"
 
 export default function LoginScreen() {
   const [apartment, setApartment] = useState("")
-  const [block, setBlock] = useState(1)
+  const [block, setBlock] = useState("1")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
   const { login } = useAuth()
@@ -24,8 +24,11 @@ export default function LoginScreen() {
     e.preventDefault()
     setIsLoading(true)
 
+    const blockNumber = Number.parseInt(block) || 1
+    const validBlock = blockNumber > 2 ? 2 : blockNumber < 1 ? 1 : blockNumber
+
     try {
-      const success = await login(apartment, block, password)
+      const success = await login(apartment, validBlock, password)
       if (success) {
         navigate("/")
       } else {
@@ -58,11 +61,16 @@ export default function LoginScreen() {
           <input
             className="input"
             type="text"
-            min="1"
-            max="2"
             placeholder={t("Login.Block")}
             value={block}
-            onChange={(e) => setBlock(Math.min(Math.max(Number.parseInt(e.target.value) || 1, 1), 2))}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, "")
+              setBlock(value)
+            }}
+            onBlur={() => {
+              const num = Number.parseInt(block) || 1
+              setBlock(num > 2 ? "2" : num < 1 ? "1" : num.toString())
+            }}
             required
           />
           <input

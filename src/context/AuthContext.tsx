@@ -80,11 +80,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const response = await loginMutate({ apartment, block, password })
-      console.log("[AuthProvider] Login response:", response)
 
-      if (response && "access_token" in response) {
-        const newToken = response.access_token as string
-        console.log("[AuthProvider] Login successful, token received")
+      if (response && (response.access_token || response.token)) {
+        const newToken = response.access_token || (response.token as string)
 
         localStorage.setItem("token", newToken)
 
@@ -94,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoggingIn.current = false
         return true
       } else {
-        console.error("Login failed:", loginError)
+        console.error("Login failed: No token in response", response)
         isLoggingIn.current = false
         return false
       }

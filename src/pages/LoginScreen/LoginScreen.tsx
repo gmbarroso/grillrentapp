@@ -29,13 +29,16 @@ export default function LoginScreen() {
 
     try {
       const success = await login(apartment, validBlock, password)
+      console.log("Login result:", success)
+
       if (success) {
         navigate("/")
       } else {
+        console.log("Login failed but no error was thrown")
         showToast(t("Login.Error"), "error")
       }
     } catch (err) {
-      console.error("Login error:", err)
+      console.error("Login error caught in component:", err)
       showToast(t("Login.Error"), "error")
     } finally {
       setIsLoading(false)
@@ -64,10 +67,12 @@ export default function LoginScreen() {
             placeholder={t("Login.Block")}
             value={block}
             onChange={(e) => {
+              // Allow any input, but restrict to digits only
               const value = e.target.value.replace(/\D/g, "")
               setBlock(value)
             }}
             onBlur={() => {
+              // When the field loses focus, ensure the value is 1 or 2
               const num = Number.parseInt(block) || 1
               setBlock(num > 2 ? "2" : num < 1 ? "1" : num.toString())
             }}

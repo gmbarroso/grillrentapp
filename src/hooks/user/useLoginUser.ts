@@ -25,9 +25,11 @@ export function useLoginUser() {
         body: JSON.stringify(body),
       })
 
+      console.log("Login response status:", response.status)
+
       const result = await response.json()
 
-      if (!response.ok) {
+      if (!response.ok && response.status !== 201) {
         throw new Error(result.message || "Login failed")
       }
 

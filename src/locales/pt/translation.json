@@ -67,7 +67,7 @@
     "PasswordInvalid": "A senha deve conter pelo menos uma letra e um número",
     "NameTooltip": "O nome só pode conter letras e espaços, máximo de 50 caracteres",
     "EmailTooltip": "Insira um endereço de e-mail válido, máximo de 100 caracteres",
-    "PasswordTooltip": "A senha deve ter até 8 caracteres, conter pelo menos uma letra e um número"
+    "PasswordTooltip": "A senha deve ter exatamente 8 caracteres, conter pelo menos uma letra e um número. Caracteres especiais são permitidos."
   },
   "SignUp": {
     "Title": "Cadastro",

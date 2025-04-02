@@ -57,7 +57,7 @@ const Profile: React.FC = () => {
     if (value && value.length > 8) {
       return t("Profile.PasswordTooLong")
     }
-    if (value && !/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value)) {
+    if (value && !/^(?=.*[A-Za-z])(?=.*\d).{8,8}$/.test(value)) {
       return t("Profile.PasswordInvalid")
     }
     return null

@@ -68,7 +68,7 @@
     "PasswordInvalid": "Password must contain at least one letter and one number",
     "NameTooltip": "Name can only contain letters and spaces, max 50 characters",
     "EmailTooltip": "Enter a valid email address, max 100 characters",
-    "PasswordTooltip": "Password must be up to 8 characters, contain at least one letter and one number"
+    "PasswordTooltip": "Password must be exactly 8 characters, contain at least one letter and one number. Special characters are allowed."
   },
   "SignUp": {
     "Title": "Sign Up",

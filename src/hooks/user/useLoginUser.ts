@@ -2,7 +2,20 @@
 
 import { useState } from "react"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const getApiBaseUrl = () => {
+  const isStaging =
+    process.env.REACT_APP_ENVIRONMENT === "staging" ||
+    window.location.hostname.includes("stg") ||
+    window.location.hostname.includes("staging")
+
+  if (isStaging) {
+    return process.env.REACT_APP_BFF_URL_STAGING || "https://grillrentbffv2-staging.up.railway.app"
+  }
+
+  return process.env.REACT_APP_BFF_URL || "https://grillrentbff.up.railway.app"
+}
+
+const API_BASE_URL = getApiBaseUrl()
 
 interface LoginResponse {
   access_token?: string
@@ -19,15 +32,23 @@ export function useLoginUser() {
     setError(null)
 
     try {
+      console.log(`Sending login request to: ${API_BASE_URL}/users/login`)
+
       const response = await fetch(`${API_BASE_URL}/users/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify(body),
       })
 
-      const result = await response.json()
+      console.log("Login response status:", response.status)
 
-      if (!response.ok) {
+      const result = await response.json()
+      console.log("Login response data:", result)
+
+      if (!response.ok && response.status !== 201) {
         throw new Error(result.message || "Login failed")
       }
 

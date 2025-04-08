@@ -1,7 +1,8 @@
 import { useFetch } from "../useFetch"
 import type { UserResponse } from "../../types/User"
+import { getApiBaseUrl } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 export function useUserProfile(token: string | null) {
   const fetcher = (url: string): Promise<UserResponse> =>
@@ -46,4 +47,3 @@ export function useUserProfile(token: string | null) {
     fetchProfile,
   }
 }
-

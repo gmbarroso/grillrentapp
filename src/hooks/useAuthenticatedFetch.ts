@@ -27,24 +27,29 @@ export function useAuthenticatedFetch() {
       const headers = {
         ...options.headers,
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       }
 
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      })
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers,
+        })
 
-      if (response.status === 401) {
-        console.log(`[useAuthenticatedFetch] Received 401 response, logging out`)
-        logout()
-        throw new Error("Authentication failed")
+        if (response.status === 401) {
+          console.log(`[useAuthenticatedFetch] Received 401 response, logging out`)
+          logout()
+          throw new Error("Authentication failed")
+        }
+
+        return response
+      } catch (error) {
+        console.error(`[useAuthenticatedFetch] Error fetching ${url}:`, error)
+        throw error
       }
-
-      return response
     },
     [token, logout],
   )
 
   return authenticatedFetch
 }
-

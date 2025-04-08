@@ -4,8 +4,9 @@ import { useState, useCallback, useMemo, useRef } from "react"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import type { Booking } from "../../types/Booking"
+import { getApiBaseUrl } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 interface BookingsResponse {
   data: Booking[]
@@ -15,11 +16,11 @@ interface BookingsResponse {
 }
 
 export function useAllBookings(token: string) {
-  // Add render counter for debugging
   const renderCount = useRef(0)
   renderCount.current++
 
   console.log(`[useAllBookings] Render count: ${renderCount.current}`)
+  console.log(`[useAllBookings] Using API base URL: ${API_BASE_URL}`)
 
   const [currentPage, setCurrentPage] = useState(1)
   const [currentLimit, setCurrentLimit] = useState(20)
@@ -27,7 +28,6 @@ export function useAllBookings(token: string) {
   const [currentOrder, setCurrentOrder] = useState<"ASC" | "DESC">("ASC")
   const authenticatedFetch = useAuthenticatedFetch()
 
-  // Memoize the fetcher function to prevent recreation on every render
   const fetcher = useCallback(
     async (url: string) => {
       console.log(`[useAllBookings] Fetching data from: ${url}`)
@@ -47,7 +47,6 @@ export function useAllBookings(token: string) {
     [authenticatedFetch],
   )
 
-  // Memoize the URL construction to prevent it from changing on every render
   const url = useMemo(() => {
     const constructedUrl = `${API_BASE_URL}/bookings?page=${currentPage}&limit=${currentLimit}&sort=${currentSort}&order=${currentOrder}`
     console.log(`[useAllBookings] URL constructed: ${constructedUrl}`)
@@ -56,7 +55,6 @@ export function useAllBookings(token: string) {
 
   const { data, isError, isLoading, mutate } = useFetch<BookingsResponse>(url, { fetcher })
 
-  //I will bring this logic to backend in the future
   const changePage = useCallback((newPage: number) => {
     console.log(`[useAllBookings] Changing page to: ${newPage}`)
     setCurrentPage(newPage)
@@ -102,4 +100,3 @@ export function useAllBookings(token: string) {
     refreshBookings,
   }
 }
-

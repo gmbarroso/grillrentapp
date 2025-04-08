@@ -4,8 +4,9 @@ import { useState, useCallback, useMemo } from "react"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import type { Notice } from "../../types/Notice"
+import { getApiBaseUrl } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 interface NoticesResponse {
   data: Notice[]
@@ -79,4 +80,3 @@ export function useAllNotices(token: string) {
     refreshNotices,
   }
 }
-

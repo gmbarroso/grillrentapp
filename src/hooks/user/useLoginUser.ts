@@ -1,19 +1,7 @@
 "use client"
 
 import { useState } from "react"
-
-const getApiBaseUrl = () => {
-  const isStaging =
-    process.env.REACT_APP_ENVIRONMENT === "staging" ||
-    window.location.hostname.includes("stg") ||
-    window.location.hostname.includes("staging")
-
-  if (isStaging) {
-    return process.env.REACT_APP_BFF_URL_STAGING || "https://grillrentbffv2-staging.up.railway.app"
-  }
-
-  return process.env.REACT_APP_BFF_URL || "https://grillrentbff.up.railway.app"
-}
+import { getApiBaseUrl, logApiRequest, logApiResponse } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -32,21 +20,19 @@ export function useLoginUser() {
     setError(null)
 
     try {
-      console.log(`Sending login request to: ${API_BASE_URL}/users/login`)
+      const endpoint = "/users/login"
+      logApiRequest("POST", `${API_BASE_URL}${endpoint}`, body)
 
-      const response = await fetch(`${API_BASE_URL}/users/login`, {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify(body),
       })
 
-      console.log("Login response status:", response.status)
-
       const result = await response.json()
-      console.log("Login response data:", result)
+      logApiResponse(endpoint, response.status, result)
 
       if (!response.ok && response.status !== 201) {
         throw new Error(result.message || "Login failed")
@@ -68,4 +54,3 @@ export function useLoginUser() {
     error,
   }
 }
-

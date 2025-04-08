@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next"
 import { useAllResources } from "../../hooks/resource/useAllResources"
 import { useCreateBooking } from "../../hooks/booking/useCreateBooking"
@@ -47,10 +47,14 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
 
-  const selectedResource = selectedOption ? resources?.find((r: Resource) => r.type === selectedOption) : null
+  const selectedResource = useMemo(() => {
+    return selectedOption ? resources?.find((r: Resource) => r.type === selectedOption) : null
+  }, [selectedOption, resources])
 
   useEffect(() => {
-    setCalendarKey(`${selectedOption}-${Date.now()}`)
+    if (selectedOption) {
+      setCalendarKey(`${selectedOption}-${Date.now()}`)
+    }
   }, [selectedOption])
 
   useEffect(() => {
@@ -59,13 +63,18 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
     }
   }, [isLoadingTimes, isFetchingAfterDateSelect])
 
-  const handleOptionSelect = (option: "grill" | "tennis") => {
-    setSelectedOption(option)
-    setSelectedDate(null)
-    setSelectedTime(null)
-    setIsDateAvailable(null)
-    setNeedTablesAndChairs(false)
-  }
+  const handleOptionSelect = useCallback(
+    (option: "grill" | "tennis") => {
+      if (option === selectedOption) return
+
+      setSelectedOption(option)
+      setSelectedDate(null)
+      setSelectedTime(null)
+      setIsDateAvailable(null)
+      setNeedTablesAndChairs(false)
+    },
+    [selectedOption],
+  )
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date)
@@ -354,4 +363,3 @@ const formatDateInPortuguese = () => {
 }
 
 export default BookingSection
-

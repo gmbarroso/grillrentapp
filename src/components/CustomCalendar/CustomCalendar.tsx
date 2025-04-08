@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useTranslation } from "react-i18next"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import "./CustomCalendar.css"
 
@@ -32,12 +32,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     setInternalSelectedDate(selectedDate)
   }, [selectedDate])
 
-  const reservedDaysSet = new Set(reservedDays)
-
-  const defaultMaxDate = new Date()
-  defaultMaxDate.setMonth(defaultMaxDate.getMonth() + 3)
-  const effectiveMaxDate = maxDate || defaultMaxDate
-
   useEffect(() => {
     if (selectedDate) {
       const selectedMonth = selectedDate.getMonth()
@@ -45,11 +39,19 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       const currentViewMonth = currentMonth.getMonth()
       const currentViewYear = currentMonth.getFullYear()
 
+      // Only update if the month or year is different
       if (selectedMonth !== currentViewMonth || selectedYear !== currentViewYear) {
         setCurrentMonth(new Date(selectedYear, selectedMonth, 1))
       }
     }
   }, [selectedDate, currentMonth])
+
+  // Memoize the reservedDaysSet to prevent unnecessary recalculations
+  const reservedDaysSet = useMemo(() => new Set(reservedDays), [reservedDays])
+
+  const defaultMaxDate = new Date()
+  defaultMaxDate.setMonth(defaultMaxDate.getMonth() + 3)
+  const effectiveMaxDate = maxDate || defaultMaxDate
 
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate()
@@ -63,31 +65,43 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     return date.toISOString().split("T")[0]
   }
 
-  const isDateReserved = (date: Date): boolean => {
-    return reservedDaysSet.has(formatDateString(date))
-  }
+  // Memoize the isDateReserved function
+  const isDateReserved = useCallback(
+    (date: Date): boolean => {
+      return reservedDaysSet.has(formatDateString(date))
+    },
+    [reservedDaysSet],
+  )
 
-  const isDateOutOfRange = (date: Date): boolean => {
-    const dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    const minWithoutTime = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate())
-    const maxWithoutTime = new Date(
-      effectiveMaxDate.getFullYear(),
-      effectiveMaxDate.getMonth(),
-      effectiveMaxDate.getDate(),
-    )
+  // Memoize the isDateOutOfRange function
+  const isDateOutOfRange = useCallback(
+    (date: Date): boolean => {
+      const dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+      const minWithoutTime = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate())
+      const maxWithoutTime = new Date(
+        effectiveMaxDate.getFullYear(),
+        effectiveMaxDate.getMonth(),
+        effectiveMaxDate.getDate(),
+      )
 
-    return dateWithoutTime < minWithoutTime || dateWithoutTime > maxWithoutTime
-  }
+      return dateWithoutTime < minWithoutTime || dateWithoutTime > maxWithoutTime
+    },
+    [minDate, effectiveMaxDate],
+  )
 
-  const isDateSelected = (date: Date): boolean => {
-    if (!internalSelectedDate) return false
+  // Memoize the isDateSelected function
+  const isDateSelected = useCallback(
+    (date: Date): boolean => {
+      if (!internalSelectedDate) return false
 
-    return (
-      date.getDate() === internalSelectedDate.getDate() &&
-      date.getMonth() === internalSelectedDate.getMonth() &&
-      date.getFullYear() === internalSelectedDate.getFullYear()
-    )
-  }
+      return (
+        date.getDate() === internalSelectedDate.getDate() &&
+        date.getMonth() === internalSelectedDate.getMonth() &&
+        date.getFullYear() === internalSelectedDate.getFullYear()
+      )
+    },
+    [internalSelectedDate],
+  )
 
   const handleDateClick = (date: Date) => {
     if (isDateReserved(date) || isDateOutOfRange(date)) {
@@ -207,4 +221,3 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 }
 
 export default CustomCalendar
-

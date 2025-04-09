@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
-import { getApiBaseUrl } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -19,8 +19,6 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
   const authenticatedFetch = useAuthenticatedFetch()
 
   // Add fetch tracking to prevent excessive fetches
-  // I added this also to prevent infinite loops
-  // I have commented the process
   const fetchCount = useRef(0)
   const lastFetchTime = useRef(0)
   const isMounted = useRef(true)
@@ -44,6 +42,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
       // Prevent excessive fetches
       const now = Date.now()
       if (now - lastFetchTime.current < 2000) {
+        // 2 second throttle
         console.log(`[useReservedTimes] Throttling fetch for ${resourceType}`)
         return
       }
@@ -64,14 +63,15 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
       setError(null)
 
       try {
-        let url = `${API_BASE_URL}/bookings/reserved-times?resourceType=${resourceType}`
+        let endpoint = `/bookings/reserved-times?resourceType=${resourceType}`
         if (resourceType === "tennis" && date) {
           const formattedDate = date.toISOString().split("T")[0]
-          url += `&date=${formattedDate}`
+          endpoint += `&date=${formattedDate}`
         }
 
-        console.log(`[useReservedTimes] Fetching from: ${url}`)
-        const response = await authenticatedFetch(url)
+        logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
+
+        const response = await authenticatedFetch(`${API_BASE_URL}${endpoint}`)
 
         if (!isMounted.current) return
 
@@ -80,6 +80,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
         }
 
         const data: ReservedTimesResponse = await response.json()
+        logApiResponse(endpoint, response.status, data)
 
         if (!isMounted.current) return
 
@@ -100,7 +101,8 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
       } catch (err) {
         console.error("Error fetching reserved times:", err)
         if (isMounted.current) {
-          setError(err instanceof Error ? err : new Error("An unknown error occurred"))
+          const apiError = handleApiError(err, `/bookings/reserved-times?resourceType=${resourceType}`)
+          setError(apiError)
         }
       } finally {
         if (isMounted.current) {
@@ -111,6 +113,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
 
     fetchReservedTimes()
 
+    // Reset fetch count after 30 seconds
     const resetTimer = setTimeout(() => {
       fetchCount.current = 0
     }, 30000)

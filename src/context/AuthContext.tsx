@@ -102,7 +102,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const response = await loginMutate({ apartment, block, password })
-      console.log("[AuthProvider] Login response:", response)
 
       if (!response) {
         console.error("[AuthProvider] No response from login")

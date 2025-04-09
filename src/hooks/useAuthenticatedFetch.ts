@@ -3,13 +3,16 @@
 import { useAuth } from "../context/AuthContext"
 import { isTokenExpired } from "../utils/jwt"
 import { useCallback, useRef } from "react"
+import { handleApiError } from "../utils/api"
 
 export function useAuthenticatedFetch() {
   // Add render counter for debugging
   const renderCount = useRef(0)
   renderCount.current++
 
-  console.log(`[useAuthenticatedFetch] Render count: ${renderCount.current}`)
+  if (renderCount.current < 100 || renderCount.current % 1000 === 0) {
+    console.log(`[useAuthenticatedFetch] Render count: ${renderCount.current}`)
+  }
 
   const { token, logout } = useAuth()
 
@@ -27,7 +30,6 @@ export function useAuthenticatedFetch() {
       const headers = {
         ...options.headers,
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
       }
 
       try {
@@ -44,8 +46,8 @@ export function useAuthenticatedFetch() {
 
         return response
       } catch (error) {
-        console.error(`[useAuthenticatedFetch] Error fetching ${url}:`, error)
-        throw error
+        // Handle CORS and network errors
+        throw handleApiError(error, url)
       }
     },
     [token, logout],

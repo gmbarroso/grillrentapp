@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { getApiBaseUrl, logApiRequest, logApiResponse } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -15,6 +15,7 @@ export function useLoginUser() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
+  // Add more detailed logging to help debug
   const login = async (body: { apartment: string; block: number; password: string }): Promise<LoginResponse | null> => {
     setIsLoading(true)
     setError(null)
@@ -31,8 +32,9 @@ export function useLoginUser() {
         body: JSON.stringify(body),
       })
 
+      logApiResponse(endpoint, response.status, { headers: Object.fromEntries([...response.headers.entries()]) })
+
       const result = await response.json()
-      logApiResponse(endpoint, response.status, result)
 
       if (!response.ok && response.status !== 201) {
         throw new Error(result.message || "Login failed")
@@ -42,7 +44,8 @@ export function useLoginUser() {
       return result
     } catch (error) {
       console.error("Error in login:", error)
-      setError(error instanceof Error ? error : new Error("An unknown error occurred"))
+      const apiError = handleApiError(error, "/users/login")
+      setError(apiError)
       setIsLoading(false)
       return null
     }

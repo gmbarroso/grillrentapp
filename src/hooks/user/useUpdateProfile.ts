@@ -1,8 +1,11 @@
+"use client"
+
 import { useState } from "react"
 import { useFetch } from "../useFetch"
 import type { User, UserResponse } from "../../types/User"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 interface UpdateUserProfileDto {
   name?: string
@@ -23,7 +26,10 @@ export function useUpdateProfile(token: string | null) {
     setError(null)
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      const endpoint = "/users/profile"
+      logApiRequest("PUT", `${API_BASE_URL}${endpoint}`, updateData)
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -37,10 +43,13 @@ export function useUpdateProfile(token: string | null) {
       }
 
       const data: UserResponse = await response.json()
+      logApiResponse(endpoint, response.status, data)
+
       await mutate(data, false)
       return data.user
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unexpected error occurred")
+      const apiError = handleApiError(err, "/users/profile")
+      setError(apiError.message)
       return null
     } finally {
       setIsLoading(false)
@@ -53,4 +62,3 @@ export function useUpdateProfile(token: string | null) {
 
   return { updateProfile, isLoading, error, canDeleteProfile }
 }
-

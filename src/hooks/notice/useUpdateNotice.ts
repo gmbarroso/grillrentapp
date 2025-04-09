@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 export function useUpdateNotice() {
   const [isLoading, setIsLoading] = useState(false)
@@ -14,7 +15,10 @@ export function useUpdateNotice() {
       setError(null)
 
       try {
-        const response = await fetch(`${API_BASE_URL}/notices/${noticeId}`, {
+        const endpoint = `/notices/${noticeId}`
+        logApiRequest("PUT", `${API_BASE_URL}${endpoint}`, updateData)
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -24,6 +28,7 @@ export function useUpdateNotice() {
         })
 
         const data = await response.json()
+        logApiResponse(endpoint, response.status, data)
 
         if (!response.ok) {
           throw new Error(data.message || `Failed to update notice: ${response.status}`)
@@ -33,9 +38,10 @@ export function useUpdateNotice() {
         return { success: true, data }
       } catch (err) {
         console.error("Error in updateNotice:", err)
-        setError(err instanceof Error ? err : new Error("An unknown error occurred"))
+        const apiError = handleApiError(err, `/notices/${noticeId}`)
+        setError(apiError)
         setIsLoading(false)
-        return { success: false, error: err instanceof Error ? err : new Error("An unknown error occurred") }
+        return { success: false, error: apiError }
       }
     },
     [],
@@ -43,4 +49,3 @@ export function useUpdateNotice() {
 
   return { updateNotice, isLoading, error }
 }
-

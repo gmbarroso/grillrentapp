@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from "react"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import type { Notice } from "../../types/Notice"
-import { getApiBaseUrl } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -24,15 +24,18 @@ export function useAllNotices(token: string) {
 
   const fetcher = useCallback(
     async (url: string) => {
+      logApiRequest("GET", url)
       try {
         const res = await authenticatedFetch(url)
         if (!res.ok) {
           throw new Error("Failed to fetch notices")
         }
-        return res.json()
+        const data = await res.json()
+        logApiResponse(url, res.status, { count: data?.data?.length || 0 })
+        return data
       } catch (error) {
-        console.error("Error fetching notices:", error)
-        throw error
+        const apiError = handleApiError(error, url)
+        throw apiError
       }
     },
     [authenticatedFetch],

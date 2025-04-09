@@ -3,13 +3,16 @@
 import { useAuth } from "../context/AuthContext"
 import { isTokenExpired } from "../utils/jwt"
 import { useCallback, useRef } from "react"
+import { handleApiError } from "../utils/api"
 
 export function useAuthenticatedFetch() {
   // Add render counter for debugging
   const renderCount = useRef(0)
   renderCount.current++
 
-  console.log(`[useAuthenticatedFetch] Render count: ${renderCount.current}`)
+  if (renderCount.current < 100 || renderCount.current % 1000 === 0) {
+    console.log(`[useAuthenticatedFetch] Render count: ${renderCount.current}`)
+  }
 
   const { token, logout } = useAuth()
 
@@ -29,22 +32,26 @@ export function useAuthenticatedFetch() {
         Authorization: `Bearer ${token}`,
       }
 
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      })
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers,
+        })
 
-      if (response.status === 401) {
-        console.log(`[useAuthenticatedFetch] Received 401 response, logging out`)
-        logout()
-        throw new Error("Authentication failed")
+        if (response.status === 401) {
+          console.log(`[useAuthenticatedFetch] Received 401 response, logging out`)
+          logout()
+          throw new Error("Authentication failed")
+        }
+
+        return response
+      } catch (error) {
+        // Handle CORS and network errors
+        throw handleApiError(error, url)
       }
-
-      return response
     },
     [token, logout],
   )
 
   return authenticatedFetch
 }
-

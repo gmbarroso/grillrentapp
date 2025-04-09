@@ -1,6 +1,9 @@
-import { useState, useCallback } from "react"
+"use client"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+import { useState, useCallback } from "react"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+
+const API_BASE_URL = getApiBaseUrl()
 
 export function useDeleteBooking(token: string) {
   const [isLoading, setIsLoading] = useState(false)
@@ -12,7 +15,10 @@ export function useDeleteBooking(token: string) {
       setError(null)
 
       try {
-        const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`, {
+        const endpoint = `/bookings/${bookingId}`
+        logApiRequest("DELETE", `${API_BASE_URL}${endpoint}`)
+
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -21,6 +27,7 @@ export function useDeleteBooking(token: string) {
         })
 
         const data = await response.json()
+        logApiResponse(endpoint, response.status, data)
 
         if (!response.ok) {
           throw new Error(data.message || `Failed to delete booking: ${response.status}`)
@@ -30,9 +37,10 @@ export function useDeleteBooking(token: string) {
         return { success: true, data }
       } catch (err) {
         console.error("Error in deleteBooking:", err)
-        setError(err instanceof Error ? err : new Error("An unknown error occurred"))
+        const apiError = handleApiError(err, `/bookings/${bookingId}`)
+        setError(apiError)
         setIsLoading(false)
-        return { success: false, error: err instanceof Error ? err : new Error("An unknown error occurred") }
+        return { success: false, error: apiError }
       }
     },
     [token],
@@ -40,4 +48,3 @@ export function useDeleteBooking(token: string) {
 
   return { deleteBooking, isLoading, error }
 }
-

@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 export function useDeleteNotice() {
   const [isLoading, setIsLoading] = useState(false)
@@ -13,7 +14,10 @@ export function useDeleteNotice() {
     setError(null)
 
     try {
-      const response = await fetch(`${API_BASE_URL}/notices/${noticeId}`, {
+      const endpoint = `/notices/${noticeId}`
+      logApiRequest("DELETE", `${API_BASE_URL}${endpoint}`)
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -22,6 +26,7 @@ export function useDeleteNotice() {
       })
 
       const data = await response.json()
+      logApiResponse(endpoint, response.status, data)
 
       if (!response.ok) {
         throw new Error(data.message || `Failed to delete notice: ${response.status}`)
@@ -31,12 +36,12 @@ export function useDeleteNotice() {
       return { success: true, data }
     } catch (err) {
       console.error("Error in deleteNotice:", err)
-      setError(err instanceof Error ? err : new Error("An unknown error occurred"))
+      const apiError = handleApiError(err, `/notices/${noticeId}`)
+      setError(apiError)
       setIsLoading(false)
-      return { success: false, error: err instanceof Error ? err : new Error("An unknown error occurred") }
+      return { success: false, error: apiError }
     }
   }, [])
 
   return { deleteNotice, isLoading, error }
 }
-

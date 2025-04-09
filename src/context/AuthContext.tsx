@@ -34,7 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { logout: logoutMutate, isLoading: isLogoutLoading } = useLogoutUser()
   const { setIsLoading } = useLoading()
 
-  // Add a ref to track if we're in the login process to prevent excessive re-renders
   const isLoggingIn = useRef(false)
 
   useEffect(() => {
@@ -73,6 +72,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(isUserLoading || isLoginLoading || isLogoutLoading)
   }, [isUserLoading, isLoginLoading, isLogoutLoading, setIsLoading])
 
+  const debugToken = (token: string) => {
+    try {
+      const parts = token.split(".")
+      if (parts.length !== 3) {
+        console.error("[AuthProvider] Invalid token format - not a JWT")
+        return false
+      }
+
+      const payload = JSON.parse(atob(parts[1]))
+      console.log("[AuthProvider] Token payload:", payload)
+
+      if (payload.exp) {
+        const expiresAt = new Date(payload.exp * 1000)
+        console.log("[AuthProvider] Token expires at:", expiresAt.toLocaleString())
+      }
+
+      return true
+    } catch (error) {
+      console.error("[AuthProvider] Error parsing token:", error)
+      return false
+    }
+  }
+
   const login = async (apartment: string, block: number, password: string): Promise<boolean> => {
     console.log("[AuthProvider] Login attempt", { apartment, block })
 
@@ -80,24 +102,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     try {
       const response = await loginMutate({ apartment, block, password })
-      console.log("[AuthProvider] Login response:", response)
 
-      if (response && "access_token" in response) {
-        const newToken = response.access_token as string
-        console.log("[AuthProvider] Login successful, token received")
-
-        localStorage.setItem("token", newToken)
-
-        setToken(newToken)
-        setIsAuthenticated(true)
-
-        isLoggingIn.current = false
-        return true
-      } else {
-        console.error("Login failed:", loginError)
+      if (!response) {
+        console.error("[AuthProvider] No response from login")
         isLoggingIn.current = false
         return false
       }
+
+      const newToken =
+        response.token ||
+        response.access_token ||
+        (response.data && (response.data.token || response.data.access_token))
+
+      if (newToken) {
+        console.log("[AuthProvider] Token found:", newToken)
+
+        const isValidToken = debugToken(newToken)
+
+        if (!isValidToken) {
+          console.error("[AuthProvider] Invalid token format")
+          isLoggingIn.current = false
+          return false
+        }
+
+        localStorage.setItem("token", newToken)
+        setToken(newToken)
+        setIsAuthenticated(true)
+        isLoggingIn.current = false
+        return true
+      } else {
+        console.error("[AuthProvider] No token found in response:", response)
+      }
+
+      isLoggingIn.current = false
+      return false
     } catch (error) {
       console.error("Login error:", error)
       isLoggingIn.current = false

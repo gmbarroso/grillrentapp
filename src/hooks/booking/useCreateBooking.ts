@@ -2,13 +2,14 @@
 
 import { useState } from "react"
 import type { Booking } from "../../types/Booking"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
 interface BookingResponse {
   message: string
   booking: Booking
 }
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 export function useCreateBooking(token: string) {
   const [isLoading, setIsLoading] = useState(false)
@@ -25,7 +26,10 @@ export function useCreateBooking(token: string) {
     setError(null)
 
     try {
-      const res = await fetch(`${API_BASE_URL}/bookings`, {
+      const endpoint = "/bookings"
+      logApiRequest("POST", `${API_BASE_URL}${endpoint}`, bookingData)
+
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,17 +38,19 @@ export function useCreateBooking(token: string) {
         body: JSON.stringify(bookingData),
       })
 
+      const result = await res.json()
+      logApiResponse(endpoint, res.status, result)
+
       if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.message || "Failed to create booking")
+        throw new Error(result.message || "Failed to create booking")
       }
 
-      const response: BookingResponse = await res.json()
-      return response
+      return result
     } catch (error) {
       console.error("Error in createBooking:", error)
-      setError(error instanceof Error ? error : new Error("An unknown error occurred"))
-      throw error
+      const apiError = handleApiError(error, "/bookings")
+      setError(apiError)
+      throw apiError
     } finally {
       setIsLoading(false)
     }
@@ -56,4 +62,3 @@ export function useCreateBooking(token: string) {
     error,
   }
 }
-

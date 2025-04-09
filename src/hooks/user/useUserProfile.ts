@@ -1,42 +1,64 @@
 import { useFetch } from "../useFetch"
 import type { UserResponse } from "../../types/User"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 export function useUserProfile(token: string | null) {
-  const fetcher = (url: string): Promise<UserResponse> =>
-    fetch(url, {
+  const fetcher = (url: string): Promise<UserResponse> => {
+    logApiRequest("GET", url)
+    return fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).then((res) => {
-      if (!res.ok) {
-        throw new Error("Failed to fetch user profile")
-      }
-      return res.json()
     })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch user profile")
+        }
+        const data = res.json()
+        logApiResponse(url, res.status)
+        return data
+      })
+      .catch((err) => {
+        const apiError = handleApiError(err, url)
+        throw apiError
+      })
+  }
 
   const { data, isError, isLoading, mutate } = useFetch<UserResponse>(token ? `${API_BASE_URL}/users/profile` : null, {
     fetcher,
   })
 
   const fetchProfile = async (): Promise<UserResponse> => {
-    const response = await mutate(() =>
-      fetch(`${API_BASE_URL}/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }).then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch user profile")
-        }
-        return res.json()
-      }),
-    )
-    if (!response) {
-      throw new Error("Failed to fetch user profile")
+    try {
+      const endpoint = "/users/profile"
+      logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
+
+      const response = await mutate(() =>
+        fetch(`${API_BASE_URL}${endpoint}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((res) => {
+            logApiResponse(endpoint, res.status)
+            if (!res.ok) {
+              throw new Error("Failed to fetch user profile")
+            }
+            return res.json()
+          })
+          .catch((err) => {
+            throw handleApiError(err, endpoint)
+          }),
+      )
+      if (!response) {
+        throw new Error("Failed to fetch user profile")
+      }
+      return response
+    } catch (err) {
+      throw handleApiError(err, "/users/profile")
     }
-    return response
   }
 
   return {
@@ -46,4 +68,3 @@ export function useUserProfile(token: string | null) {
     fetchProfile,
   }
 }
-

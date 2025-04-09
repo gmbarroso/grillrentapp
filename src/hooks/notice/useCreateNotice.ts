@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 export function useCreateNotice() {
   const [isLoading, setIsLoading] = useState(false)
@@ -13,7 +14,10 @@ export function useCreateNotice() {
     setError(null)
 
     try {
-      const response = await fetch(`${API_BASE_URL}/notices`, {
+      const endpoint = "/notices"
+      logApiRequest("POST", `${API_BASE_URL}${endpoint}`, noticeData)
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,6 +27,7 @@ export function useCreateNotice() {
       })
 
       const data = await response.json()
+      logApiResponse(endpoint, response.status, data)
 
       if (!response.ok) {
         throw new Error(data.message || `Failed to create notice: ${response.status}`)
@@ -32,12 +37,12 @@ export function useCreateNotice() {
       return { success: true, data }
     } catch (err) {
       console.error("Error in createNotice:", err)
-      setError(err instanceof Error ? err : new Error("An unknown error occurred"))
+      const apiError = handleApiError(err, "/notices")
+      setError(apiError)
       setIsLoading(false)
-      return { success: false, error: err instanceof Error ? err : new Error("An unknown error occurred") }
+      return { success: false, error: apiError }
     }
   }, [])
 
   return { createNotice, isLoading, error }
 }
-

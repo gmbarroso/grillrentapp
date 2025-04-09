@@ -4,8 +4,9 @@ import { useState, useCallback, useMemo, useRef } from "react"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import type { Booking } from "../../types/Booking"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
-const API_BASE_URL = process.env.REACT_APP_BFF_URL || "http://localhost:3001"
+const API_BASE_URL = getApiBaseUrl()
 
 interface BookingsResponse {
   data: Booking[]
@@ -19,7 +20,10 @@ export function useAllBookings(token: string) {
   const renderCount = useRef(0)
   renderCount.current++
 
-  console.log(`[useAllBookings] Render count: ${renderCount.current}`)
+  if (renderCount.current < 100 || renderCount.current % 1000 === 0) {
+    console.log(`[useAllBookings] Render count: ${renderCount.current}`)
+    console.log(`[useAllBookings] Using API base URL: ${API_BASE_URL}`)
+  }
 
   const [currentPage, setCurrentPage] = useState(1)
   const [currentLimit, setCurrentLimit] = useState(20)
@@ -30,18 +34,18 @@ export function useAllBookings(token: string) {
   // Memoize the fetcher function to prevent recreation on every render
   const fetcher = useCallback(
     async (url: string) => {
-      console.log(`[useAllBookings] Fetching data from: ${url}`)
+      logApiRequest("GET", url)
       try {
         const res = await authenticatedFetch(url)
         if (!res.ok) {
           throw new Error("Failed to fetch bookings")
         }
         const data = await res.json()
-        console.log(`[useAllBookings] Fetch successful, received ${data?.data?.length || 0} bookings`)
+        logApiResponse(url, res.status, { count: data?.data?.length || 0 })
         return data
       } catch (error) {
-        console.error("[useAllBookings] Error fetching bookings:", error)
-        throw error
+        const apiError = handleApiError(error, url)
+        throw apiError
       }
     },
     [authenticatedFetch],
@@ -50,7 +54,6 @@ export function useAllBookings(token: string) {
   // Memoize the URL construction to prevent it from changing on every render
   const url = useMemo(() => {
     const constructedUrl = `${API_BASE_URL}/bookings?page=${currentPage}&limit=${currentLimit}&sort=${currentSort}&order=${currentOrder}`
-    console.log(`[useAllBookings] URL constructed: ${constructedUrl}`)
     return constructedUrl
   }, [currentPage, currentLimit, currentSort, currentOrder])
 
@@ -102,4 +105,3 @@ export function useAllBookings(token: string) {
     refreshBookings,
   }
 }
-

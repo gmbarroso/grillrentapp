@@ -2,6 +2,7 @@
   background-color: var(--color-card-background);
   border-radius: 8px;
   padding: 1rem;
+  margin-bottom: 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -14,6 +15,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1rem;
+  table-layout: fixed;
 }
 
 .booking-list th,
@@ -21,6 +23,29 @@
   padding: 0.5rem;
   text-align: left;
   border-bottom: 1px solid var(--color-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.booking-list th:nth-child(1),
+.booking-list td:nth-child(1) {
+  width: 25%;
+}
+
+.booking-list th:nth-child(2),
+.booking-list td:nth-child(2) {
+  width: 20%;
+}
+
+.booking-list th:nth-child(3),
+.booking-list td:nth-child(3) {
+  width: 20%;
+}
+
+.booking-list th:nth-child(4),
+.booking-list td:nth-child(4) {
+  width: 25%;
 }
 
 .booking-list th {
@@ -206,3 +231,9 @@
   color: #f0f7f4;
 }
 
+.no-bookings-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text);
+  font-style: italic;
+}

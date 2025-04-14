@@ -25,14 +25,6 @@ const BookingList: React.FC<BookingListProps> = ({
   onChangeSort,
   onChangeOrder,
 }) => {
-  const now = new Date()
-  now.setHours(0, 0, 0, 0)
-
-  const filteredBookings = bookings.filter((booking) => {
-    const bookingDate = new Date(booking.startTime)
-    return bookingDate >= now
-  })
-
   const { t } = useTranslation()
   const { token, user } = useAuth()
   const { deleteBooking, isLoading } = useDeleteBooking(token ?? "")
@@ -103,86 +95,92 @@ const BookingList: React.FC<BookingListProps> = ({
   return (
     <div className="booking-list">
       <h3>{t("BookingList.Title")}</h3>
-      {filteredBookings.length === 0 ? (
+      {bookings.length === 0 ? (
         <div className="no-bookings-message">{t("BookingList.NoBookings")}</div>
       ) : (
         <>
-          <table>
-            <thead>
-              <tr>
-                <th onClick={() => handleSortChange("resourceType")} className="sortable-column">
-                  <div className="column-header">
-                    {t("BookingList.ResourceType")}
-                    {renderSortIndicator("resourceType")}
-                  </div>
-                </th>
-                <th onClick={() => handleSortChange("startTime")} className="sortable-column">
-                  <div className="column-header">
-                    {t("BookingList.Date")}
-                    {renderSortIndicator("startTime")}
-                  </div>
-                </th>
-                <th onClick={() => handleSortChange("startTime")} className="sortable-column">
-                  <div className="column-header">
-                    {t("BookingList.Time")}
-                    {renderSortIndicator("startTime")}
-                  </div>
-                </th>
-                <th onClick={() => handleSortChange("userApartment")} className="sortable-column">
-                  <div className="column-header">
-                    {t("BookingList.Apartment")}
-                    {renderSortIndicator("userApartment")}
-                  </div>
-                </th>
-                <th className="action-column"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredBookings.map((booking) => (
-                <tr key={booking.id}>
-                  <td>
-                    <div className="resource-with-tooltip">
-                      {t(`Resource.${booking.resourceType}`)}
-                      {booking.resourceType === "grill" && booking.needTablesAndChairs && (
-                        <Tooltip content={t("BookingList.TablesAndChairsIncluded")} />
-                      )}
+          <div className="booking-list-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th onClick={() => handleSortChange("resourceType")} className="sortable-column">
+                    <div className="column-header">
+                      {t("BookingList.ResourceType")}
+                      {renderSortIndicator("resourceType")}
                     </div>
-                  </td>
-                  <td>{formatDate(booking.startTime)}</td>
-                  <td>
-                    {booking.resourceType === "grill"
-                      ? t("BookingList.AllDay")
-                      : formatTimeInterval(booking.startTime, booking.endTime)}
-                  </td>
-                  <td>
-                    <div className="apartment-with-tooltip">
-                      {`${booking.userApartment} bl. ${booking.userBlock}`}
-                      {booking.bookedOnBehalf && (
-                        <Tooltip content={t("BookingList.BookedOnBehalf", { apartment: booking.bookedOnBehalf })} />
-                      )}
+                  </th>
+                  <th onClick={() => handleSortChange("startTime")} className="sortable-column">
+                    <div className="column-header">
+                      {t("BookingList.Date")}
+                      {renderSortIndicator("startTime")}
                     </div>
-                  </td>
-                  <td className="action-column">
-                    {canDeleteBooking(booking) && (
-                      <button
-                        onClick={() => handleDeleteClick(booking.id)}
-                        className="delete-button"
-                        aria-label={t("BookingList.Delete")}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    )}
-                  </td>
+                  </th>
+                  <th onClick={() => handleSortChange("startTime")} className="sortable-column">
+                    <div className="column-header">
+                      {t("BookingList.Time")}
+                      {renderSortIndicator("startTime")}
+                    </div>
+                  </th>
+                  <th onClick={() => handleSortChange("userApartment")} className="sortable-column">
+                    <div className="column-header">
+                      {t("BookingList.Apartment")}
+                      {renderSortIndicator("userApartment")}
+                    </div>
+                  </th>
+                  <th className="action-column"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {bookings.map((booking) => (
+                  <tr key={booking.id}>
+                    <td>
+                      <div className="resource-with-tooltip">
+                        {t(`Resource.${booking.resourceType}`)}
+                        {booking.resourceType === "grill" && booking.needTablesAndChairs && (
+                          <Tooltip content={t("BookingList.TablesAndChairsIncluded")} />
+                        )}
+                      </div>
+                    </td>
+                    <td>{formatDate(booking.startTime)}</td>
+                    <td>
+                      {booking.resourceType === "grill"
+                        ? t("BookingList.AllDay")
+                        : formatTimeInterval(booking.startTime, booking.endTime)}
+                    </td>
+                    <td>
+                      <div className="apartment-with-tooltip">
+                        {`${booking.userApartment} bl. ${booking.userBlock}`}
+                        {booking.bookedOnBehalf && (
+                          <Tooltip content={t("BookingList.BookedOnBehalf", { apartment: booking.bookedOnBehalf })} />
+                        )}
+                      </div>
+                    </td>
+                    <td className="action-column">
+                      {canDeleteBooking(booking) && (
+                        <button
+                          onClick={() => handleDeleteClick(booking.id)}
+                          className="delete-button"
+                          aria-label={t("BookingList.Delete")}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="pagination">
             <Button variant="secondary" onClick={() => onChangePage(currentPage - 1)} disabled={currentPage === 1}>
               {t("BookingList.PreviousPage")}
             </Button>
             <span>{t("BookingList.PageInfo", { current: currentPage, total: lastPage })}</span>
-            <Button variant="secondary" onClick={() => onChangePage(currentPage + 1)} disabled={currentPage === lastPage}>
+            <Button
+              variant="secondary"
+              onClick={() => onChangePage(currentPage + 1)}
+              disabled={currentPage === lastPage}
+            >
               {t("BookingList.NextPage")}
             </Button>
             <select value={currentLimit} onChange={(e) => onChangeLimit(Number(e.target.value))}>

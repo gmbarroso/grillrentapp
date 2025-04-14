@@ -31,6 +31,20 @@ export function useAllBookings(token: string) {
   const [currentOrder, setCurrentOrder] = useState<"ASC" | "DESC">("ASC")
   const authenticatedFetch = useAuthenticatedFetch()
 
+  // Calculate date range for three months
+  const dateRange = useMemo(() => {
+    const startDate = new Date()
+    startDate.setHours(0, 0, 0, 0)
+
+    const endDate = new Date(startDate)
+    endDate.setMonth(endDate.getMonth() + 3)
+
+    return {
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: endDate.toISOString().split("T")[0],
+    }
+  }, [])
+
   // Memoize the fetcher function to prevent recreation on every render
   const fetcher = useCallback(
     async (url: string) => {
@@ -52,14 +66,14 @@ export function useAllBookings(token: string) {
   )
 
   // Memoize the URL construction to prevent it from changing on every render
+  // Include the date range parameters
   const url = useMemo(() => {
-    const constructedUrl = `${API_BASE_URL}/bookings?page=${currentPage}&limit=${currentLimit}&sort=${currentSort}&order=${currentOrder}`
+    const constructedUrl = `${API_BASE_URL}/bookings?page=${currentPage}&limit=${currentLimit}&sort=${currentSort}&order=${currentOrder}&startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`
     return constructedUrl
-  }, [currentPage, currentLimit, currentSort, currentOrder])
+  }, [currentPage, currentLimit, currentSort, currentOrder, dateRange])
 
   const { data, isError, isLoading, mutate } = useFetch<BookingsResponse>(url, { fetcher })
 
-  //I will bring this logic to backend in the future
   const changePage = useCallback((newPage: number) => {
     console.log(`[useAllBookings] Changing page to: ${newPage}`)
     setCurrentPage(newPage)

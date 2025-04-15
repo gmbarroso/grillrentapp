@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useLoading } from "../../context/LoadingContext"
 import { useToast } from "../../context/ToastContext"
+import { useTheme } from "../../context/ThemeContext"
 import { Button } from "../../components"
 import "./LoginScreen.css"
 
@@ -17,6 +18,7 @@ export default function LoginScreen() {
   const navigate = useNavigate()
   const { login } = useAuth()
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const { setIsLoading } = useLoading()
   const { showToast } = useToast()
 
@@ -42,11 +44,13 @@ export default function LoginScreen() {
     }
   }
 
+  const logoSrc = theme === "dark" ? "/images/logo_white.png" : "/images/logo.png"
+
   return (
     <div className="container">
       <div className="form-container">
         <div className="login-brand">
-          <img src="/images/logo.png" alt="Chácara Sacopã Logo" className="login-logo" />
+          <img src={logoSrc || "/placeholder.svg"} alt="Chácara Sacopã Logo" className="login-logo" />
         </div>
         <h2 className="title">{t("Login.Title")}</h2>
         <form className="form" onSubmit={handleSubmit}>
@@ -89,4 +93,3 @@ export default function LoginScreen() {
     </div>
   )
 }
-

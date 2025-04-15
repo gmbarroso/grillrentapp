@@ -5,11 +5,13 @@ import { Link, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { Clock, Modal, Button } from "../"
 import { useAuth } from "../../context/AuthContext"
+import { useTheme } from "../../context/ThemeContext"
 import "./Header.css"
 
 const Header = () => {
   const { isAuthenticated, logout } = useAuth()
   const { t } = useTranslation()
+  const { theme } = useTheme()
   const navigate = useNavigate()
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
 
@@ -27,11 +29,13 @@ const Header = () => {
     setIsLogoutModalOpen(false)
   }
 
+  const logoSrc = theme === "dark" ? "/images/logo_white.png" : "/images/logo.png"
+
   return (
     <header className="header">
       <div className="header-content">
         <div className="header-brand">
-          <img src="/images/logo.png" alt="Chácara Sacopã Logo" className="header-logo" />
+          <img src={logoSrc || "/placeholder.svg"} alt="Chácara Sacopã Logo" className="header-logo" />
           <h1>Chácara Sacopã</h1>
         </div>
         <Clock />
@@ -77,4 +81,3 @@ const Header = () => {
 }
 
 export default Header
-

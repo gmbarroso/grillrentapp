@@ -30,8 +30,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   useEffect(() => {
     setInternalSelectedDate(selectedDate)
+
+    if (selectedDate) {
+      setCurrentMonth(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1))
+    }
   }, [selectedDate])
 
+  /*
   useEffect(() => {
     if (selectedDate) {
       const selectedMonth = selectedDate.getMonth()
@@ -39,12 +44,17 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       const currentViewMonth = currentMonth.getMonth()
       const currentViewYear = currentMonth.getFullYear()
 
-      // Only update if the month or year is different
+      // Only update if the initial selected date is in a different month
+      // This allows users to navigate away from the selected date's month
       if (selectedMonth !== currentViewMonth || selectedYear !== currentViewYear) {
-        setCurrentMonth(new Date(selectedYear, selectedMonth, 1))
+        // Only update on initial selection, not during navigation
+        if (internalSelectedDate === null) {
+          setCurrentMonth(new Date(selectedYear, selectedMonth, 1))
+        }
       }
     }
-  }, [selectedDate, currentMonth])
+  }, [selectedDate, currentMonth, internalSelectedDate])
+  */
 
   // Memoize the reservedDaysSet to prevent unnecessary recalculations
   const reservedDaysSet = useMemo(() => new Set(reservedDays), [reservedDays])
@@ -109,6 +119,8 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     }
 
     setInternalSelectedDate(date)
+    // Keep the view on the month of the selected date
+    setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1))
     onDateSelect(date)
   }
 
@@ -117,11 +129,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       const newMonth = new Date(prevMonth)
       newMonth.setMonth(newMonth.getMonth() - 1)
 
+      // Only prevent going before the current month
       const currentDate = new Date()
-      if (
-        newMonth.getFullYear() < currentDate.getFullYear() ||
-        (newMonth.getFullYear() === currentDate.getFullYear() && newMonth.getMonth() < currentDate.getMonth())
-      ) {
+      const currentMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+      if (newMonth < currentMonthStart) {
         return prevMonth
       }
 
@@ -134,10 +145,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       const newMonth = new Date(prevMonth)
       newMonth.setMonth(newMonth.getMonth() + 1)
 
-      if (
-        newMonth.getFullYear() > effectiveMaxDate.getFullYear() ||
-        (newMonth.getFullYear() === effectiveMaxDate.getFullYear() && newMonth.getMonth() > effectiveMaxDate.getMonth())
-      ) {
+      // Only prevent going beyond the maximum allowed date (3 months from now)
+      const maxMonthStart = new Date(effectiveMaxDate.getFullYear(), effectiveMaxDate.getMonth() + 1, 1)
+      if (newMonth >= maxMonthStart) {
         return prevMonth
       }
 

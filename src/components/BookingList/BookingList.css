@@ -23,7 +23,7 @@
   padding: 0.5rem;
   text-align: left;
   border-bottom: 1px solid var(--color-secondary);
-  overflow: hidden;
+  overflow: visible;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -52,6 +52,18 @@
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+}
+
+/* .booking-list tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.booking-list tr:nth-child(even) {
+  background-color: var(--color-secondary);
+} */
+
+.booking-list tr.user-reservation {
+  background-color: var(--color-secondary);
 }
 
 .booking-list th:hover {
@@ -143,14 +155,18 @@
     max-width: 40px;
   }
 
-  .booking-list th:first-child,
+  /* .booking-list th:first-child,
   .booking-list td:first-child,
   .booking-list th.action-column,
   .booking-list td.action-column {
     position: sticky;
     background-color: var(--color-card-background);
     z-index: 2;
-  }
+  } */
+
+  .booking-list tr.user-reservation {
+    background-color: var(--color-secondary);
+  }  
 
   .booking-list th:first-child,
   .booking-list td:first-child {
@@ -209,12 +225,17 @@
   color: #f0f7f4;
 }
 
-.dark .booking-list th:first-child,
+.dark .booking-list tr.user-reservation {
+  background-color: var(--color-secondary);
+}
+
+/* .dark .booking-list th:first-child,
 .dark .booking-list td:first-child,
 .dark .booking-list th.action-column,
 .dark .booking-list td.action-column {
   background-color: var(--color-card-background);
-}
+} */
+
 
 .dark .pagination {
   color: #f0f7f4;

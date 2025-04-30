@@ -132,7 +132,10 @@ const BookingList: React.FC<BookingListProps> = ({
               </thead>
               <tbody>
                 {bookings.map((booking) => (
-                  <tr key={booking.id}>
+                  <tr
+                    key={booking.id}
+                    className={booking.userId === user?.id ? "user-reservation" : ""}
+                  >
                     <td>
                       <div className="resource-with-tooltip">
                         {t(`Resource.${booking.resourceType}`)}

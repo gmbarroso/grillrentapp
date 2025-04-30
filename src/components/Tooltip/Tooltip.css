@@ -30,7 +30,7 @@
   white-space: normal;
   width: 200px;
   max-width: 300px;
-  z-index: 1000;
+  z-index: 9999;
   line-height: 1.4;
   margin-left: 8px;
 }

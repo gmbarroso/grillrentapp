@@ -263,10 +263,8 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
                 id="bookedOnBehalf"
                 type="text"
                 value={bookedOnBehalf}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9]/g, "")
-                  setBookedOnBehalf(value)
-                }}
+                onChange={(e) => setBookedOnBehalf(e.target.value)}
+                maxLength={25}
                 className="admin-booking-input"
                 placeholder={t("BookOnBehalfPlaceholder")}
               />

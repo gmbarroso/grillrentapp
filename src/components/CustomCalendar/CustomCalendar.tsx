@@ -174,8 +174,9 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day)
       const dateString = formatDateString(date)
-      const isReserved = isDateReserved(date)
       const isOutOfRange = isDateOutOfRange(date)
+      // Only mark as reserved if it's within the allowed date range
+      const isReserved = !isOutOfRange && isDateReserved(date)
       const isSelected = isDateSelected(date)
 
       const className = `calendar-day ${isReserved ? "reserved" : ""} ${isOutOfRange ? "out-of-range" : ""} ${isSelected ? "selected" : ""}`

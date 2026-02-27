@@ -35,4 +35,14 @@ describe("jwt utils", () => {
     const token = buildToken({ exp: 1900000000 })
     expect(isTokenExpired(token)).toBe(false)
   })
+
+  it("treats token with missing exp as expired", () => {
+    const token = buildToken({ role: "resident" })
+    expect(isTokenExpired(token)).toBe(true)
+  })
+
+  it("treats token with non-numeric exp as expired", () => {
+    const token = buildToken({ exp: "1900000000" })
+    expect(isTokenExpired(token)).toBe(true)
+  })
 })

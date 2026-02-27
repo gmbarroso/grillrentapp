@@ -2,12 +2,14 @@ import { authError } from "./auth-logger"
 
 const decodeBase64 = (value: string): string => {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/")
+  const paddingLength = (4 - (normalized.length % 4)) % 4
+  const padded = normalized + "=".repeat(paddingLength)
 
   if (typeof atob === "function") {
-    return atob(normalized)
+    return atob(padded)
   }
 
-  return Buffer.from(normalized, "base64").toString("utf-8")
+  return Buffer.from(padded, "base64").toString("utf-8")
 }
 
 export function isTokenExpired(token: string | null): boolean {
@@ -17,6 +19,10 @@ export function isTokenExpired(token: string | null): boolean {
     const payload = token.split(".")[1]
     const decodedPayload = decodeBase64(payload)
     const { exp } = JSON.parse(decodedPayload)
+
+    if (typeof exp !== "number" || !Number.isFinite(exp) || exp <= 0) {
+      return true
+    }
 
     return Date.now() >= exp * 1000
   } catch (error) {

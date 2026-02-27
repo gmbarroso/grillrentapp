@@ -28,7 +28,9 @@ export const signalUnauthorizedOnce = (source: string): void => {
   if (typeof window === "undefined" || unauthorizedSignalSent) return
 
   unauthorizedSignalSent = true
-  window.dispatchEvent(new CustomEvent(AUTH_UNAUTHORIZED_EVENT, { detail: { source } }))
+  window.dispatchEvent(
+    new CustomEvent(AUTH_UNAUTHORIZED_EVENT, { detail: { source: stripSensitiveQueryParams(source) } }),
+  )
 }
 
 export const resetUnauthorizedSignal = (): void => {
@@ -47,10 +49,10 @@ export const fetchWithAuthHandling = async (url: string, options: RequestInit = 
   }
 
   const response = await fetch(url, {
-    credentials: "include",
     ...options,
     method,
     headers,
+    credentials: "include",
   })
 
   if (response.status === 401) {

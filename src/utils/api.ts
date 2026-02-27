@@ -1,8 +1,5 @@
-// This file contains utility functions for API requests and logging
-// and is used in various hooks throughout the application.
-// I don't like this approach, but I it was the way that I found to
-// deal with CORS problem that I had.
-// I will try to find a better solution in the future
+import { authDebug, authError, sanitizeForLog, stripSensitiveQueryParams } from "./auth-logger"
+
 let unauthorizedSignalSent = false
 export const AUTH_UNAUTHORIZED_EVENT = "auth:unauthorized"
 
@@ -41,6 +38,7 @@ export const fetchWithAuthHandling = async (url: string, options: RequestInit = 
   const response = await fetch(url, options)
 
   if (response.status === 401) {
+    authDebug(`[API] Unauthorized response`, { endpoint: stripSensitiveQueryParams(url) })
     signalUnauthorizedOnce(url)
   }
 
@@ -48,16 +46,16 @@ export const fetchWithAuthHandling = async (url: string, options: RequestInit = 
 }
 
 export const logApiRequest = (method: string, endpoint: string, data?: any): void => {
-  console.log(`[API] ${method} ${endpoint}`)
+  authDebug(`[API] ${method} ${stripSensitiveQueryParams(endpoint)}`)
   if (data) {
-    console.log(`[API] Request data:`, data)
+    authDebug(`[API] Request data`, sanitizeForLog(data))
   }
 }
 
 export const logApiResponse = (endpoint: string, status: number, data?: any): void => {
-  console.log(`[API] Response from ${endpoint}: ${status}`)
+  authDebug(`[API] Response from ${stripSensitiveQueryParams(endpoint)}: ${status}`)
   if (data) {
-    console.log(`[API] Response data:`, data)
+    authDebug(`[API] Response data`, sanitizeForLog(data))
   }
 }
 
@@ -68,12 +66,12 @@ export const handleApiError = (error: any, endpoint: string): Error => {
       error.message.includes("NetworkError") ||
       error.message.includes("Failed to fetch"))
   ) {
-    console.error(`[API] CORS error when accessing ${endpoint}:`, error)
+    authError(`[API] CORS error when accessing ${stripSensitiveQueryParams(endpoint)}:`, error)
     return new Error(
       `CORS error: Unable to access the API. Please check your network connection and API configuration.`,
     )
   }
 
-  console.error(`[API] Error accessing ${endpoint}:`, error)
+  authError(`[API] Error accessing ${stripSensitiveQueryParams(endpoint)}:`, error)
   return error instanceof Error ? error : new Error(`Unknown error accessing ${endpoint}`)
 }

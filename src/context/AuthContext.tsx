@@ -15,7 +15,9 @@ import {
   readStoredAccessToken,
   persistAccessToken,
   clearStoredAccessToken,
+  stripAccessTokenFromUrl,
 } from "../utils/auth-storage"
+import { authDebug, authError } from "../utils/auth-logger"
 import type { User } from "../types/User"
 
 interface AuthContextType {
@@ -66,6 +68,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [clearAuthState, redirectToLogin, setIsLoading])
 
   useEffect(() => {
+    if (stripAccessTokenFromUrl()) {
+      authDebug("[Auth] Removed token-like params from URL before auth bootstrap")
+    }
+
     const storedToken = readStoredAccessToken()
 
     if (!storedToken || !isValidToken(storedToken) || isTokenExpired(storedToken)) {
@@ -135,7 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthResolved(true)
       return true
     } catch (error) {
-      console.error("Login error:", error)
+      authError("[Auth] Login error:", error)
       return false
     }
   }
@@ -152,7 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await logoutMutate(tokenToRevoke)
       }
     } catch (error) {
-      console.error("Error during logout:", error)
+      authError("[Auth] Error during logout:", error)
     } finally {
       redirectToLogin()
     }

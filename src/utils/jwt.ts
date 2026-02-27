@@ -1,3 +1,5 @@
+import { authError } from "./auth-logger"
+
 const decodeBase64 = (value: string): string => {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/")
 
@@ -18,7 +20,7 @@ export function isTokenExpired(token: string | null): boolean {
 
     return Date.now() >= exp * 1000
   } catch (error) {
-    console.error("Error checking token expiration:", error)
+    authError("[Auth] Error checking token expiration:", error)
     return true
   }
 }
@@ -35,7 +37,7 @@ export function isValidToken(token: string | null): boolean {
 
     return typeof parsed === "object" && parsed !== null
   } catch (error) {
-    console.error("Error validating token format:", error)
+    authError("[Auth] Error validating token format:", error)
     return false
   }
 }
@@ -56,7 +58,7 @@ export function getTokenRemainingTime(token: string | null): number {
 
     return Math.max(0, Math.floor(remainingTime / 1000))
   } catch (error) {
-    console.error("Error getting token remaining time:", error)
+    authError("[Auth] Error getting token remaining time:", error)
     return 0
   }
 }

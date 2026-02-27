@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { authError } from "../../utils/auth-logger"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -14,7 +15,6 @@ export function useLoginUser() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  // Add more detailed logging to help debug
   const login = async (body: { apartment: string; block: number; password: string }): Promise<LoginResponse | null> => {
     setIsLoading(true)
     setError(null)
@@ -42,7 +42,7 @@ export function useLoginUser() {
       setIsLoading(false)
       return result
     } catch (error) {
-      console.error("Error in login:", error)
+      authError("[Auth] Error in login:", error)
       const apiError = handleApiError(error, "/users/login")
       setError(apiError)
       setIsLoading(false)

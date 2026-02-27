@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import { clearStoredAccessToken, persistAccessToken, readStoredAccessToken } from "./auth-storage"
+import {
+  clearStoredAccessToken,
+  persistAccessToken,
+  readStoredAccessToken,
+  stripAccessTokenFromUrl,
+} from "./auth-storage"
 
 const createLocalStorage = () => {
   const store = new Map<string, string>()
@@ -20,11 +25,26 @@ const createLocalStorage = () => {
 
 describe("auth storage", () => {
   let storage: ReturnType<typeof createLocalStorage>
+  let replaceState: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
     storage = createLocalStorage()
-    vi.stubGlobal("window", { localStorage: storage })
+    replaceState = vi.fn()
+    vi.stubGlobal("window", {
+      localStorage: storage,
+      location: {
+        href: "https://example.com/home",
+        pathname: "/home",
+        search: "",
+        hash: "",
+      },
+      history: {
+        replaceState,
+      },
+    })
+    vi.stubGlobal("document", { title: "Test Title" })
     vi.stubGlobal("localStorage", storage)
+    clearStoredAccessToken()
   })
 
   afterEach(() => {
@@ -56,6 +76,15 @@ describe("auth storage", () => {
     clearStoredAccessToken()
 
     expect(storage.getItem("access_token")).toBeNull()
-    expect(storage.getItem("token")).toBe("new-token")
+    expect(storage.getItem("token")).toBeNull()
+  })
+
+  it("strips token params from URL", () => {
+    ;(window.location as any).href = "https://example.com/home?access_token=abc&tab=1#token=xyz"
+    ;(window.location as any).search = "?access_token=abc&tab=1"
+    ;(window.location as any).hash = "#token=xyz"
+
+    expect(stripAccessTokenFromUrl()).toBe(true)
+    expect(replaceState).toHaveBeenCalledWith({}, "Test Title", "/home?tab=1")
   })
 })

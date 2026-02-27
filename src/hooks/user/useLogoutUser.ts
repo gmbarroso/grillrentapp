@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
+import { authError } from "../../utils/auth-logger"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -37,7 +38,7 @@ export function useLogoutUser() {
       setIsLoading(false)
       return { success: true, data }
     } catch (err) {
-      console.error("Error in logout:", err)
+      authError("[Auth] Error in logout:", err)
       const apiError = handleApiError(err, "/users/logout")
       setError(apiError)
       setIsLoading(false)

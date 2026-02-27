@@ -5,7 +5,7 @@ import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWith
 
 const API_BASE_URL = getApiBaseUrl()
 
-export function useDeleteBooking(token: string) {
+export function useDeleteBooking(_token: string) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -21,7 +21,6 @@ export function useDeleteBooking(token: string) {
         const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })
@@ -43,7 +42,7 @@ export function useDeleteBooking(token: string) {
         return { success: false, error: apiError }
       }
     },
-    [token],
+    [],
   )
 
   return { deleteBooking, isLoading, error }

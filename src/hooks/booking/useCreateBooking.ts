@@ -11,7 +11,7 @@ interface BookingResponse {
 
 const API_BASE_URL = getApiBaseUrl()
 
-export function useCreateBooking(token: string) {
+export function useCreateBooking(_token: string) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -33,7 +33,6 @@ export function useCreateBooking(token: string) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(bookingData),
       })

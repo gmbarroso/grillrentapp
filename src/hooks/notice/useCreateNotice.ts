@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
-import { readStoredAccessToken } from "../../utils/auth-storage"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -22,7 +21,6 @@ export function useCreateNotice() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${readStoredAccessToken()}`,
         },
         body: JSON.stringify(noticeData),
       })

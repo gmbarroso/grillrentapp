@@ -20,8 +20,6 @@ export function useUpdateProfile(token: string | null) {
   const { mutate } = useFetch<UserResponse>(token ? `${API_BASE_URL}/users/profile` : null)
 
   const updateProfile = async (updateData: UpdateUserProfileDto): Promise<User | null> => {
-    if (!token) return null
-
     setIsLoading(true)
     setError(null)
 
@@ -33,7 +31,6 @@ export function useUpdateProfile(token: string | null) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updateData),
       })

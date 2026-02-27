@@ -10,9 +10,7 @@ export function useLogoutUser() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const logout = useCallback(async (token: string) => {
-    if (!token) return { success: true }
-
+  const logout = useCallback(async () => {
     setIsLoading(true)
     setError(null)
 
@@ -22,10 +20,7 @@ export function useLogoutUser() {
 
       const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       })
 
       const data = await response.json()

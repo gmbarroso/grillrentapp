@@ -6,14 +6,11 @@ import { useUserProfile } from "../hooks/user/useUserProfile"
 import { useLoginUser } from "../hooks/user/useLoginUser"
 import { useLogoutUser } from "../hooks/user/useLogoutUser"
 import { useLoading } from "../context/LoadingContext"
-import { isTokenExpired, isValidToken } from "../utils/jwt"
 import {
   AUTH_UNAUTHORIZED_EVENT,
   resetUnauthorizedSignal,
 } from "../utils/api"
 import {
-  readStoredAccessToken,
-  persistAccessToken,
   clearStoredAccessToken,
   stripAccessTokenFromUrl,
 } from "../utils/auth-storage"
@@ -31,11 +28,12 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const COOKIE_SESSION_TOKEN = "cookie-session"
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isAuthResolved, setIsAuthResolved] = useState(false)
-  const [token, setToken] = useState<string | null>(null)
+  const [token, setToken] = useState<string | null>(COOKIE_SESSION_TOKEN)
 
   const { data: userResponse, error: userError, isLoading: isUserLoading } = useUserProfile(token)
   const { login: loginMutate, isLoading: isLoginLoading } = useLoginUser()
@@ -71,37 +69,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (stripAccessTokenFromUrl()) {
       authDebug("[Auth] Removed token-like params from URL before auth bootstrap")
     }
-
-    const storedToken = readStoredAccessToken()
-
-    if (!storedToken || !isValidToken(storedToken) || isTokenExpired(storedToken)) {
-      authResetInProgressRef.current = true
-      clearAuthState()
-      setIsAuthResolved(true)
-      redirectToLogin()
-      return
-    }
+    clearStoredAccessToken()
 
     authResetInProgressRef.current = false
     resetUnauthorizedSignal()
-    setToken(storedToken)
-    setIsAuthenticated(true)
-    setIsAuthResolved(true)
+    setToken(COOKIE_SESSION_TOKEN)
+    setIsAuthResolved(false)
   }, [clearAuthState, redirectToLogin])
 
   useEffect(() => {
-    if (!token) return
+    if (isUserLoading) return
 
-    const checkInterval = setInterval(() => {
-      if (isTokenExpired(token)) {
+    if (userResponse?.user && !userError) {
+      authResetInProgressRef.current = false
+      setToken(COOKIE_SESSION_TOKEN)
+      setIsAuthenticated(true)
+      setIsAuthResolved(true)
+      return
+    }
+
+    if (!isUserLoading && userError) {
+      if (window.location.pathname !== "/login") {
         handleUnauthorized()
       }
-    }, 60000)
-
-    return () => {
-      clearInterval(checkInterval)
+      setIsAuthResolved(true)
+      return
     }
-  }, [token, handleUnauthorized])
+
+    if (!isUserLoading) {
+      setIsAuthenticated(false)
+      setToken(null)
+      setIsAuthResolved(true)
+    }
+  }, [handleUnauthorized, isUserLoading, userError, userResponse?.user])
 
   useEffect(() => {
     const onUnauthorized = () => {
@@ -126,17 +126,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!response) {
         return false
       }
-
-      const newToken = response.access_token || response.data?.access_token
-
-      if (!newToken || !isValidToken(newToken) || isTokenExpired(newToken)) {
-        return false
-      }
-
-      persistAccessToken(newToken)
       resetUnauthorizedSignal()
       authResetInProgressRef.current = false
-      setToken(newToken)
+      setToken(COOKIE_SESSION_TOKEN)
       setIsAuthenticated(true)
       setIsAuthResolved(true)
       return true
@@ -147,22 +139,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const logout = useCallback(async () => {
-    const tokenToRevoke = token || readStoredAccessToken()
-
     authResetInProgressRef.current = true
     clearAuthState()
     setIsAuthResolved(true)
 
     try {
-      if (tokenToRevoke) {
-        await logoutMutate(tokenToRevoke)
-      }
+      await logoutMutate()
     } catch (error) {
       authError("[Auth] Error during logout:", error)
     } finally {
       redirectToLogin()
     }
-  }, [clearAuthState, logoutMutate, redirectToLogin, token])
+  }, [clearAuthState, logoutMutate, redirectToLogin])
 
   const handleDeleteUser = useCallback(async () => {
     return

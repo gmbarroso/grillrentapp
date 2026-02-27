@@ -6,17 +6,13 @@ import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWith
 
 const API_BASE_URL = getApiBaseUrl()
 
-export function useAvailability(resourceId: string, startTime: string, endTime: string, token: string) {
+export function useAvailability(resourceId: string, startTime: string, endTime: string, _token: string) {
   const [error, setError] = useState<Error | null>(null)
 
   const fetcher = useCallback(
     (url: string) => {
       logApiRequest("GET", url)
-      return fetchWithAuthHandling(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      return fetchWithAuthHandling(url)
         .then((res) => {
           if (!res.ok) {
             throw new Error("Failed to fetch availability")
@@ -31,7 +27,7 @@ export function useAvailability(resourceId: string, startTime: string, endTime: 
           throw apiError
         })
     },
-    [token],
+    [],
   )
 
   const { data, isError, isLoading, mutate } = useFetch(null, { fetcher })
@@ -41,11 +37,7 @@ export function useAvailability(resourceId: string, startTime: string, endTime: 
       const endpoint = `/bookings/availability/${resourceId}?startTime=${startTime}&endTime=${endTime}`
       logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
 
-      const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`)
 
       const result = await response.json()
       logApiResponse(endpoint, response.status, result)

@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from "react"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
-import { readStoredAccessToken } from "../../utils/auth-storage"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -21,7 +20,6 @@ export function useDeleteNotice() {
       const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${readStoredAccessToken()}`,
           "Content-Type": "application/json",
         },
       })

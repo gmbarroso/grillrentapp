@@ -4,14 +4,10 @@ import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWith
 
 const API_BASE_URL = getApiBaseUrl()
 
-export function useUserProfile(token: string | null) {
+export function useUserProfile(token?: string | null) {
   const fetcher = (url: string): Promise<UserResponse> => {
     logApiRequest("GET", url)
-    return fetchWithAuthHandling(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    return fetchWithAuthHandling(url)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to fetch user profile")
@@ -36,11 +32,7 @@ export function useUserProfile(token: string | null) {
       logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
 
       const response = await mutate(() =>
-        fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`)
           .then((res) => {
             logApiResponse(endpoint, res.status)
             if (!res.ok) {

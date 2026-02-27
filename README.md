@@ -68,9 +68,9 @@ Before you begin, ensure you have met the following requirements:
 
 3. Create a `.env` file in the root directory and add your environment variables:
    ```env
-   REACT_APP_API_URL=https://grillrentapi.up.railway.app
    REACT_APP_BFF_URL=https://grillrentbff.up.railway.app
-   REACT_APP_AUTH_SECRET=your_auth_secret
+   REACT_APP_BFF_URL_STAGING=https://grillrentbffv2-staging.up.railway.app
+   REACT_APP_ENVIRONMENT=production
    ```
 
 4. Start the development server:

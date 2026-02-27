@@ -7,7 +7,6 @@ const API_BASE_URL = getApiBaseUrl()
 
 interface LoginResponse {
   access_token?: string
-  token?: string
   [key: string]: any
 }
 

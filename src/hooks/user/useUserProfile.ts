@@ -1,13 +1,13 @@
 import { useFetch } from "../useFetch"
 import type { UserResponse } from "../../types/User"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
 export function useUserProfile(token: string | null) {
   const fetcher = (url: string): Promise<UserResponse> => {
     logApiRequest("GET", url)
-    return fetch(url, {
+    return fetchWithAuthHandling(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -36,7 +36,7 @@ export function useUserProfile(token: string | null) {
       logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
 
       const response = await mutate(() =>
-        fetch(`${API_BASE_URL}${endpoint}`, {
+        fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

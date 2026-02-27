@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import type { Booking } from "../../types/Booking"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 interface BookingResponse {
   message: string
@@ -29,7 +29,7 @@ export function useCreateBooking(token: string) {
       const endpoint = "/bookings"
       logApiRequest("POST", `${API_BASE_URL}${endpoint}`, bookingData)
 
-      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const res = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

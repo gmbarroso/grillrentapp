@@ -1,12 +1,12 @@
 import { useFetch } from "../useFetch"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
 export function useAllResources(token: string) {
   const fetcher = (url: string) => {
     logApiRequest("GET", url)
-    return fetch(url, {
+    return fetchWithAuthHandling(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -33,7 +33,7 @@ export function useAllResources(token: string) {
       logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
 
       const response = await mutate(() =>
-        fetch(`${API_BASE_URL}${endpoint}`, {
+        fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

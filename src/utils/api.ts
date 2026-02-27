@@ -3,6 +3,9 @@
 // I don't like this approach, but I it was the way that I found to
 // deal with CORS problem that I had.
 // I will try to find a better solution in the future
+let unauthorizedSignalSent = false
+export const AUTH_UNAUTHORIZED_EVENT = "auth:unauthorized"
+
 export const getApiBaseUrl = (): string => {
   // Check if we're in development mode
   const isDevelopment = process.env.NODE_ENV === "development"
@@ -21,6 +24,27 @@ export const getApiBaseUrl = (): string => {
   }
 
   return process.env.REACT_APP_BFF_URL || "https://grillrentbff.up.railway.app"
+}
+
+export const signalUnauthorizedOnce = (source: string): void => {
+  if (typeof window === "undefined" || unauthorizedSignalSent) return
+
+  unauthorizedSignalSent = true
+  window.dispatchEvent(new CustomEvent(AUTH_UNAUTHORIZED_EVENT, { detail: { source } }))
+}
+
+export const resetUnauthorizedSignal = (): void => {
+  unauthorizedSignalSent = false
+}
+
+export const fetchWithAuthHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  const response = await fetch(url, options)
+
+  if (response.status === 401) {
+    signalUnauthorizedOnce(url)
+  }
+
+  return response
 }
 
 export const logApiRequest = (method: string, endpoint: string, data?: any): void => {

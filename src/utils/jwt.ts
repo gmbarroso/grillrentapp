@@ -1,16 +1,25 @@
+const decodeBase64 = (value: string): string => {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/")
+
+  if (typeof atob === "function") {
+    return atob(normalized)
+  }
+
+  return Buffer.from(normalized, "base64").toString("utf-8")
+}
+
 export function isTokenExpired(token: string | null): boolean {
   if (!token) return true
 
   try {
     const payload = token.split(".")[1]
-    const decodedPayload = window.atob(payload)
+    const decodedPayload = decodeBase64(payload)
     const { exp } = JSON.parse(decodedPayload)
 
     return Date.now() >= exp * 1000
   } catch (error) {
     console.error("Error checking token expiration:", error)
-
-    return false
+    return true
   }
 }
 
@@ -21,14 +30,13 @@ export function isValidToken(token: string | null): boolean {
   if (parts.length !== 3) return false
 
   try {
-    const payload = window.atob(parts[1])
+    const payload = decodeBase64(parts[1])
     const parsed = JSON.parse(payload)
 
     return typeof parsed === "object" && parsed !== null
   } catch (error) {
     console.error("Error validating token format:", error)
-
-    return true
+    return false
   }
 }
 
@@ -37,7 +45,7 @@ export function getTokenRemainingTime(token: string | null): number {
 
   try {
     const payload = token.split(".")[1]
-    const decodedPayload = window.atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+    const decodedPayload = decodeBase64(payload)
     const { exp } = JSON.parse(decodedPayload)
 
     if (!exp) return 0
@@ -52,4 +60,3 @@ export function getTokenRemainingTime(token: string | null): number {
     return 0
   }
 }
-

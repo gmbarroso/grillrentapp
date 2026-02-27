@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
+import { readStoredAccessToken } from "../../utils/auth-storage"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -18,11 +19,11 @@ export function useUpdateNotice() {
         const endpoint = `/notices/${noticeId}`
         logApiRequest("PUT", `${API_BASE_URL}${endpoint}`, updateData)
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${readStoredAccessToken()}`,
           },
           body: JSON.stringify(updateData),
         })

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -18,7 +18,7 @@ export function useDeleteBooking(token: string) {
         const endpoint = `/bookings/${bookingId}`
         logApiRequest("DELETE", `${API_BASE_URL}${endpoint}`)
 
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,

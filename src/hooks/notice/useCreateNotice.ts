@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -17,11 +17,10 @@ export function useCreateNotice() {
       const endpoint = "/notices"
       logApiRequest("POST", `${API_BASE_URL}${endpoint}`, noticeData)
 
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(noticeData),
       })

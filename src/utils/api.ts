@@ -1,8 +1,9 @@
-// This file contains utility functions for API requests and logging
-// and is used in various hooks throughout the application.
-// I don't like this approach, but I it was the way that I found to
-// deal with CORS problem that I had.
-// I will try to find a better solution in the future
+import { authDebug, authError, sanitizeForLog, stripSensitiveQueryParams } from "./auth-logger"
+import { isStateChangingMethod, readCsrfToken } from "./csrf"
+
+let unauthorizedSignalSent = false
+export const AUTH_UNAUTHORIZED_EVENT = "auth:unauthorized"
+
 export const getApiBaseUrl = (): string => {
   // Check if we're in development mode
   const isDevelopment = process.env.NODE_ENV === "development"
@@ -23,17 +24,56 @@ export const getApiBaseUrl = (): string => {
   return process.env.REACT_APP_BFF_URL || "https://grillrentbff.up.railway.app"
 }
 
+export const signalUnauthorizedOnce = (source: string): void => {
+  if (typeof window === "undefined" || unauthorizedSignalSent) return
+
+  unauthorizedSignalSent = true
+  window.dispatchEvent(
+    new CustomEvent(AUTH_UNAUTHORIZED_EVENT, { detail: { source: stripSensitiveQueryParams(source) } }),
+  )
+}
+
+export const resetUnauthorizedSignal = (): void => {
+  unauthorizedSignalSent = false
+}
+
+export const fetchWithAuthHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  const method = options.method || "GET"
+  const headers = new Headers(options.headers || {})
+
+  if (isStateChangingMethod(method)) {
+    const csrfToken = readCsrfToken()
+    if (csrfToken) {
+      headers.set("X-CSRF-Token", csrfToken)
+    }
+  }
+
+  const response = await fetch(url, {
+    ...options,
+    method,
+    headers,
+    credentials: "include",
+  })
+
+  if (response.status === 401) {
+    authDebug(`[API] Unauthorized response`, { endpoint: stripSensitiveQueryParams(url) })
+    signalUnauthorizedOnce(url)
+  }
+
+  return response
+}
+
 export const logApiRequest = (method: string, endpoint: string, data?: any): void => {
-  console.log(`[API] ${method} ${endpoint}`)
+  authDebug(`[API] ${method} ${stripSensitiveQueryParams(endpoint)}`)
   if (data) {
-    console.log(`[API] Request data:`, data)
+    authDebug(`[API] Request data`, sanitizeForLog(data))
   }
 }
 
 export const logApiResponse = (endpoint: string, status: number, data?: any): void => {
-  console.log(`[API] Response from ${endpoint}: ${status}`)
+  authDebug(`[API] Response from ${stripSensitiveQueryParams(endpoint)}: ${status}`)
   if (data) {
-    console.log(`[API] Response data:`, data)
+    authDebug(`[API] Response data`, sanitizeForLog(data))
   }
 }
 
@@ -44,12 +84,12 @@ export const handleApiError = (error: any, endpoint: string): Error => {
       error.message.includes("NetworkError") ||
       error.message.includes("Failed to fetch"))
   ) {
-    console.error(`[API] CORS error when accessing ${endpoint}:`, error)
+    authError(`[API] CORS error when accessing ${stripSensitiveQueryParams(endpoint)}:`, error)
     return new Error(
       `CORS error: Unable to access the API. Please check your network connection and API configuration.`,
     )
   }
 
-  console.error(`[API] Error accessing ${endpoint}:`, error)
+  authError(`[API] Error accessing ${stripSensitiveQueryParams(endpoint)}:`, error)
   return error instanceof Error ? error : new Error(`Unknown error accessing ${endpoint}`)
 }

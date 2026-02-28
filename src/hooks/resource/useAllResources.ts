@@ -1,16 +1,12 @@
 import { useFetch } from "../useFetch"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
-export function useAllResources(token: string) {
+export function useAllResources(_token: string) {
   const fetcher = (url: string) => {
     logApiRequest("GET", url)
-    return fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    return fetchWithAuthHandling(url)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to fetch resources")
@@ -33,11 +29,7 @@ export function useAllResources(token: string) {
       logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
 
       const response = await mutate(() =>
-        fetch(`${API_BASE_URL}${endpoint}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`)
           .then((res) => {
             logApiResponse(endpoint, res.status)
             if (!res.ok) {

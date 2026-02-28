@@ -1,16 +1,33 @@
+import { authError } from "./auth-logger"
+
+const decodeBase64 = (value: string): string => {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/")
+  const paddingLength = (4 - (normalized.length % 4)) % 4
+  const padded = normalized + "=".repeat(paddingLength)
+
+  if (typeof atob === "function") {
+    return atob(padded)
+  }
+
+  return Buffer.from(padded, "base64").toString("utf-8")
+}
+
 export function isTokenExpired(token: string | null): boolean {
   if (!token) return true
 
   try {
     const payload = token.split(".")[1]
-    const decodedPayload = window.atob(payload)
+    const decodedPayload = decodeBase64(payload)
     const { exp } = JSON.parse(decodedPayload)
+
+    if (typeof exp !== "number" || !Number.isFinite(exp) || exp <= 0) {
+      return true
+    }
 
     return Date.now() >= exp * 1000
   } catch (error) {
-    console.error("Error checking token expiration:", error)
-
-    return false
+    authError("[Auth] Error checking token expiration:", error)
+    return true
   }
 }
 
@@ -21,14 +38,13 @@ export function isValidToken(token: string | null): boolean {
   if (parts.length !== 3) return false
 
   try {
-    const payload = window.atob(parts[1])
+    const payload = decodeBase64(parts[1])
     const parsed = JSON.parse(payload)
 
     return typeof parsed === "object" && parsed !== null
   } catch (error) {
-    console.error("Error validating token format:", error)
-
-    return true
+    authError("[Auth] Error validating token format:", error)
+    return false
   }
 }
 
@@ -37,7 +53,7 @@ export function getTokenRemainingTime(token: string | null): number {
 
   try {
     const payload = token.split(".")[1]
-    const decodedPayload = window.atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+    const decodedPayload = decodeBase64(payload)
     const { exp } = JSON.parse(decodedPayload)
 
     if (!exp) return 0
@@ -48,8 +64,7 @@ export function getTokenRemainingTime(token: string | null): number {
 
     return Math.max(0, Math.floor(remainingTime / 1000))
   } catch (error) {
-    console.error("Error getting token remaining time:", error)
+    authError("[Auth] Error getting token remaining time:", error)
     return 0
   }
 }
-

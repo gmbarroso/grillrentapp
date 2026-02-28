@@ -6,189 +6,168 @@ import { useUserProfile } from "../hooks/user/useUserProfile"
 import { useLoginUser } from "../hooks/user/useLoginUser"
 import { useLogoutUser } from "../hooks/user/useLogoutUser"
 import { useLoading } from "../context/LoadingContext"
-import { isTokenExpired } from "../utils/jwt"
+import {
+  AUTH_UNAUTHORIZED_EVENT,
+  resetUnauthorizedSignal,
+} from "../utils/api"
+import {
+  clearStoredAccessToken,
+  stripAccessTokenFromUrl,
+} from "../utils/auth-storage"
+import { authDebug, authError } from "../utils/auth-logger"
 import type { User } from "../types/User"
 
 interface AuthContextType {
   isAuthenticated: boolean
+  isAuthResolved: boolean
   user: User | null
   token: string | null
   login: (apartment: string, block: number, password: string) => Promise<boolean>
-  logout: () => void
+  logout: () => Promise<void>
   deleteUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const COOKIE_SESSION_TOKEN = "cookie-session"
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Add render counter for debugging
-  const renderCount = useRef(0)
-  renderCount.current++
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthResolved, setIsAuthResolved] = useState(false)
+  const [token, setToken] = useState<string | null>(COOKIE_SESSION_TOKEN)
 
-  console.log(`[AuthProvider] Render count: ${renderCount.current}`)
-
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
-  const [token, setToken] = useState<string | null>(null)
   const { data: userResponse, error: userError, isLoading: isUserLoading } = useUserProfile(token)
-  const { error: loginError, login: loginMutate, isLoading: isLoginLoading } = useLoginUser()
+  const { login: loginMutate, isLoading: isLoginLoading } = useLoginUser()
   const { logout: logoutMutate, isLoading: isLogoutLoading } = useLogoutUser()
   const { setIsLoading } = useLoading()
 
-  const isLoggingIn = useRef(false)
+  const authResetInProgressRef = useRef(false)
 
-  useEffect(() => {
-    console.log("[AuthProvider] Initial token check effect running")
-    const storedToken = localStorage.getItem("token")
-    if (storedToken && !isTokenExpired(storedToken)) {
-      console.log("[AuthProvider] Valid token found in localStorage")
-      setIsAuthenticated(true)
-      setToken(storedToken)
-    } else if (storedToken) {
-      console.log("[AuthProvider] Expired token found in localStorage")
-      handleLogout()
+  const redirectToLogin = useCallback(() => {
+    if (typeof window === "undefined") return
+    if (window.location.pathname !== "/login") {
+      window.location.replace("/login")
     }
   }, [])
 
-  useEffect(() => {
-    console.log("[AuthProvider] Token expiration check effect setup")
-    if (!token) return
+  const clearAuthState = useCallback(() => {
+    clearStoredAccessToken()
+    setIsAuthenticated(false)
+    setToken(null)
+  }, [])
 
-    const checkInterval = setInterval(() => {
-      console.log("[AuthProvider] Running periodic token check")
-      if (isTokenExpired(token)) {
-        console.log("[AuthProvider] Token expired during periodic check")
-        handleLogout()
+  const handleUnauthorized = useCallback(() => {
+    if (authResetInProgressRef.current) return
+
+    authResetInProgressRef.current = true
+    clearAuthState()
+    setIsAuthResolved(true)
+    setIsLoading(false)
+    redirectToLogin()
+  }, [clearAuthState, redirectToLogin, setIsLoading])
+
+  useEffect(() => {
+    if (stripAccessTokenFromUrl()) {
+      authDebug("[Auth] Removed token-like params from URL before auth bootstrap")
+    }
+    clearStoredAccessToken()
+
+    authResetInProgressRef.current = false
+    resetUnauthorizedSignal()
+    setToken(COOKIE_SESSION_TOKEN)
+    setIsAuthResolved(false)
+  }, [clearAuthState, redirectToLogin])
+
+  useEffect(() => {
+    if (isUserLoading) return
+
+    if (userResponse?.user && !userError) {
+      authResetInProgressRef.current = false
+      setToken(COOKIE_SESSION_TOKEN)
+      setIsAuthenticated(true)
+      setIsAuthResolved(true)
+      return
+    }
+
+    if (!isUserLoading && userError) {
+      if (window.location.pathname !== "/login") {
+        handleUnauthorized()
       }
-    }, 60000)
+      setIsAuthResolved(true)
+      return
+    }
+
+    if (!isUserLoading) {
+      setIsAuthenticated(false)
+      setToken(null)
+      setIsAuthResolved(true)
+    }
+  }, [handleUnauthorized, isUserLoading, userError, userResponse?.user])
+
+  useEffect(() => {
+    const onUnauthorized = () => {
+      handleUnauthorized()
+    }
+
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized)
 
     return () => {
-      console.log("[AuthProvider] Clearing token check interval")
-      clearInterval(checkInterval)
+      window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized)
     }
-  }, [token])
+  }, [handleUnauthorized])
 
   useEffect(() => {
-    console.log("[AuthProvider] Loading state effect running", { isUserLoading, isLoginLoading, isLogoutLoading })
     setIsLoading(isUserLoading || isLoginLoading || isLogoutLoading)
   }, [isUserLoading, isLoginLoading, isLogoutLoading, setIsLoading])
 
-  const debugToken = (token: string) => {
-    try {
-      const parts = token.split(".")
-      if (parts.length !== 3) {
-        console.error("[AuthProvider] Invalid token format - not a JWT")
-        return false
-      }
-
-      const payload = JSON.parse(atob(parts[1]))
-      console.log("[AuthProvider] Token payload:", payload)
-
-      if (payload.exp) {
-        const expiresAt = new Date(payload.exp * 1000)
-        console.log("[AuthProvider] Token expires at:", expiresAt.toLocaleString())
-      }
-
-      return true
-    } catch (error) {
-      console.error("[AuthProvider] Error parsing token:", error)
-      return false
-    }
-  }
-
   const login = async (apartment: string, block: number, password: string): Promise<boolean> => {
-    console.log("[AuthProvider] Login attempt", { apartment, block })
-
-    isLoggingIn.current = true
-
     try {
       const response = await loginMutate({ apartment, block, password })
 
       if (!response) {
-        console.error("[AuthProvider] No response from login")
-        isLoggingIn.current = false
         return false
       }
-
-      const newToken =
-        response.token ||
-        response.access_token ||
-        (response.data && (response.data.token || response.data.access_token))
-
-      if (newToken) {
-        console.log("[AuthProvider] Token found:", newToken)
-
-        const isValidToken = debugToken(newToken)
-
-        if (!isValidToken) {
-          console.error("[AuthProvider] Invalid token format")
-          isLoggingIn.current = false
-          return false
-        }
-
-        localStorage.setItem("token", newToken)
-        setToken(newToken)
-        setIsAuthenticated(true)
-        isLoggingIn.current = false
-        return true
-      } else {
-        console.error("[AuthProvider] No token found in response:", response)
-      }
-
-      isLoggingIn.current = false
-      return false
+      resetUnauthorizedSignal()
+      authResetInProgressRef.current = false
+      setToken(COOKIE_SESSION_TOKEN)
+      setIsAuthenticated(true)
+      setIsAuthResolved(true)
+      return true
     } catch (error) {
-      console.error("Login error:", error)
-      isLoggingIn.current = false
+      authError("[Auth] Login error:", error)
       return false
     }
   }
 
-  const handleLogout = useCallback(async () => {
-    console.log("[AuthProvider] Logout initiated")
-    setIsLoading(true)
+  const logout = useCallback(async () => {
+    authResetInProgressRef.current = true
+    clearAuthState()
+    setIsAuthResolved(true)
+
     try {
-      if (token) {
-        await logoutMutate(token)
-      }
+      await logoutMutate()
     } catch (error) {
-      console.error("Error during logout:", error)
+      authError("[Auth] Error during logout:", error)
     } finally {
-      localStorage.removeItem("token")
-      setIsAuthenticated(false)
-      setToken(null)
-      setIsLoading(false)
-      console.log("[AuthProvider] Logout completed")
+      redirectToLogin()
     }
-  }, [token, logoutMutate, setIsLoading])
+  }, [clearAuthState, logoutMutate, redirectToLogin])
 
   const handleDeleteUser = useCallback(async () => {
-    console.log("[AuthProvider] Delete user called (not implemented)")
     return
   }, [])
 
-  const contextValue = useMemo(() => {
-    if (isLoggingIn.current) {
-      console.log("[AuthProvider] Skipping context recalculation during login")
-      return {
-        isAuthenticated,
-        user: userError ? null : (userResponse?.user ?? null),
-        token,
-        login,
-        logout: handleLogout,
-        deleteUser: handleDeleteUser,
-      }
-    }
-
-    console.log("[AuthProvider] Context value recalculated")
-    return {
+  const contextValue = useMemo(
+    () => ({
       isAuthenticated,
+      isAuthResolved,
       user: userError ? null : (userResponse?.user ?? null),
       token,
       login,
-      logout: handleLogout,
+      logout,
       deleteUser: handleDeleteUser,
-    }
-  }, [isAuthenticated, userError, userResponse?.user, token, handleLogout, handleDeleteUser])
+    }),
+    [isAuthenticated, isAuthResolved, userError, userResponse?.user, token, logout, handleDeleteUser],
+  )
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
 }
@@ -200,4 +179,3 @@ export const useAuth = () => {
   }
   return context
 }
-

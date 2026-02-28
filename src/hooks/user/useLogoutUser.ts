@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
+import { authError } from "../../utils/auth-logger"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -9,9 +10,7 @@ export function useLogoutUser() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const logout = useCallback(async (token: string) => {
-    if (!token) return { success: true }
-
+  const logout = useCallback(async () => {
     setIsLoading(true)
     setError(null)
 
@@ -19,12 +18,9 @@ export function useLogoutUser() {
       const endpoint = "/users/logout"
       logApiRequest("POST", `${API_BASE_URL}${endpoint}`)
 
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       })
 
       const data = await response.json()
@@ -37,7 +33,7 @@ export function useLogoutUser() {
       setIsLoading(false)
       return { success: true, data }
     } catch (err) {
-      console.error("Error in logout:", err)
+      authError("[Auth] Error in logout:", err)
       const apiError = handleApiError(err, "/users/logout")
       setError(apiError)
       setIsLoading(false)

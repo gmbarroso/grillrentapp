@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback, useRef } from "react"
+import { useEffect, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { BookingList, BookingSection, LoadingSpinner } from "../../components"
@@ -9,31 +9,12 @@ import { useToast } from "../../context/ToastContext"
 import "./Home.css"
 
 const Home = () => {
-  const renderCount = useRef(0)
-  renderCount.current++
-
-  console.log(`[Home] Render count: ${renderCount.current}`)
-
-  const lastRenderTime = useRef(Date.now())
-  const shouldRender = useRef(true)
-
-  const now = Date.now()
-  if (now - lastRenderTime.current < 100) {
-    shouldRender.current = false
-    console.log(`[Home] Throttling render, skipping...`)
-  } else {
-    shouldRender.current = true
-    lastRenderTime.current = now
-  }
-
   const { user, token } = useAuth()
   const { t } = useTranslation()
-  const [unavailableDates, setUnavailableDates] = useState<Date[]>([])
   const { showToast } = useToast()
 
   const {
     bookings: bookingsData,
-    total,
     currentPage,
     lastPage,
     isLoading: isBookingsLoading,
@@ -46,44 +27,22 @@ const Home = () => {
     changeSort,
     changeOrder,
     refreshBookings,
-  } = useAllBookings(token ?? "")
-
-  useEffect(() => {
-    console.log(`[Home] Processing bookings data effect, bookingsData length: ${bookingsData?.length || 0}`)
-    if (bookingsData && shouldRender.current) {
-      const unavailable = bookingsData.map((booking: any) => new Date(booking.startTime))
-      setUnavailableDates(unavailable)
-    }
-  }, [bookingsData])
+  } = useAllBookings()
 
   // Memoize handleBookingDeleted to prevent recreation on every render
   const handleBookingDeleted = useCallback(
-    async (bookingId: string) => {
-      console.log(`[Home] Booking deleted: ${bookingId}`)
+    async () => {
       await refreshBookings()
-      showToast(t("BookingList.DeleteSuccess"), "success")
     },
-    [refreshBookings, showToast, t],
+    [refreshBookings],
   )
 
   const handleBookingCreated = useCallback(async () => {
-    console.log(`[Home] Booking created`)
     await refreshBookings()
-    showToast(t("BookingCreatedSuccess"), "success")
-  }, [refreshBookings, showToast, t])
-
-
-  const handleBookingError = useCallback(
-    (errorMessage: string) => {
-      console.log(`[Home] Booking error: ${errorMessage}`)
-      showToast(errorMessage, "error")
-    },
-    [showToast],
-  )
+  }, [refreshBookings])
 
   useEffect(() => {
-    console.log(`[Home] Booking error effect, error: ${bookingsError ? "yes" : "no"}`)
-    if (bookingsError && shouldRender.current) {
+    if (bookingsError) {
       showToast(t("ErrorLoadingBookings"), "error")
     }
   }, [bookingsError, showToast, t])
@@ -98,10 +57,7 @@ const Home = () => {
           {token && user && (
             <BookingSection
               token={token}
-              unavailableDates={unavailableDates}
-              userId={user.id}
               onBookingCreated={handleBookingCreated}
-              onBookingError={handleBookingError}
             />
           )}
         </div>
@@ -111,7 +67,6 @@ const Home = () => {
           ) : bookingsData ? (
             <BookingList
               bookings={bookingsData}
-              total={total}
               currentPage={currentPage}
               lastPage={lastPage}
               currentLimit={currentLimit}
@@ -131,4 +86,3 @@ const Home = () => {
 }
 
 export default Home
-

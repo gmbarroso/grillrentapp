@@ -5,6 +5,7 @@ import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import type { Booking } from "../../types/Booking"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { formatBookingDateKey } from "../../utils/booking-datetime"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -15,7 +16,7 @@ interface BookingsResponse {
   lastPage: number
 }
 
-export function useAllBookings(token: string) {
+export function useAllBookings() {
   // Add render counter for debugging
   const renderCount = useRef(0)
   renderCount.current++
@@ -30,8 +31,9 @@ export function useAllBookings(token: string) {
   const [currentSort, setCurrentSort] = useState("startTime")
   const [currentOrder, setCurrentOrder] = useState<"ASC" | "DESC">("ASC")
   const authenticatedFetch = useAuthenticatedFetch()
+  const todayKey = formatBookingDateKey(new Date())
 
-  // Calculate date range for three months
+  // Calculate date range for three months using local calendar dates.
   const dateRange = useMemo(() => {
     const startDate = new Date()
     startDate.setHours(0, 0, 0, 0)
@@ -40,10 +42,10 @@ export function useAllBookings(token: string) {
     endDate.setMonth(endDate.getMonth() + 3)
 
     return {
-      startDate: startDate.toISOString().split("T")[0],
-      endDate: endDate.toISOString().split("T")[0],
+      startDate: formatBookingDateKey(startDate),
+      endDate: formatBookingDateKey(endDate),
     }
-  }, [])
+  }, [todayKey])
 
   // Memoize the fetcher function to prevent recreation on every render
   const fetcher = useCallback(
@@ -74,6 +76,8 @@ export function useAllBookings(token: string) {
 
   const { data, isError, isLoading, mutate } = useFetch<BookingsResponse>(url, { fetcher })
 
+  const visibleBookings = useMemo(() => data?.data || [], [data?.data])
+
   const changePage = useCallback((newPage: number) => {
     console.log(`[useAllBookings] Changing page to: ${newPage}`)
     setCurrentPage(newPage)
@@ -103,7 +107,7 @@ export function useAllBookings(token: string) {
   }, [mutate])
 
   return {
-    bookings: data?.data || [],
+    bookings: visibleBookings,
     total: data?.total || 0,
     currentPage: Number(data?.page) || currentPage,
     lastPage: data?.lastPage || 1,

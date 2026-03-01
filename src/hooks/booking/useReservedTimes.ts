@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { formatBookingDateKey, formatBookingHourSlot } from "../../utils/booking-datetime"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -17,10 +18,8 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const authenticatedFetch = useAuthenticatedFetch()
+  const dateKey = date ? formatBookingDateKey(date) : undefined
 
-  // Add fetch tracking to prevent excessive fetches
-  const fetchCount = useRef(0)
-  const lastFetchTime = useRef(0)
   const isMounted = useRef(true)
 
   useEffect(() => {
@@ -39,24 +38,6 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
         return
       }
 
-      // Prevent excessive fetches
-      const now = Date.now()
-      if (now - lastFetchTime.current < 2000) {
-        // 2 second throttle
-        console.log(`[useReservedTimes] Throttling fetch for ${resourceType}`)
-        return
-      }
-
-      // Track fetch count and time
-      fetchCount.current += 1
-      lastFetchTime.current = now
-
-      // Safety check to prevent infinite loops
-      if (fetchCount.current > 10) {
-        console.warn(`[useReservedTimes] Too many fetches (${fetchCount.current}). Possible infinite loop.`)
-        return
-      }
-
       if (!isMounted.current) return
 
       setIsLoading(true)
@@ -64,9 +45,8 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
 
       try {
         let endpoint = `/bookings/reserved-times?resourceType=${resourceType}`
-        if (resourceType === "tennis" && date) {
-          const formattedDate = date.toISOString().split("T")[0]
-          endpoint += `&date=${formattedDate}`
+        if (resourceType === "tennis" && dateKey) {
+          endpoint += `&date=${dateKey}`
         }
 
         logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
@@ -88,10 +68,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
           const bookedTimes: string[] = []
 
           data.reservedTimes.forEach((slot) => {
-            const startTime = new Date(slot.startTime)
-            const hour = startTime.getHours()
-            const timeSlot = `${hour.toString().padStart(2, "0")}:00`
-            bookedTimes.push(timeSlot)
+            bookedTimes.push(formatBookingHourSlot(slot.startTime))
           })
 
           setReservedTimes(bookedTimes)
@@ -112,16 +89,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
     }
 
     fetchReservedTimes()
-
-    // Reset fetch count after 30 seconds
-    const resetTimer = setTimeout(() => {
-      fetchCount.current = 0
-    }, 30000)
-
-    return () => {
-      clearTimeout(resetTimer)
-    }
-  }, [resourceType, date, authenticatedFetch])
+  }, [resourceType, dateKey, authenticatedFetch])
 
   return {
     reservedTimes,

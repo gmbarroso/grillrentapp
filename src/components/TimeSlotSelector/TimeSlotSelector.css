@@ -35,6 +35,12 @@
   color: var(--color-text);
 }
 
+.time-select option.past {
+  background-color: var(--color-background);
+  color: var(--color-secondary);
+  font-style: italic;
+}
+
 .time-select option.user-booked {
   background-color: var(--color-primary-light);
   color: white;
@@ -82,4 +88,3 @@
   text-align: center;
   font-style: italic;
 }
-

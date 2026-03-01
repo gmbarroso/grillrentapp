@@ -52,13 +52,19 @@ const SignUp = () => {
 
       const loginResult = await login(normalizedOrganizationSlug, apartment, validBlock, password)
       if (!loginResult.success) {
+        if (loginResult.errorCode === "INVALID_CONDOMINIUM_CODE") {
+          setError(t("SignUp.InvalidCondominiumCode"))
+          return
+        }
         navigate("/login", { state: { message: t("SignUp.RegisteredPleaseLogin") } })
         return
       }
       navigate("/")
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message.toLowerCase() : ""
-      if (message.includes("invalid condominium code")) {
+      const errorCode = typeof err === "object" && err && "code" in err
+        ? String((err as { code?: unknown }).code || "")
+        : ""
+      if (errorCode === "INVALID_CONDOMINIUM_CODE") {
         setError(t("SignUp.InvalidCondominiumCode"))
         return
       }

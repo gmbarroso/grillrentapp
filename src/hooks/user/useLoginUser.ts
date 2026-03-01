@@ -11,6 +11,15 @@ interface LoginResponse {
   [key: string]: any
 }
 
+type LoginApiError = Error & { status?: number; code?: string }
+
+const resolveLoginErrorCode = (status: number, message: string): string | undefined => {
+  if ((status === 400 || status === 401) && /invalid condominium code/i.test(message)) {
+    return "INVALID_CONDOMINIUM_CODE"
+  }
+  return undefined
+}
+
 export function useLoginUser() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
@@ -42,14 +51,20 @@ export function useLoginUser() {
       const result = await response.json()
 
       if (!response.ok && response.status !== 201) {
-        throw new Error(result.message || "Login failed")
+        const message = result.message || "Login failed"
+        const loginError = new Error(message) as LoginApiError
+        loginError.status = response.status
+        loginError.code = resolveLoginErrorCode(response.status, message)
+        throw loginError
       }
 
       setIsLoading(false)
       return result
     } catch (error) {
       authError("[Auth] Error in login:", error)
-      const apiError = handleApiError(error, "/users/login")
+      const apiError = error instanceof Error && ("status" in error || "code" in error)
+        ? error
+        : handleApiError(error, "/users/login")
       setError(apiError)
       setIsLoading(false)
       throw apiError

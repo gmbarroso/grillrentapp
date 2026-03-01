@@ -27,7 +27,7 @@ interface AuthContextType {
     apartment: string,
     block: number,
     password: string,
-  ) => Promise<{ success: boolean; errorMessage?: string }>
+  ) => Promise<{ success: boolean; errorCode?: string; errorMessage?: string }>
   logout: () => Promise<void>
   deleteUser: () => Promise<void>
 }
@@ -129,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     apartment: string,
     block: number,
     password: string,
-  ): Promise<{ success: boolean; errorMessage?: string }> => {
+  ): Promise<{ success: boolean; errorCode?: string; errorMessage?: string }> => {
     try {
       await loginMutate({ organizationSlug, apartment, block, password })
       resetUnauthorizedSignal()
@@ -140,7 +140,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: true }
     } catch (error) {
       authError("[Auth] Login error:", error)
-      return { success: false, errorMessage: error instanceof Error ? error.message : "Login failed" }
+      const errorCode = typeof error === "object" && error && "code" in error
+        ? String((error as { code?: unknown }).code || "")
+        : undefined
+      return {
+        success: false,
+        errorCode,
+        errorMessage: error instanceof Error ? error.message : "Login failed",
+      }
     }
   }
 

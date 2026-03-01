@@ -52,7 +52,7 @@ export default function LoginScreen() {
       if (result.success) {
         navigate("/")
       } else {
-        const isInvalidSlug = (result.errorMessage || "").toLowerCase().includes("invalid condominium code")
+        const isInvalidSlug = result.errorCode === "INVALID_CONDOMINIUM_CODE"
         showToast(isInvalidSlug ? t("Login.InvalidCondominiumCode") : t("Login.Error"), "error")
       }
     } catch (err) {

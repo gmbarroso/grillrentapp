@@ -13,15 +13,9 @@ import type { BookingSectionProps } from "../../types/Booking"
 import { LoadingSpinner, Modal, CustomCalendar, TimeSlotSelector, Tooltip, Button } from "../"
 import "./BookingSection.css"
 
-interface ExtendedBookingSectionProps extends BookingSectionProps {
-  onBookingCreated: () => void
-  onBookingError: (errorMessage: string) => void
-}
-
-const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
+const BookingSection: React.FC<BookingSectionProps> = ({
   token,
   onBookingCreated,
-  onBookingError,
 }) => {
   const { t } = useTranslation()
   const { showToast } = useToast()
@@ -142,7 +136,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
         setBookedOnBehalf("")
       } catch (error) {
         console.error("Error creating booking:", error)
-        onBookingError(t("ErrorCreatingBooking"))
         showToast(t("ErrorCreatingBooking"), "error")
       }
     }

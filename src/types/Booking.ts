@@ -26,7 +26,6 @@ export interface BookingListInterface {
 export interface BookingSectionProps {
   token: string
   onBookingCreated: () => void
-  onBookingError: (errorMessage: string) => void
 }
 
 export interface BookingListProps {

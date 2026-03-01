@@ -23,6 +23,10 @@ describe("booking datetime utils", () => {
     expect(parsed.toISOString()).toBe("2026-03-02T11:00:00.000Z")
   })
 
+  it("throws on date-only values", () => {
+    expect(() => parseBookingDateTime("2026-03-02")).toThrow("Date-only values are not supported")
+  })
+
   it("formats booking hours in America/Sao_Paulo", () => {
     const utcValue = "2026-03-02T11:00:00.000Z"
     expect(formatBookingHour(utcValue)).toBe("8")

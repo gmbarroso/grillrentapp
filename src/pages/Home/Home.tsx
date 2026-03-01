@@ -33,23 +33,13 @@ const Home = () => {
   const handleBookingDeleted = useCallback(
     async () => {
       await refreshBookings()
-      showToast(t("BookingList.DeleteSuccess"), "success")
     },
-    [refreshBookings, showToast, t],
+    [refreshBookings],
   )
 
   const handleBookingCreated = useCallback(async () => {
     await refreshBookings()
-    showToast(t("BookingCreatedSuccess"), "success")
-  }, [refreshBookings, showToast, t])
-
-
-  const handleBookingError = useCallback(
-    (errorMessage: string) => {
-      showToast(errorMessage, "error")
-    },
-    [showToast],
-  )
+  }, [refreshBookings])
 
   useEffect(() => {
     if (bookingsError) {
@@ -68,7 +58,6 @@ const Home = () => {
             <BookingSection
               token={token}
               onBookingCreated={handleBookingCreated}
-              onBookingError={handleBookingError}
             />
           )}
         </div>

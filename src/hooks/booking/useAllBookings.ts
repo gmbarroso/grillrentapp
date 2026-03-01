@@ -5,7 +5,7 @@ import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import type { Booking } from "../../types/Booking"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
-import { parseBookingDateTime } from "../../utils/booking-datetime"
+import { formatBookingDateKey } from "../../utils/booking-datetime"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -14,13 +14,6 @@ interface BookingsResponse {
   total: number
   page: string
   lastPage: number
-}
-
-const formatLocalDateKey = (date: Date) => {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  return `${year}-${month}-${day}`
 }
 
 export function useAllBookings() {
@@ -38,7 +31,7 @@ export function useAllBookings() {
   const [currentSort, setCurrentSort] = useState("startTime")
   const [currentOrder, setCurrentOrder] = useState<"ASC" | "DESC">("ASC")
   const authenticatedFetch = useAuthenticatedFetch()
-  const todayKey = formatLocalDateKey(new Date())
+  const todayKey = formatBookingDateKey(new Date())
 
   // Calculate date range for three months using local calendar dates.
   const dateRange = useMemo(() => {
@@ -48,9 +41,9 @@ export function useAllBookings() {
     const endDate = new Date(startDate)
     endDate.setMonth(endDate.getMonth() + 3)
 
-    return {
-      startDate: formatLocalDateKey(startDate),
-      endDate: formatLocalDateKey(endDate),
+      return {
+      startDate: formatBookingDateKey(startDate),
+      endDate: formatBookingDateKey(endDate),
     }
   }, [todayKey])
 
@@ -83,18 +76,7 @@ export function useAllBookings() {
 
   const { data, isError, isLoading, mutate } = useFetch<BookingsResponse>(url, { fetcher })
 
-  // Keep "Current Bookings" focused on active/upcoming reservations only.
-  const visibleBookings = useMemo(() => {
-    const now = Date.now()
-    return (data?.data || []).filter((booking) => {
-      const isUpcoming = parseBookingDateTime(booking.endTime).getTime() > now
-      if (!isUpcoming) {
-        return false
-      }
-
-      return true
-    })
-  }, [data?.data])
+  const visibleBookings = useMemo(() => data?.data || [], [data?.data])
 
   const changePage = useCallback((newPage: number) => {
     console.log(`[useAllBookings] Changing page to: ${newPage}`)

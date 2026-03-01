@@ -3,9 +3,8 @@
 import type React from "react"
 
 import { useTranslation } from "react-i18next"
+import { BOOKING_DISPLAY_TIMEZONE } from "../../utils/booking-datetime"
 import "./TimeSlotSelector.css"
-
-const BOOKING_DISPLAY_TIMEZONE = "America/Sao_Paulo"
 
 interface TimeSlotSelectorProps {
   selectedTime: string | null
@@ -78,7 +77,7 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
 
   const getSlotClassName = (slot: string) => {
     if (unavailableSlots.includes(slot) || isPastSlotForSelectedDate(slot)) {
-      return "booked"
+      return "past"
     }
     return "available"
   }
@@ -98,7 +97,7 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
               disabled={isSlotDisabled(slot.value)}
               className={getSlotClassName(slot.value)}
             >
-              {slot.label} {unavailableSlots.includes(slot.value) ? `(${t("TimeSlot.Booked")})` : ""}
+              {slot.label} {isSlotDisabled(slot.value) ? `(${t("TimeSlot.Booked")})` : ""}
             </option>
           ))}
         </select>

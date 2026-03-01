@@ -22,7 +22,7 @@ export const parseBookingDateTime = (value: string | Date) => {
   const normalized = normalizeIsoLikeInput(raw)
 
   if (DATE_ONLY_REGEX.test(normalized)) {
-    return new Date(`${normalized}T00:00:00.000Z`)
+    throw new Error("Date-only values are not supported for booking datetime parsing")
   }
 
   if (HAS_TIMEZONE_SUFFIX.test(normalized)) {
@@ -30,6 +30,13 @@ export const parseBookingDateTime = (value: string | Date) => {
   }
 
   return new Date(`${normalized}Z`)
+}
+
+export const formatBookingDateKey = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
 }
 
 export const formatBookingDate = (value: string | Date, locale: string = "en-GB") => {

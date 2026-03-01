@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useRegisterUser } from "../../hooks/user/useRegisterUser"
+import { normalizeOrganizationSlug } from "../../utils/organizationSlug"
 import "./SignUp.css"
 
 const SignUp = () => {
@@ -30,13 +31,7 @@ const SignUp = () => {
     }
 
     try {
-      const normalizedOrganizationSlug = organizationSlug
-        .trim()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
+      const normalizedOrganizationSlug = normalizeOrganizationSlug(organizationSlug)
 
       if (!normalizedOrganizationSlug) {
         setError(t("SignUp.InvalidCondominiumCode"))
@@ -57,8 +52,7 @@ const SignUp = () => {
 
       const loginResult = await login(normalizedOrganizationSlug, apartment, validBlock, password)
       if (!loginResult.success) {
-        setError(t("SignUp.RegisteredPleaseLogin"))
-        navigate("/login")
+        navigate("/login", { state: { message: t("SignUp.RegisteredPleaseLogin") } })
         return
       }
       navigate("/")

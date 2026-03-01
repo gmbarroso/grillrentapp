@@ -1,14 +1,15 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useLoading } from "../../context/LoadingContext"
 import { useToast } from "../../context/ToastContext"
 import { useTheme } from "../../context/ThemeContext"
 import { Button } from "../../components"
+import { normalizeOrganizationSlug } from "../../utils/organizationSlug"
 import "./LoginScreen.css"
 
 export default function LoginScreen() {
@@ -17,11 +18,20 @@ export default function LoginScreen() {
   const [block, setBlock] = useState("1")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { setIsLoading } = useLoading()
   const { showToast } = useToast()
+
+  useEffect(() => {
+    const stateMessage = (location.state as { message?: string } | null)?.message
+    if (stateMessage) {
+      showToast(stateMessage, "error")
+      navigate(location.pathname, { replace: true })
+    }
+  }, [location.pathname, location.state, navigate, showToast])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,13 +41,7 @@ export default function LoginScreen() {
     const validBlock = blockNumber > 2 ? 2 : blockNumber < 1 ? 1 : blockNumber
 
     try {
-      const normalizedOrganizationSlug = organizationSlug
-        .trim()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
+      const normalizedOrganizationSlug = normalizeOrganizationSlug(organizationSlug)
 
       if (!normalizedOrganizationSlug) {
         showToast(t("Login.InvalidCondominiumCode"), "error")

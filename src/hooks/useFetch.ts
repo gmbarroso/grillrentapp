@@ -22,9 +22,6 @@ export function useFetch<Data = any, Error = any>(key: string | null, config?: S
     ...swrConfig,
     ...config,
     fetcher: undefined,
-    revalidateOnFocus: true,
-    revalidateOnReconnect: true,
-    dedupingInterval: 5000,
   })
 
   return {

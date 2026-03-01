@@ -17,6 +17,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const authenticatedFetch = useAuthenticatedFetch()
+  const dateKey = date ? date.toISOString().split("T")[0] : undefined
 
   const isMounted = useRef(true)
 
@@ -43,9 +44,8 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
 
       try {
         let endpoint = `/bookings/reserved-times?resourceType=${resourceType}`
-        if (resourceType === "tennis" && date) {
-          const formattedDate = date.toISOString().split("T")[0]
-          endpoint += `&date=${formattedDate}`
+        if (resourceType === "tennis" && dateKey) {
+          endpoint += `&date=${dateKey}`
         }
 
         logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
@@ -91,7 +91,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
     }
 
     fetchReservedTimes()
-  }, [resourceType, date, authenticatedFetch])
+  }, [resourceType, dateKey, authenticatedFetch])
 
   return {
     reservedTimes,

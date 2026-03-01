@@ -36,8 +36,10 @@
     "SignIn": "Iniciar sesión",
     "SigningIn": "Iniciando sesión...",
     "Error": "Error al iniciar sesión. Por favor, verifica tus credenciales e intenta de nuevo.",
+    "InvalidCondominiumCode": "Codigo de condominio invalido. Verificalo e intentalo de nuevo.",
     "NoAccount": "¿No tienes una cuenta?",
     "SignUp": "Regístrate",
+    "CondominiumCode": "Código del condominio",
     "Apartment": "Apartamento",
     "Block": "Bloque"
   },
@@ -72,13 +74,17 @@
   },
   "SignUp": {
     "Title": "Registrarse",
+    "CondominiumCode": "Código del condominio",
     "Name": "Nombre",
     "Email": "Correo electrónico",
     "Password": "Contraseña",
     "ConfirmPassword": "Confirmar Contraseña",
     "Apartment": "Apartamento",
+    "Block": "Bloque",
     "Submit": "Registrarse",
     "Error": "Error al registrarse. Por favor, intenta de nuevo.",
+    "InvalidCondominiumCode": "Codigo de condominio invalido. Verificalo e intentalo de nuevo.",
+    "RegisteredPleaseLogin": "Cuenta creada, pero fallo el inicio automatico. Inicia sesion manualmente.",
     "PasswordMismatch": "Las contraseñas no coinciden",
     "HaveAccount": "¿Ya tienes una cuenta?",
     "Login": "Iniciar sesión"
@@ -224,4 +230,3 @@
   "BookOnBehalfTooltip": "Ingrese el número de apartamento para el que está reservando",
   "BookOnBehalfPlaceholder": "Ingrese el número de apartamento"
 }
-

@@ -6,26 +6,27 @@ import { authError } from "../../utils/auth-logger"
 
 const API_BASE_URL = getApiBaseUrl()
 
-interface LoginResponse {
-  access_token?: string
+interface RegisterResponse {
   [key: string]: any
 }
 
-export function useLoginUser() {
+export function useRegisterUser() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const login = async (body: {
+  const register = async (body: {
     organizationSlug: string
+    name: string
+    email: string
+    password: string
     apartment: string
     block: number
-    password: string
-  }): Promise<LoginResponse> => {
+  }): Promise<RegisterResponse> => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const endpoint = "/users/login"
+      const endpoint = "/users/register"
       logApiRequest("POST", `${API_BASE_URL}${endpoint}`, body)
 
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -40,16 +41,15 @@ export function useLoginUser() {
       logApiResponse(endpoint, response.status, { headers: Object.fromEntries([...response.headers.entries()]) })
 
       const result = await response.json()
-
       if (!response.ok && response.status !== 201) {
-        throw new Error(result.message || "Login failed")
+        throw new Error(result.message || "Registration failed")
       }
 
       setIsLoading(false)
       return result
     } catch (error) {
-      authError("[Auth] Error in login:", error)
-      const apiError = handleApiError(error, "/users/login")
+      authError("[Auth] Error in register:", error)
+      const apiError = handleApiError(error, "/users/register")
       setError(apiError)
       setIsLoading(false)
       throw apiError
@@ -57,7 +57,7 @@ export function useLoginUser() {
   }
 
   return {
-    login,
+    register,
     isLoading,
     error,
   }

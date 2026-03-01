@@ -12,6 +12,7 @@ import { Button } from "../../components"
 import "./LoginScreen.css"
 
 export default function LoginScreen() {
+  const [organizationSlug, setOrganizationSlug] = useState("")
   const [apartment, setApartment] = useState("")
   const [block, setBlock] = useState("1")
   const [password, setPassword] = useState("")
@@ -30,11 +31,25 @@ export default function LoginScreen() {
     const validBlock = blockNumber > 2 ? 2 : blockNumber < 1 ? 1 : blockNumber
 
     try {
-      const success = await login(apartment, validBlock, password)
-      if (success) {
+      const normalizedOrganizationSlug = organizationSlug
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+
+      if (!normalizedOrganizationSlug) {
+        showToast(t("Login.InvalidCondominiumCode"), "error")
+        return
+      }
+
+      const result = await login(normalizedOrganizationSlug, apartment, validBlock, password)
+      if (result.success) {
         navigate("/")
       } else {
-        showToast(t("Login.Error"), "error")
+        const isInvalidSlug = (result.errorMessage || "").toLowerCase().includes("invalid condominium code")
+        showToast(isInvalidSlug ? t("Login.InvalidCondominiumCode") : t("Login.Error"), "error")
       }
     } catch (err) {
       console.error("Login error:", err)
@@ -54,6 +69,14 @@ export default function LoginScreen() {
         </div>
         <h2 className="title">{t("Login.Title")}</h2>
         <form className="form" onSubmit={handleSubmit}>
+          <input
+            className="input"
+            type="text"
+            placeholder={t("Login.CondominiumCode")}
+            value={organizationSlug}
+            onChange={(e) => setOrganizationSlug(e.target.value)}
+            required
+          />
           <input
             className="input"
             type="text"

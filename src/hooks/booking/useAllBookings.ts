@@ -41,7 +41,7 @@ export function useAllBookings() {
     const endDate = new Date(startDate)
     endDate.setMonth(endDate.getMonth() + 3)
 
-      return {
+    return {
       startDate: formatBookingDateKey(startDate),
       endDate: formatBookingDateKey(endDate),
     }

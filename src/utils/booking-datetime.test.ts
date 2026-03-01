@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import {
   formatBookingDate,
+  formatBookingDateKey,
   formatBookingHour,
   formatBookingHourSlot,
   formatBookingTimeInterval,
@@ -37,5 +38,15 @@ describe("booking datetime utils", () => {
   it("formats date and time interval in America/Sao_Paulo", () => {
     expect(formatBookingDate("2026-03-02T11:00:00.000Z")).toBe("02/03/2026")
     expect(formatBookingTimeInterval("2026-03-03T00:00:00.000Z", "2026-03-03T01:00:00.000Z")).toBe("21h - 22h")
+  })
+
+  it("formats date key with zero-padding", () => {
+    expect(formatBookingDateKey(new Date("2026-03-05T12:00:00.000Z"))).toBe("2026-03-05")
+    expect(formatBookingDateKey(new Date("2026-11-15T12:00:00.000Z"))).toBe("2026-11-15")
+  })
+
+  it("formats date key correctly across year rollover", () => {
+    expect(formatBookingDateKey(new Date("2026-12-31T12:00:00.000Z"))).toBe("2026-12-31")
+    expect(formatBookingDateKey(new Date("2027-01-01T12:00:00.000Z"))).toBe("2027-01-01")
   })
 })

@@ -20,7 +20,6 @@ interface ExtendedBookingSectionProps extends BookingSectionProps {
 
 const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   token,
-  unavailableDates,
   onBookingCreated,
   onBookingError,
 }) => {
@@ -30,7 +29,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const [selectedOption, setSelectedOption] = useState<"grill" | "tennis" | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
-  const [isDateAvailable, setIsDateAvailable] = useState<boolean | null>(null)
   const {
     reservedTimes: unavailableTimes,
     reservedDays,
@@ -39,13 +37,12 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   } = useReservedTimes(selectedOption as "tennis" | "grill" | undefined, selectedDate || undefined)
   const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
   const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
   const [isFetchingAfterDateSelect, setIsFetchingAfterDateSelect] = useState(false)
   const [bookedOnBehalf, setBookedOnBehalf] = useState<string>("")
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
-  const { createBooking, isLoading: isCreatingBooking, error: createBookingError } = useCreateBooking(token)
+  const { createBooking, isLoading: isCreatingBooking } = useCreateBooking(token)
 
   const selectedResource = useMemo(() => {
     return selectedOption ? resources?.find((r: Resource) => r.type === selectedOption) : null
@@ -70,7 +67,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
       setSelectedOption(option)
       setSelectedDate(null)
       setSelectedTime(null)
-      setIsDateAvailable(null)
       setNeedTablesAndChairs(false)
     },
     [selectedOption],
@@ -79,7 +75,6 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date)
     setSelectedTime(null)
-    setIsDateAvailable(null)
 
     if (selectedOption === "grill") {
       setIsFetchingAfterDateSelect(true)
@@ -138,18 +133,15 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
           ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
         }
         await createBooking(bookingData)
-        setIsDateAvailable(true)
         onBookingCreated()
         showToast(t("BookingCreatedSuccess"), "success")
         setSelectedDate(null)
         setSelectedTime(null)
         setNeedTablesAndChairs(false)
         setSelectedOption(null)
-        setIsDateAvailable(null)
         setBookedOnBehalf("")
       } catch (error) {
         console.error("Error creating booking:", error)
-        setIsDateAvailable(false)
         onBookingError(t("ErrorCreatingBooking"))
         showToast(t("ErrorCreatingBooking"), "error")
       }
@@ -248,6 +240,7 @@ const BookingSection: React.FC<ExtendedBookingSectionProps> = ({
               selectedTime={selectedTime}
               onTimeSelect={handleTimeSelect}
               resourceType={selectedOption}
+              selectedDate={selectedDate}
               unavailableSlots={unavailableTimes}
               isLoading={isLoadingTimes}
             />

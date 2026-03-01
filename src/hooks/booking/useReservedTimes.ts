@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { formatBookingHourSlot } from "../../utils/booking-datetime"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -11,13 +12,20 @@ interface ReservedTimesResponse {
   reservedDays?: string[]
 }
 
+const formatLocalDateKey = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
 export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, date?: Date) {
   const [reservedTimes, setReservedTimes] = useState<string[]>([])
   const [reservedDays, setReservedDays] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const authenticatedFetch = useAuthenticatedFetch()
-  const dateKey = date ? date.toISOString().split("T")[0] : undefined
+  const dateKey = date ? formatLocalDateKey(date) : undefined
 
   const isMounted = useRef(true)
 
@@ -67,10 +75,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
           const bookedTimes: string[] = []
 
           data.reservedTimes.forEach((slot) => {
-            const startTime = new Date(slot.startTime)
-            const hour = startTime.getHours()
-            const timeSlot = `${hour.toString().padStart(2, "0")}:00`
-            bookedTimes.push(timeSlot)
+            bookedTimes.push(formatBookingHourSlot(slot.startTime))
           })
 
           setReservedTimes(bookedTimes)

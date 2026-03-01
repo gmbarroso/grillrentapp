@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { BookingList, BookingSection, LoadingSpinner } from "../../components"
@@ -11,12 +11,10 @@ import "./Home.css"
 const Home = () => {
   const { user, token } = useAuth()
   const { t } = useTranslation()
-  const [unavailableDates, setUnavailableDates] = useState<Date[]>([])
   const { showToast } = useToast()
 
   const {
     bookings: bookingsData,
-    total,
     currentPage,
     lastPage,
     isLoading: isBookingsLoading,
@@ -29,18 +27,11 @@ const Home = () => {
     changeSort,
     changeOrder,
     refreshBookings,
-  } = useAllBookings(token ?? "")
-
-  useEffect(() => {
-    if (bookingsData) {
-      const unavailable = bookingsData.map((booking: any) => new Date(booking.startTime))
-      setUnavailableDates(unavailable)
-    }
-  }, [bookingsData])
+  } = useAllBookings()
 
   // Memoize handleBookingDeleted to prevent recreation on every render
   const handleBookingDeleted = useCallback(
-    async (bookingId: string) => {
+    async () => {
       await refreshBookings()
       showToast(t("BookingList.DeleteSuccess"), "success")
     },
@@ -76,8 +67,6 @@ const Home = () => {
           {token && user && (
             <BookingSection
               token={token}
-              unavailableDates={unavailableDates}
-              userId={user.id}
               onBookingCreated={handleBookingCreated}
               onBookingError={handleBookingError}
             />
@@ -89,7 +78,6 @@ const Home = () => {
           ) : bookingsData ? (
             <BookingList
               bookings={bookingsData}
-              total={total}
               currentPage={currentPage}
               lastPage={lastPage}
               currentLimit={currentLimit}

@@ -5,10 +5,13 @@ import type React from "react"
 import { useTranslation } from "react-i18next"
 import "./TimeSlotSelector.css"
 
+const BOOKING_DISPLAY_TIMEZONE = "America/Sao_Paulo"
+
 interface TimeSlotSelectorProps {
   selectedTime: string | null
   onTimeSelect: (time: string) => void
   resourceType: "tennis" | "grill"
+  selectedDate?: Date | null
   unavailableSlots?: string[]
   isLoading?: boolean
 }
@@ -17,6 +20,7 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   selectedTime,
   onTimeSelect,
   resourceType,
+  selectedDate = null,
   unavailableSlots = [],
   isLoading = false,
 }) => {
@@ -34,15 +38,46 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
     onTimeSelect(event.target.value)
   }
 
+  const isPastSlotForSelectedDate = (slot: string) => {
+    if (!selectedDate || resourceType !== "tennis") {
+      return false
+    }
+
+    const now = new Date()
+    const dayFormatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: BOOKING_DISPLAY_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    const selectedDayKey = dayFormatter.format(selectedDate)
+    const todayKey = dayFormatter.format(now)
+    if (selectedDayKey !== todayKey) {
+      return false
+    }
+
+    const [slotHourText] = slot.split(":")
+    const slotHour = Number.parseInt(slotHourText, 10)
+    const nowHour = Number.parseInt(
+      new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        hour12: false,
+        timeZone: BOOKING_DISPLAY_TIMEZONE,
+      }).format(now),
+      10,
+    )
+    return slotHour <= nowHour
+  }
+
   const isSlotDisabled = (slot: string) => {
     if (resourceType === "tennis") {
-      return unavailableSlots.includes(slot)
+      return unavailableSlots.includes(slot) || isPastSlotForSelectedDate(slot)
     }
     return false
   }
 
   const getSlotClassName = (slot: string) => {
-    if (unavailableSlots.includes(slot)) {
+    if (unavailableSlots.includes(slot) || isPastSlotForSelectedDate(slot)) {
       return "booked"
     }
     return "available"
@@ -84,4 +119,3 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
 }
 
 export default TimeSlotSelector
-

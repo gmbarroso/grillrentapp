@@ -8,12 +8,12 @@ import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
 import { Modal, LoadingSpinner, Tooltip, Button } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react"
+import { formatBookingDate, formatBookingTimeInterval } from "../../utils/booking-datetime"
 import "./BookingList.css"
 import type { Booking, BookingListProps } from "../../types/Booking"
 
 const BookingList: React.FC<BookingListProps> = ({
   bookings,
-  total,
   currentPage,
   lastPage,
   currentLimit,
@@ -41,7 +41,7 @@ const BookingList: React.FC<BookingListProps> = ({
     if (selectedBookingId) {
       const { success, error } = await deleteBooking(selectedBookingId)
       if (success) {
-        onBookingDeleted(selectedBookingId)
+        onBookingDeleted()
         showToast(t("BookingList.DeleteSuccess"), "success")
       } else {
         console.error("Error deleting booking:", error)
@@ -70,19 +70,6 @@ const BookingList: React.FC<BookingListProps> = ({
     if (user?.role === "admin") return true
     if (user?.role === "resident" && booking.userId === user.id) return true
     return false
-  }
-
-  const formatTimeInterval = (startTime: string, endTime: string) => {
-    const start = new Date(startTime)
-    const end = new Date(endTime)
-    const startHour = start.getHours()
-    const endHour = end.getHours()
-    return `${startHour}h - ${endHour}h`
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" })
   }
 
   const renderSortIndicator = (column: string) => {
@@ -144,11 +131,11 @@ const BookingList: React.FC<BookingListProps> = ({
                         )}
                       </div>
                     </td>
-                    <td>{formatDate(booking.startTime)}</td>
+                    <td>{formatBookingDate(booking.startTime)}</td>
                     <td>
                       {booking.resourceType === "grill"
                         ? t("BookingList.AllDay")
-                        : formatTimeInterval(booking.startTime, booking.endTime)}
+                        : formatBookingTimeInterval(booking.startTime, booking.endTime)}
                     </td>
                     <td>
                       <div className="apartment-with-tooltip">
@@ -220,4 +207,3 @@ const BookingList: React.FC<BookingListProps> = ({
 }
 
 export default BookingList
-

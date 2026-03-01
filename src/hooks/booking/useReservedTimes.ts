@@ -18,9 +18,6 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
   const [error, setError] = useState<Error | null>(null)
   const authenticatedFetch = useAuthenticatedFetch()
 
-  // Add fetch tracking to prevent excessive fetches
-  const fetchCount = useRef(0)
-  const lastFetchTime = useRef(0)
   const isMounted = useRef(true)
 
   useEffect(() => {
@@ -36,24 +33,6 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
       if (!resourceType || (resourceType === "tennis" && !date)) {
         setReservedTimes([])
         setReservedDays([])
-        return
-      }
-
-      // Prevent excessive fetches
-      const now = Date.now()
-      if (now - lastFetchTime.current < 2000) {
-        // 2 second throttle
-        console.log(`[useReservedTimes] Throttling fetch for ${resourceType}`)
-        return
-      }
-
-      // Track fetch count and time
-      fetchCount.current += 1
-      lastFetchTime.current = now
-
-      // Safety check to prevent infinite loops
-      if (fetchCount.current > 10) {
-        console.warn(`[useReservedTimes] Too many fetches (${fetchCount.current}). Possible infinite loop.`)
         return
       }
 
@@ -112,15 +91,6 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
     }
 
     fetchReservedTimes()
-
-    // Reset fetch count after 30 seconds
-    const resetTimer = setTimeout(() => {
-      fetchCount.current = 0
-    }, 30000)
-
-    return () => {
-      clearTimeout(resetTimer)
-    }
   }, [resourceType, date, authenticatedFetch])
 
   return {

@@ -3,11 +3,13 @@
 import { useState } from "react"
 import { fetchWithAuthHandling, getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 import { authError } from "../../utils/auth-logger"
+import { persistCsrfToken } from "../../utils/csrf"
 
 const API_BASE_URL = getApiBaseUrl()
 
 interface LoginResponse {
   access_token?: string
+  csrfToken?: string
   [key: string]: any
 }
 
@@ -55,6 +57,10 @@ export function useLoginUser() {
         loginError.status = response.status
         loginError.code = resolveLoginErrorCode(response.status, message)
         throw loginError
+      }
+
+      if (typeof result.csrfToken === "string" && result.csrfToken) {
+        persistCsrfToken(result.csrfToken)
       }
 
       setIsLoading(false)

@@ -57,7 +57,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearAuthState = useCallback(() => {
     clearStoredAccessToken()
-    clearStoredCsrfToken()
     setIsAuthenticated(false)
     setToken(null)
   }, [])

@@ -20,6 +20,11 @@ const SignUp = () => {
   const { login } = useAuth()
   const { register, isLoading } = useRegisterUser()
   const { t } = useTranslation()
+  const clampBlockValue = (value: string): string => {
+    const parsed = Number.parseInt(value, 10)
+    const normalized = parsed > 2 ? 2 : parsed < 1 || Number.isNaN(parsed) ? 1 : parsed
+    return normalized.toString()
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,8 +43,7 @@ const SignUp = () => {
         return
       }
 
-      const parsedBlock = Number.parseInt(block, 10)
-      const validBlock = parsedBlock > 2 ? 2 : parsedBlock < 1 || Number.isNaN(parsedBlock) ? 1 : parsedBlock
+      const validBlock = Number.parseInt(clampBlockValue(block), 10)
 
       await register({
         organizationSlug: normalizedOrganizationSlug,
@@ -123,12 +127,15 @@ const SignUp = () => {
           placeholder={t("SignUp.Block")}
           value={block}
           onChange={(e) => {
-            const value = e.target.value.replace(/\D/g, "")
-            setBlock(value)
+            const digits = e.target.value.replace(/\D/g, "")
+            if (!digits) {
+              setBlock("")
+              return
+            }
+            setBlock(clampBlockValue(digits))
           }}
           onBlur={() => {
-            const num = Number.parseInt(block, 10) || 1
-            setBlock(num > 2 ? "2" : num < 1 ? "1" : num.toString())
+            setBlock(clampBlockValue(block))
           }}
           required
         />

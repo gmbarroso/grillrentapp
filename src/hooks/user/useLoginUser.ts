@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
+import { fetchWithAuthHandling, getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 import { authError } from "../../utils/auth-logger"
 
 const API_BASE_URL = getApiBaseUrl()
@@ -37,9 +37,8 @@ export function useLoginUser() {
       const endpoint = "/users/login"
       logApiRequest("POST", `${API_BASE_URL}${endpoint}`, body)
 
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

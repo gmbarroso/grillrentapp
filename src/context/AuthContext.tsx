@@ -14,6 +14,7 @@ import {
   clearStoredAccessToken,
   stripAccessTokenFromUrl,
 } from "../utils/auth-storage"
+import { clearStoredCsrfToken } from "../utils/csrf"
 import { authDebug, authError } from "../utils/auth-logger"
 import type { User } from "../types/User"
 

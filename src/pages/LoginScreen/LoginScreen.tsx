@@ -1,26 +1,37 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useLoading } from "../../context/LoadingContext"
 import { useToast } from "../../context/ToastContext"
 import { useTheme } from "../../context/ThemeContext"
 import { Button } from "../../components"
+import { normalizeOrganizationSlug } from "../../utils/organizationSlug"
 import "./LoginScreen.css"
 
 export default function LoginScreen() {
+  const [organizationSlug, setOrganizationSlug] = useState("")
   const [apartment, setApartment] = useState("")
   const [block, setBlock] = useState("1")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
   const { t } = useTranslation()
   const { theme } = useTheme()
   const { setIsLoading } = useLoading()
   const { showToast } = useToast()
+
+  useEffect(() => {
+    const stateMessage = (location.state as { message?: string } | null)?.message
+    if (stateMessage) {
+      showToast(stateMessage, "error")
+      navigate(location.pathname, { replace: true })
+    }
+  }, [location.pathname, location.state, navigate, showToast])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,11 +41,19 @@ export default function LoginScreen() {
     const validBlock = blockNumber > 2 ? 2 : blockNumber < 1 ? 1 : blockNumber
 
     try {
-      const success = await login(apartment, validBlock, password)
-      if (success) {
+      const normalizedOrganizationSlug = normalizeOrganizationSlug(organizationSlug)
+
+      if (!normalizedOrganizationSlug) {
+        showToast(t("Login.InvalidCondominiumCode"), "error")
+        return
+      }
+
+      const result = await login(normalizedOrganizationSlug, apartment, validBlock, password)
+      if (result.success) {
         navigate("/")
       } else {
-        showToast(t("Login.Error"), "error")
+        const isInvalidSlug = result.errorCode === "INVALID_CONDOMINIUM_CODE"
+        showToast(isInvalidSlug ? t("Login.InvalidCondominiumCode") : t("Login.Error"), "error")
       }
     } catch (err) {
       console.error("Login error:", err)
@@ -54,6 +73,14 @@ export default function LoginScreen() {
         </div>
         <h2 className="title">{t("Login.Title")}</h2>
         <form className="form" onSubmit={handleSubmit}>
+          <input
+            className="input"
+            type="text"
+            placeholder={t("Login.CondominiumCode")}
+            value={organizationSlug}
+            onChange={(e) => setOrganizationSlug(e.target.value)}
+            required
+          />
           <input
             className="input"
             type="text"

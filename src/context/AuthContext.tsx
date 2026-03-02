@@ -22,7 +22,12 @@ interface AuthContextType {
   isAuthResolved: boolean
   user: User | null
   token: string | null
-  login: (apartment: string, block: number, password: string) => Promise<boolean>
+  login: (
+    organizationSlug: string,
+    apartment: string,
+    block: number,
+    password: string,
+  ) => Promise<{ success: boolean; errorCode?: string; errorMessage?: string }>
   logout: () => Promise<void>
   deleteUser: () => Promise<void>
 }
@@ -119,22 +124,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(isUserLoading || isLoginLoading || isLogoutLoading)
   }, [isUserLoading, isLoginLoading, isLogoutLoading, setIsLoading])
 
-  const login = async (apartment: string, block: number, password: string): Promise<boolean> => {
+  const login = async (
+    organizationSlug: string,
+    apartment: string,
+    block: number,
+    password: string,
+  ): Promise<{ success: boolean; errorCode?: string; errorMessage?: string }> => {
     try {
-      const response = await loginMutate({ apartment, block, password })
-
-      if (!response) {
-        return false
-      }
+      await loginMutate({ organizationSlug, apartment, block, password })
       resetUnauthorizedSignal()
       authResetInProgressRef.current = false
       setToken(COOKIE_SESSION_TOKEN)
       setIsAuthenticated(true)
       setIsAuthResolved(true)
-      return true
+      return { success: true }
     } catch (error) {
       authError("[Auth] Login error:", error)
-      return false
+      const errorCode = typeof error === "object" && error && "code" in error
+        ? String((error as { code?: unknown }).code || "")
+        : undefined
+      return {
+        success: false,
+        errorCode,
+        errorMessage: error instanceof Error ? error.message : "Login failed",
+      }
     }
   }
 

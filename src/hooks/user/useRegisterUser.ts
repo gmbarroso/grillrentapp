@@ -6,35 +6,41 @@ import { authError } from "../../utils/auth-logger"
 
 const API_BASE_URL = getApiBaseUrl()
 
-interface LoginResponse {
-  access_token?: string
-  [key: string]: any
+interface RegisterRequestBody {
+  organizationSlug: string
+  name: string
+  email: string
+  password: string
+  apartment: string
+  block: number
 }
 
-type LoginApiError = Error & { status?: number; code?: string }
+interface RegisterResponse {
+  message: string
+  user?: {
+    id?: string
+  }
+}
 
-const resolveLoginErrorCode = (status: number, message: string): string | undefined => {
+type RegisterApiError = Error & { status?: number; code?: string }
+
+const resolveRegisterErrorCode = (status: number, message: string): string | undefined => {
   if ((status === 400 || status === 401) && /invalid condominium code/i.test(message)) {
     return "INVALID_CONDOMINIUM_CODE"
   }
   return undefined
 }
 
-export function useLoginUser() {
+export function useRegisterUser() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const login = async (body: {
-    organizationSlug: string
-    apartment: string
-    block: number
-    password: string
-  }): Promise<LoginResponse> => {
+  const register = async (body: RegisterRequestBody): Promise<RegisterResponse> => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const endpoint = "/users/login"
+      const endpoint = "/users/register"
       logApiRequest("POST", `${API_BASE_URL}${endpoint}`, body)
 
       const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
@@ -47,23 +53,22 @@ export function useLoginUser() {
 
       logApiResponse(endpoint, response.status, { headers: Object.fromEntries([...response.headers.entries()]) })
 
-      const result = await response.json()
-
-      if (!response.ok && response.status !== 201) {
-        const message = result.message || "Login failed"
-        const loginError = new Error(message) as LoginApiError
-        loginError.status = response.status
-        loginError.code = resolveLoginErrorCode(response.status, message)
-        throw loginError
+      const result = await response.json() as RegisterResponse & { message?: string }
+      if (!response.ok) {
+        const message = result.message || "Registration failed"
+        const registerError = new Error(message) as RegisterApiError
+        registerError.status = response.status
+        registerError.code = resolveRegisterErrorCode(response.status, message)
+        throw registerError
       }
 
       setIsLoading(false)
       return result
     } catch (error) {
-      authError("[Auth] Error in login:", error)
+      authError("[Auth] Error in register:", error)
       const apiError = error instanceof Error && ("status" in error || "code" in error)
         ? error
-        : handleApiError(error, "/users/login")
+        : handleApiError(error, "/users/register")
       setError(apiError)
       setIsLoading(false)
       throw apiError
@@ -71,7 +76,7 @@ export function useLoginUser() {
   }
 
   return {
-    login,
+    register,
     isLoading,
     error,
   }

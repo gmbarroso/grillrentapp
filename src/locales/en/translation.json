@@ -36,8 +36,10 @@
     "SignIn": "Sign in",
     "SigningIn": "Signing in...",
     "Error": "Login failed. Please check your credentials and try again.",
+    "InvalidCondominiumCode": "Invalid condominium code. Check the code and try again.",
     "NoAccount": "Don't have an account?",
     "SignUp": "Sign up",
+    "CondominiumCode": "Condominium Code",
     "Apartment": "Apartment",
     "Block": "Block"
   },
@@ -72,13 +74,17 @@
   },
   "SignUp": {
     "Title": "Sign Up",
+    "CondominiumCode": "Condominium Code",
     "Name": "Name",
     "Email": "Email",
     "Password": "Password",
     "ConfirmPassword": "Confirm Password",
     "Apartment": "Apartment",
+    "Block": "Block",
     "Submit": "Sign Up",
     "Error": "Sign up failed. Please try again.",
+    "InvalidCondominiumCode": "Invalid condominium code. Check the code and try again.",
+    "RegisteredPleaseLogin": "Account created, but automatic login failed. Please sign in.",
     "PasswordMismatch": "Passwords don't match",
     "HaveAccount": "Already have an account?",
     "Login": "Login"
@@ -229,4 +235,3 @@
   "BookOnBehalfTooltip": "Enter the apartment number you are booking for",
   "BookOnBehalfPlaceholder": "Enter apartment number"
 }
-

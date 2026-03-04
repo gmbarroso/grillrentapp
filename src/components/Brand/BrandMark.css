@@ -1,0 +1,59 @@
+.brand-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.brand-avatar {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  border: 1px solid #ced8ea;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(13, 56, 142, 0.14);
+}
+
+.brand-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-wordmark {
+  display: flex;
+  align-items: baseline;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.brand-wordmark-seu {
+  color: var(--color-navy);
+}
+
+.brand-wordmark-ze {
+  color: var(--color-green);
+}
+
+.brand-tagline {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #51668e;
+  font-weight: 600;
+}
+
+.brand-mark-compact .brand-avatar {
+  width: 36px;
+  height: 36px;
+}
+
+.brand-mark-compact .brand-wordmark {
+  font-size: 1.22rem;
+}
+
+.brand-mark-compact .brand-tagline {
+  display: none;
+}

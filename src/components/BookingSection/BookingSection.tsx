@@ -2,244 +2,368 @@
 
 import type React from "react"
 import { useState, useEffect, useCallback, useMemo } from "react"
+import { CalendarDays, Clock3, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useAllResources } from "../../hooks/resource/useAllResources"
 import { useCreateBooking } from "../../hooks/booking/useCreateBooking"
+import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
 import { useReservedTimes } from "../../hooks/booking/useReservedTimes"
+import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { useToast } from "../../context/ToastContext"
 import { useAuth } from "../../context/AuthContext"
 import type { Resource } from "../../types/Resource"
-import type { BookingSectionProps } from "../../types/Booking"
-import { LoadingSpinner, Modal, CustomCalendar, TimeSlotSelector, Tooltip, Button } from "../"
+import type { Booking, BookingSectionProps } from "../../types/Booking"
+import { formatBookingDateKey, formatBookingTimeInterval, BOOKING_DISPLAY_TIMEZONE } from "../../utils/booking-datetime"
+import { LoadingSpinner, Modal, Calendar, Tooltip, Button } from "../"
 import "./BookingSection.css"
 
-const BookingSection: React.FC<BookingSectionProps> = ({
-  token,
-  onBookingCreated,
-}) => {
+interface PendingBookingData {
+  resourceId: string
+  startTime: string
+  endTime: string
+  needTablesAndChairs: boolean
+  bookedOnBehalf?: string
+}
+
+const timeSlots = Array.from({ length: 15 }, (_, i) => {
+  const hour = i + 7
+  return {
+    value: `${hour.toString().padStart(2, "0")}:00`,
+    label: `${hour.toString().padStart(2, "0")}:00h - ${(hour + 1).toString().padStart(2, "0")}:00h`,
+  }
+})
+
+const formatPtDateTitle = (date: Date) => {
+  const text = new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(date)
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+const sameDateKey = (iso: string, key: string) => formatBookingDateKey(new Date(iso)) === key
+
+const isSameUnit = (booking: Booking, apartment?: string, block?: number) =>
+  booking.userApartment === apartment && Number(booking.userBlock) === Number(block)
+
+const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated }) => {
   const { t } = useTranslation()
   const { showToast } = useToast()
   const { user } = useAuth()
-  const [selectedOption, setSelectedOption] = useState<"daily" | "hourly" | null>(null)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+
+  const [selectedOption, setSelectedOption] = useState<"grill" | "tennis">("tennis")
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
-  const {
-    reservedTimes: unavailableTimes,
-    reservedDays,
-    isLoading: isLoadingTimes,
-    error: timesError,
-  } = useReservedTimes(selectedOption as "hourly" | "daily" | undefined, selectedDate || undefined)
   const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
   const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false)
-  const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
-  const [isFetchingAfterDateSelect, setIsFetchingAfterDateSelect] = useState(false)
-  const [bookedOnBehalf, setBookedOnBehalf] = useState<string>("")
+  const [bookedOnBehalf, setBookedOnBehalf] = useState("")
+  const [isConfirmBookingModalOpen, setIsConfirmBookingModalOpen] = useState(false)
+  const [pendingBookingData, setPendingBookingData] = useState<PendingBookingData | null>(null)
+  const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null)
+
+  const {
+    reservedTimes: unavailableTimes,
+    isLoading: isLoadingTimes,
+    error: timesError,
+  } = useReservedTimes(selectedOption, selectedDate)
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking } = useCreateBooking(token)
+  const { deleteBooking, isLoading: isDeletingBooking } = useDeleteBooking(token)
+  const { bookings, refreshBookings } = useAllBookings({ initialLimit: 200 })
+
+  const selectedDateKey = useMemo(() => formatBookingDateKey(selectedDate), [selectedDate])
 
   const selectedResource = useMemo(() => {
-    return selectedOption ? resources?.find((r: Resource) => r.type === selectedOption) : null
-  }, [selectedOption, resources])
+    return resources?.find((resource: Resource) => resource.type === selectedOption) ?? null
+  }, [resources, selectedOption])
 
-  useEffect(() => {
-    if (selectedOption) {
-      setCalendarKey(`${selectedOption}-${Date.now()}`)
-    }
-  }, [selectedOption])
+  const resourceBookings = useMemo(() => {
+    const now = new Date()
+    return bookings
+      .filter((booking) => booking.resourceType === selectedOption)
+      .filter((booking) => new Date(booking.endTime).getTime() > now.getTime())
+  }, [bookings, selectedOption])
 
-  useEffect(() => {
-    if (!isLoadingTimes && isFetchingAfterDateSelect) {
-      setIsFetchingAfterDateSelect(false)
-    }
-  }, [isLoadingTimes, isFetchingAfterDateSelect])
-
-  const handleOptionSelect = useCallback(
-    (option: "daily" | "hourly") => {
-      if (option === selectedOption) return
-
-      setSelectedOption(option)
-      setSelectedDate(null)
-      setSelectedTime(null)
-      setNeedTablesAndChairs(false)
-    },
-    [selectedOption],
+  const reservedDayKeys = useMemo(
+    () => [...new Set(resourceBookings.map((booking) => formatBookingDateKey(new Date(booking.startTime))))],
+    [resourceBookings],
   )
 
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date)
-    setSelectedTime(null)
+  const dayBookings = useMemo(
+    () =>
+      resourceBookings
+        .filter((booking) => sameDateKey(booking.startTime, selectedDateKey))
+        .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()),
+    [resourceBookings, selectedDateKey],
+  )
 
-    if (selectedOption === "daily") {
-      setIsFetchingAfterDateSelect(true)
+  const tennisBookingByHour = useMemo(() => {
+    const map = new Map<string, Booking>()
+    dayBookings.forEach((booking) => {
+      const hour = new Date(booking.startTime).getHours().toString().padStart(2, "0")
+      map.set(`${hour}:00`, booking)
+    })
+    return map
+  }, [dayBookings])
+
+  const grillBooking = selectedOption === "grill" ? dayBookings[0] ?? null : null
+
+  const canDeleteBooking = useCallback(
+    (booking: Booking) => {
+      if (!user) return false
+      return booking.userId === user.id || isSameUnit(booking, user.apartment, user.block) || user.role === "admin"
+    },
+    [user],
+  )
+
+  const isPastSlotForSelectedDate = (slot: string) => {
+    if (selectedOption !== "tennis") return false
+
+    const now = new Date()
+    const dayFormatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: BOOKING_DISPLAY_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    const selectedDayKey = dayFormatter.format(selectedDate)
+    const todayKey = dayFormatter.format(now)
+    if (selectedDayKey !== todayKey) return false
+
+    const [slotHourText] = slot.split(":")
+    const slotHour = Number.parseInt(slotHourText, 10)
+    const nowHour = Number.parseInt(
+      new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        hour12: false,
+        timeZone: BOOKING_DISPLAY_TIMEZONE,
+      }).format(now),
+      10,
+    )
+    return slotHour <= nowHour
+  }
+
+  useEffect(() => {
+    if (resourcesError) {
+      showToast(t("ErrorLoadingResources"), "error")
+    }
+  }, [resourcesError, showToast, t])
+
+  useEffect(() => {
+    if (timesError && !(selectedOption === "tennis" && !selectedDate)) {
+      showToast(t("ErrorFetchingSlots"), "error")
+    }
+  }, [timesError, selectedDate, selectedOption, showToast, t])
+
+  const buildBookingPayload = (slot?: string | null): PendingBookingData | null => {
+    if (!selectedResource) return null
+
+    const now = new Date()
+    const startTime = new Date(selectedDate)
+    const endTime = new Date(selectedDate)
+
+    if (selectedOption === "tennis") {
+      if (!slot) return null
+      const [hourText] = slot.split(":")
+      startTime.setHours(Number.parseInt(hourText, 10), 0, 0, 0)
+      endTime.setHours(startTime.getHours() + 1, 0, 0, 0)
+    } else {
+      startTime.setHours(7, 0, 0, 0)
+      endTime.setHours(22, 0, 0, 0)
+    }
+
+    if (startTime.toDateString() === now.toDateString() && selectedOption === "grill") {
+      const currentHour = now.getHours()
+      if (currentHour >= 7 && currentHour < 22) {
+        startTime.setHours(currentHour + 1, 0, 0, 0)
+      } else if (currentHour >= 22) {
+        showToast(t("ErrorBookingClosedForToday"), "error")
+        return null
+      }
+    }
+
+    return {
+      resourceId: selectedResource.id,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      needTablesAndChairs: selectedOption === "grill" ? needTablesAndChairs : false,
+      ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
     }
   }
 
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time)
+  const openConfirmBookingModal = (slot?: string | null) => {
+    const payload = buildBookingPayload(slot)
+    if (!payload) return
+    setPendingBookingData(payload)
+    setIsConfirmBookingModalOpen(true)
   }
 
-  const handleTablesAndChairsChange = () => {
-    setIsAgreementModalOpen(true)
-  }
+  const handleConfirmBooking = async () => {
+    if (!pendingBookingData) return
 
-  const handleAgreementConfirm = () => {
-    setNeedTablesAndChairs(true)
-    setIsAgreementModalOpen(false)
-  }
-
-  const handleAgreementCancel = () => {
-    setNeedTablesAndChairs(false)
-    setIsAgreementModalOpen(false)
-  }
-
-  const handleConfirmDate = async () => {
-    if (selectedResource && selectedDate) {
-      const now = new Date()
-      const startTime = new Date(selectedDate)
-      const endTime = new Date(selectedDate)
-
-      if (selectedOption === "hourly" && selectedTime) {
-        const [hours] = selectedTime.split(":")
-        startTime.setHours(Number.parseInt(hours, 10), 0, 0, 0)
-        endTime.setHours(startTime.getHours() + 1, 0, 0, 0)
-      } else {
-        startTime.setHours(7, 0, 0, 0)
-        endTime.setHours(22, 0, 0, 0)
-      }
-
-      if (startTime.toDateString() === now.toDateString() && selectedOption === "daily") {
-        const currentHour = now.getHours()
-        if (currentHour >= 7 && currentHour < 22) {
-          startTime.setHours(currentHour + 1, 0, 0, 0)
-        } else if (currentHour >= 22) {
-          showToast(t("ErrorBookingClosedForToday"), "error")
-          return
-        }
-      }
-
-      try {
-        const bookingData = {
-          resourceId: selectedResource.id,
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
-          needTablesAndChairs: selectedOption === "daily" ? needTablesAndChairs : false,
-          ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
-        }
-        await createBooking(bookingData)
-        onBookingCreated()
-        showToast(t("BookingCreatedSuccess"), "success")
-        setSelectedDate(null)
-        setSelectedTime(null)
-        setNeedTablesAndChairs(false)
-        setSelectedOption(null)
-        setBookedOnBehalf("")
-      } catch (error) {
-        console.error("Error creating booking:", error)
-        showToast(t("ErrorCreatingBooking"), "error")
-      }
+    try {
+      await createBooking(pendingBookingData)
+      await refreshBookings()
+      await onBookingCreated()
+      showToast(t("BookingCreatedSuccess"), "success")
+      setSelectedTime(null)
+      setNeedTablesAndChairs(false)
+      setBookedOnBehalf("")
+    } catch (error) {
+      console.error("Error creating booking:", error)
+      showToast(t("ErrorCreatingBooking"), "error")
+    } finally {
+      setIsConfirmBookingModalOpen(false)
+      setPendingBookingData(null)
     }
   }
 
-  const handleRulesForEachResource = (option: "daily" | "hourly") => {
-    const title = t(`Card.${option === "hourly" ? "TennisTitle" : "GrillTitle"}`)
-    const content = t(`Card.${option === "hourly" ? "TennisContent" : "GrillContent"}`, {
+  const handleDeleteCurrentBooking = async () => {
+    if (!bookingToDelete) return
+    const result = await deleteBooking(bookingToDelete.id)
+    if (result.success) {
+      await refreshBookings()
+      await onBookingCreated()
+      showToast(t("BookingList.DeleteSuccess"), "success")
+    } else {
+      showToast(t("BookingList.DeleteError"), "error")
+    }
+    setBookingToDelete(null)
+  }
+
+  const rules = useMemo(() => {
+    const content = t(`Card.${selectedOption === "tennis" ? "TennisContent" : "GrillContent"}`, {
       returnObjects: true,
     }) as string[]
-
-    return (
-      <div>
-        <h3 className="card-title">{title}</h3>
-        <ul className="card-content">
-          {content.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-
-  const canConfirmBooking = () => {
-    if (selectedOption === "hourly") {
-      return selectedDate && selectedTime
-    }
-    return selectedDate
-  }
-
-  if (resourcesError) {
-    showToast(t("ErrorLoadingResources"), "error")
-  }
-
-  if (timesError && !(selectedOption === "hourly" && !selectedDate)) {
-    showToast(t("ErrorFetchingSlots"), "error")
-  }
+    return content
+  }, [selectedOption, t])
 
   return (
-    <section className="booking-section">
-      <h2>{t("ChooseRent")}</h2>
-      <div className="options">
-        {isResourcesLoading ? (
-          <div className="options-loading">
-            <LoadingSpinner inline />
-          </div>
-        ) : resources ? (
-          resources.map((resource: Resource) => (
-            <Button
-              key={resource.id}
-              variant="secondary"
-              className={selectedOption === resource.type ? "selected" : ""}
-              onClick={() => handleOptionSelect(resource.type)}
-            >
-              {t(`Resource.${resource.type}`)}
-            </Button>
-          ))
-        ) : null}
+    <section className="booking-section booking-scheduler">
+      <div className="scheduler-tabs">
+        <Button
+          variant="secondary"
+          className={selectedOption === "tennis" ? "selected" : ""}
+          onClick={() => setSelectedOption("tennis")}
+        >
+          Quadra de Tenis
+        </Button>
+        <Button
+          variant="secondary"
+          className={selectedOption === "grill" ? "selected" : ""}
+          onClick={() => setSelectedOption("grill")}
+        >
+          Churrasqueira
+        </Button>
       </div>
-      {selectedOption && (
-        <div className="calendar-section">
-          <div className="calendar-container">
-            {selectedOption === "daily" && (isLoadingTimes || isFetchingAfterDateSelect) ? (
-              <div className="calendar-loading">
-                <LoadingSpinner inline />
-              </div>
-            ) : (
-              <CustomCalendar
-                key={calendarKey}
-                reservedDays={selectedOption === "daily" ? reservedDays : []}
-                onDateSelect={handleDateSelect}
-                resourceType={selectedOption}
-                selectedDate={selectedDate}
-              />
-            )}
+
+      <div className="scheduler-content">
+        <div className="scheduler-main">
+          <div className="scheduler-day-title">
+            <CalendarDays size={16} />
+            <strong>{formatPtDateTitle(selectedDate)}</strong>
           </div>
 
-          {selectedDate && selectedOption === "daily" && !isLoadingTimes && !isFetchingAfterDateSelect && (
-            <div className="tables-chairs-option">
+          {isLoadingTimes ? (
+            <div className="scheduler-loading">
+              <LoadingSpinner inline />
+            </div>
+          ) : selectedOption === "tennis" ? (
+            <div className="scheduler-slot-list">
+              {timeSlots.map((slot) => {
+                const booking = tennisBookingByHour.get(slot.value)
+                const isPast = isPastSlotForSelectedDate(slot.value)
+                const isBooked = Boolean(booking) || unavailableTimes.includes(slot.value)
+                const isBlocked = isPast || isBooked
+                const canDelete = booking ? canDeleteBooking(booking) : false
+
+                return (
+                  <div key={slot.value} className={`scheduler-slot-row ${isBlocked ? "blocked" : ""}`.trim()}>
+                    <div className="scheduler-slot-time">
+                      <Clock3 size={15} />
+                      <span>{slot.label}</span>
+                    </div>
+
+                    {booking ? (
+                      <div className="scheduler-slot-actions">
+                        <span className={`reservation-status ${booking.bookedOnBehalf ? "pending" : "confirmed"}`.trim()}>
+                          {booking.bookedOnBehalf ? "Pag. Pendente" : "Confirmado"}
+                        </span>
+                        {canDelete ? (
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => setBookingToDelete(booking)}
+                            className="scheduler-delete-button"
+                          >
+                            <Trash2 size={13} />
+                            Cancelar
+                          </Button>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={isBlocked}
+                        onClick={() => {
+                          setSelectedTime(slot.value)
+                          openConfirmBookingModal(slot.value)
+                        }}
+                        className="scheduler-reserve-button"
+                      >
+                        {isBlocked ? "Reservado" : "Reservar"}
+                      </Button>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ) : grillBooking ? (
+            <div className="scheduler-grill-booking">
+              <div className="scheduler-grill-row">
+                <div>
+                  <strong>Reservado - Dia inteiro</strong>
+                  <p>
+                    Morador: {grillBooking.userId === user?.id || isSameUnit(grillBooking, user?.apartment, user?.block)
+                      ? user?.name || "Morador"
+                      : `Apt ${grillBooking.userApartment} Bl. ${grillBooking.userBlock}`}
+                  </p>
+                  <p>Apt {grillBooking.userApartment} Bl. {grillBooking.userBlock}</p>
+                  {grillBooking.needTablesAndChairs ? <a href="#">Mesas e cadeiras solicitadas</a> : null}
+                </div>
+                <span className={`reservation-status ${grillBooking.bookedOnBehalf ? "pending" : "confirmed"}`.trim()}>
+                  {grillBooking.bookedOnBehalf ? "Pag. Pendente" : "Confirmado"}
+                </span>
+              </div>
+              {canDeleteBooking(grillBooking) ? (
+                <Button variant="danger" size="sm" onClick={() => setBookingToDelete(grillBooking)} className="scheduler-delete-button">
+                  <Trash2 size={13} />
+                  Cancelar
+                </Button>
+              ) : null}
+            </div>
+          ) : (
+            <div className="scheduler-grill-empty">
+              <p>Disponivel para reserva</p>
+              <Button variant="primary" onClick={() => openConfirmBookingModal(null)}>
+                Reservar Churrasqueira
+              </Button>
               <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={needTablesAndChairs}
-                  onChange={handleTablesAndChairsChange}
+                  onChange={() => setIsAgreementModalOpen(true)}
                   className="checkbox-input"
                 />
                 <span className="checkbox-text">{t("NeedTablesAndChairs")}</span>
               </label>
-              <p>{t("GrillRentWarning")}</p>
             </div>
           )}
 
-          {selectedDate && selectedOption === "hourly" && (
-            <TimeSlotSelector
-              selectedTime={selectedTime}
-              onTimeSelect={handleTimeSelect}
-              resourceType={selectedOption}
-              selectedDate={selectedDate}
-              unavailableSlots={unavailableTimes}
-              isLoading={isLoadingTimes}
-            />
-          )}
-
-          {selectedDate && user?.role === "admin" && (
+          {user?.role === "admin" ? (
             <div className="admin-booking-field">
               <label htmlFor="bookedOnBehalf" className="admin-booking-label">
                 {t("BookOnBehalf")}
@@ -255,26 +379,39 @@ const BookingSection: React.FC<BookingSectionProps> = ({
                 placeholder={t("BookOnBehalfPlaceholder")}
               />
             </div>
-          )}
-
-          {selectedDate && canConfirmBooking() && (
-            <Button
-              variant="primary"
-              onClick={handleConfirmDate}
-              disabled={isCreatingBooking}
-              className="confirm-date-button"
-            >
-              {t("ConfirmDate")}
-            </Button>
-          )}
-
-          {isCreatingBooking && <LoadingSpinner />}
+          ) : null}
         </div>
-      )}
-      {selectedOption && handleRulesForEachResource(selectedResource.type)}
 
-      {/* I will separate all the Modals in this format in its own components in the future */}
-      <Modal isOpen={isAgreementModalOpen} onClose={handleAgreementCancel} wide={true}>
+        <aside className="scheduler-side">
+          <div className="scheduler-side-card">
+            <Calendar
+              reservedDays={reservedDayKeys}
+              onDateSelect={setSelectedDate}
+              resourceType={selectedOption}
+              selectedDate={selectedDate}
+            />
+          </div>
+          <div className="scheduler-side-card scheduler-resource-card">
+            <h4>{selectedOption === "tennis" ? "Quadra de Tenis" : "Churrasqueira"}</h4>
+            <p>
+              {selectedOption === "tennis"
+                ? "Quadra profissional com iluminacao noturna"
+                : "Area de churrasqueira com mesas, cadeiras e espaco coberto"}
+            </p>
+          </div>
+        </aside>
+      </div>
+
+      <section className="scheduler-rules">
+        <h3>Regras de Uso - {selectedOption === "tennis" ? "Quadra de Tenis" : "Churrasqueira"}</h3>
+        <ul className="card-content">
+          {rules.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      </section>
+
+      <Modal isOpen={isAgreementModalOpen} onClose={() => setIsAgreementModalOpen(false)} wide={true}>
         <div className="agreement-modal">
           <h2 className="agreement-title">{t("TablesAndChairsAgreement.Title")}</h2>
           <p className="agreement-content">
@@ -290,60 +427,69 @@ const BookingSection: React.FC<BookingSectionProps> = ({
             </div>
           ))}
 
-          <div className="agreement-date">
-            {t("TablesAndChairsAgreement.DatePrefix")} {formatDateInPortuguese()}
-          </div>
-
-          <div className="agreement-signatures">
-            <div className="agreement-signature">
-              <div className="agreement-signature-line"></div>
-              <div className="agreement-signature-name">{user?.name || ""}</div>
-              <div className="agreement-signature-title">{t("TablesAndChairsAgreement.SignatureUser")}</div>
-            </div>
-
-            <div className="agreement-signature">
-              <div className="agreement-signature-line"></div>
-              <div className="agreement-signature-name">{t("TablesAndChairsAgreement.SignatureAdmin")}</div>
-              <div className="agreement-signature-title">{t("TablesAndChairsAgreement.SignatureAdminTitle")}</div>
-            </div>
-          </div>
-
           <div className="agreement-actions">
-            <Button variant="primary" onClick={handleAgreementConfirm} className="confirm-button">
+            <Button
+              variant="primary"
+              onClick={() => {
+                setNeedTablesAndChairs(true)
+                setIsAgreementModalOpen(false)
+              }}
+              className="confirm-button"
+            >
               {t("TablesAndChairsAgreement.Confirm")}
             </Button>
-            <Button variant="danger" onClick={handleAgreementCancel} className="cancel-button">
+            <Button
+              variant="danger"
+              onClick={() => {
+                setNeedTablesAndChairs(false)
+                setIsAgreementModalOpen(false)
+              }}
+              className="cancel-button"
+            >
               {t("TablesAndChairsAgreement.Cancel")}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isConfirmBookingModalOpen} onClose={() => setIsConfirmBookingModalOpen(false)}>
+        <div className="confirm-booking-modal">
+          <h2>Confirmar reserva</h2>
+          <p>
+            {selectedOption === "tennis" && selectedTime
+              ? `Deseja reservar ${formatBookingTimeInterval(
+                  new Date(`${selectedDateKey}T${selectedTime}:00`),
+                  new Date(`${selectedDateKey}T${(Number.parseInt(selectedTime, 10) + 1).toString().padStart(2, "0")}:00:00`),
+                )}?`
+              : "Deseja confirmar esta reserva?"}
+          </p>
+          <div className="confirm-booking-actions">
+            <Button variant="secondary" onClick={() => setIsConfirmBookingModalOpen(false)}>
+              Voltar
+            </Button>
+            <Button variant="primary" onClick={handleConfirmBooking} disabled={isCreatingBooking}>
+              Confirmar
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={Boolean(bookingToDelete)} onClose={() => setBookingToDelete(null)}>
+        <div className="confirm-booking-modal">
+          <h2>Cancelar reserva</h2>
+          <p>Deseja realmente cancelar esta reserva?</p>
+          <div className="confirm-booking-actions">
+            <Button variant="secondary" onClick={() => setBookingToDelete(null)}>
+              Voltar
+            </Button>
+            <Button variant="danger" onClick={handleDeleteCurrentBooking} disabled={isDeletingBooking}>
+              Cancelar reserva
             </Button>
           </div>
         </div>
       </Modal>
     </section>
   )
-}
-
-// I will isolate this in a separate function to avoid cluttering the main component
-const formatDateInPortuguese = () => {
-  const now = new Date()
-  const day = now.getDate()
-  const monthNames = [
-    "janeiro",
-    "fevereiro",
-    "março",
-    "abril",
-    "maio",
-    "junho",
-    "julho",
-    "agosto",
-    "setembro",
-    "outubro",
-    "novembro",
-    "dezembro",
-  ]
-  const month = monthNames[now.getMonth()]
-  const year = now.getFullYear()
-
-  return `${day} de ${month} de ${year}`
 }
 
 export default BookingSection

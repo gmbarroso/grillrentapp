@@ -1,52 +1,45 @@
 import type React from "react"
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
+import CustomCalendar from "../CustomCalendar/CustomCalendar"
 import "./Calendar.css"
 
 interface CalendarProps {
-  availableDates: Date[]
-  unavailableDates: Date[]
+  availableDates?: Date[]
+  unavailableDates?: Date[]
+  reservedDays?: string[]
   onDateSelect: (date: Date) => void
+  minDate?: Date
+  maxDate?: Date
+  resourceType?: "grill" | "tennis"
+  selectedDate?: Date | null
 }
 
-const Calendar: React.FC<CalendarProps> = ({ availableDates, unavailableDates, onDateSelect }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-
-  const formatDateForInput = (date: Date): string => {
-    return date.toISOString().split("T")[0]
-  }
-
-  // const formatDateForDisplay = (date: Date): string => {
-  //   return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
-  // }
-
-  const maxDate = useMemo(() => {
-    const date = new Date()
-    date.setMonth(date.getMonth() + 3)
-    return formatDateForInput(date)
-  }, [])
-
-  // const isDateUnavailable = (date: Date): boolean => {
-  //   return unavailableDates.some(unavailableDate => unavailableDate.toDateString() === date.toDateString())
-  // }
-
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(event.target.value + "T00:00:00")
-    setSelectedDate(date)
-    onDateSelect(date)
-  }
+const Calendar: React.FC<CalendarProps> = ({
+  unavailableDates = [],
+  reservedDays,
+  onDateSelect,
+  minDate,
+  maxDate,
+  resourceType = "grill",
+  selectedDate = null,
+}) => {
+  const normalizedReservedDays = useMemo(() => {
+    if (reservedDays) return reservedDays
+    return unavailableDates.map((date) => date.toISOString().split("T")[0])
+  }, [reservedDays, unavailableDates])
 
   return (
-    <div className="calendar">
-      <input
-        type="date"
-        onChange={handleDateChange}
-        className="calendar-input"
-        min={formatDateForInput(new Date())}
-        max={maxDate}
+    <div className="calendar calendar-widget">
+      <CustomCalendar
+        reservedDays={normalizedReservedDays}
+        onDateSelect={onDateSelect}
+        minDate={minDate}
+        maxDate={maxDate}
+        resourceType={resourceType}
+        selectedDate={selectedDate}
       />
     </div>
   )
 }
 
 export default Calendar
-

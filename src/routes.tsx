@@ -1,16 +1,20 @@
 "use client"
 
 import type React from "react"
-import { Route, Routes, Navigate } from "react-router-dom"
+import { Route, Routes, Navigate, useLocation, Outlet } from "react-router-dom"
 import { useAuth } from "./context/AuthContext"
-import { Home, LoginScreen, SignUp, Profile, Contact, Notices } from "./pages"
-import { ToastProvider } from "./context/ToastContext"
-import { LoadingSpinner } from "./components"
+import { Home, LoginScreen, SignUp, Profile, Contact, Notices, MyReservations } from "./pages"
+import { DashboardHomeSkeleton, DashboardLayout, LoadingSpinner } from "./components"
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ProtectedDashboardLayout: React.FC = () => {
   const { isAuthenticated, isAuthResolved } = useAuth()
+  const location = useLocation()
 
   if (!isAuthResolved) {
+    if (location.pathname === "/") {
+      return <DashboardHomeSkeleton />
+    }
+
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
         <LoadingSpinner />
@@ -18,41 +22,29 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     )
   }
 
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+
+  return (
+    <DashboardLayout>
+      <Outlet />
+    </DashboardLayout>
+  )
 }
 
 export const AppRoutes = () => {
   return (
-    <ToastProvider>
-      <Routes>
-        <Route path="/login" element={<LoginScreen />} />
-        <Route path="/signup" element={<SignUp />} />
+    <Routes>
+      <Route path="/login" element={<LoginScreen />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route element={<ProtectedDashboardLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/minhas-reservas" element={<MyReservations />} />
+        <Route path="/notices" element={<Notices />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact />} />
-        <Route
-          path="/notices"
-          element={
-            <ProtectedRoute>
-              <Notices />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </ToastProvider>
+      </Route>
+    </Routes>
   )
 }

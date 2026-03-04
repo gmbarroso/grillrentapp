@@ -16,7 +16,11 @@ interface BookingsResponse {
   lastPage: number
 }
 
-export function useAllBookings() {
+interface UseAllBookingsOptions {
+  initialLimit?: number
+}
+
+export function useAllBookings(options?: UseAllBookingsOptions) {
   // Add render counter for debugging
   const renderCount = useRef(0)
   renderCount.current++
@@ -27,7 +31,7 @@ export function useAllBookings() {
   }
 
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentLimit, setCurrentLimit] = useState(20)
+  const [currentLimit, setCurrentLimit] = useState(options?.initialLimit ?? 20)
   const [currentSort, setCurrentSort] = useState("startTime")
   const [currentOrder, setCurrentOrder] = useState<"ASC" | "DESC">("ASC")
   const authenticatedFetch = useAuthenticatedFetch()

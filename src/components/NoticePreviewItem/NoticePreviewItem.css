@@ -1,0 +1,37 @@
+.notice-preview-item {
+  border: 1px solid #d4deee;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0.8rem;
+}
+
+.notice-preview-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.notice-preview-header h4 {
+  margin: 0;
+  font-size: 0.94rem;
+  color: #101828;
+}
+
+.notice-preview-header time {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.notice-preview-subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.84rem;
+  color: #516179;
+}
+
+.notice-preview-content {
+  margin: 0.4rem 0 0;
+  color: #4a596f;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}

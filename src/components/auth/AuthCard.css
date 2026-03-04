@@ -1,0 +1,29 @@
+.auth-card {
+  width: min(100%, 420px);
+  padding: 1.4rem;
+  border-radius: 14px;
+  border: 1px solid #ccd7ea;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(11, 40, 101, 0.08);
+}
+
+.auth-card-header {
+  margin-bottom: 1rem;
+}
+
+.auth-card-header h2 {
+  margin: 0;
+  font-size: 1.65rem;
+  color: #141923;
+}
+
+.auth-card-header p {
+  margin: 0.35rem 0 0;
+  color: #626e83;
+}
+
+.auth-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}

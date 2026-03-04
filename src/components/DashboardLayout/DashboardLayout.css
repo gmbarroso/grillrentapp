@@ -1,0 +1,38 @@
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: #f4f6fb;
+}
+
+.dashboard-main {
+  min-width: 0;
+}
+
+.dashboard-main-content {
+  padding: 1.25rem;
+}
+
+@media (max-width: 1080px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-sidebar {
+    border-right: none;
+    border-bottom: 1px solid #d8dfec;
+  }
+
+  .dashboard-nav-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-nav-group h3 {
+    width: 100%;
+  }
+
+  .dashboard-user-box {
+    margin-top: 0;
+  }
+}

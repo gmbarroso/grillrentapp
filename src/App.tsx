@@ -1,4 +1,5 @@
 import { BrowserRouter as Router } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { I18nextProvider } from "react-i18next"
 import { SWRConfig } from "swr"
 import i18n from "./i18n"
@@ -15,16 +16,20 @@ import "./App.css"
 
 function AppContent() {
   const { isLoading } = useLoading()
+  const location = useLocation()
+  const dashboardRoutes = ["/", "/minhas-reservas", "/notices", "/profile", "/contact"]
+  const isDashboardRoute = dashboardRoutes.includes(location.pathname)
+  const hideGlobalChrome = location.pathname === "/login" || isDashboardRoute
 
   return (
     <div className="app">
-      <Header />
-      <SettingsBar />
-      <main className="main-content">
+      {!hideGlobalChrome && <Header />}
+      {!hideGlobalChrome && <SettingsBar />}
+      <main className={`main-content ${hideGlobalChrome ? "main-content-fluid" : ""}`.trim()}>
         <AppRoutes />
       </main>
-      <Footer />
-      {isLoading && <LoadingSpinner />}
+      {!hideGlobalChrome && <Footer />}
+      {isLoading && !isDashboardRoute && <LoadingSpinner />}
     </div>
   )
 }
@@ -50,4 +55,3 @@ function App() {
 }
 
 export default App
-

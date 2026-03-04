@@ -4,11 +4,11 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { Eye, EyeOff } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useLoading } from "../../context/LoadingContext"
 import { useToast } from "../../context/ToastContext"
-import { useTheme } from "../../context/ThemeContext"
-import { Button } from "../../components"
+import { AuthCard, BrandMark } from "../../components"
 import { normalizeOrganizationSlug } from "../../utils/organizationSlug"
 import "./LoginScreen.css"
 
@@ -17,11 +17,11 @@ export default function LoginScreen() {
   const [apartment, setApartment] = useState("")
   const [block, setBlock] = useState("1")
   const [password, setPassword] = useState("")
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { login } = useAuth()
   const { t } = useTranslation()
-  const { theme } = useTheme()
   const { setIsLoading } = useLoading()
   const { showToast } = useToast()
 
@@ -63,59 +63,110 @@ export default function LoginScreen() {
     }
   }
 
-  const logoSrc = theme === "dark" ? "/images/logo_white.png" : "/images/logo.png"
-
   return (
-    <div className="container">
-      <div className="form-container">
-        <div className="login-brand">
-          <img src={logoSrc || "/placeholder.svg"} alt="Chácara Sacopã Logo" className="login-logo" />
+    <div className="login-page">
+      <div className="login-page-decoration login-page-decoration-top" aria-hidden="true" />
+      <div className="login-page-decoration login-page-decoration-bottom" aria-hidden="true" />
+      <div className="login-page-inner">
+        <div className="login-brand-wrap">
+          <BrandMark />
         </div>
-        <h2 className="title">{t("Login.Title")}</h2>
-        <form className="form" onSubmit={handleSubmit}>
-          <input
-            className="input"
-            type="text"
-            placeholder={t("Login.CondominiumCode")}
-            value={organizationSlug}
-            onChange={(e) => setOrganizationSlug(e.target.value)}
-            required
-          />
-          <input
-            className="input"
-            type="text"
-            placeholder={t("Login.Apartment")}
-            value={apartment}
-            onChange={(e) => setApartment(e.target.value)}
-            required
-          />
-          <input
-            className="input"
-            type="text"
-            placeholder={t("Login.Block")}
-            value={block}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, "")
-              setBlock(value)
-            }}
-            onBlur={() => {
-              const num = Number.parseInt(block) || 1
-              setBlock(num > 2 ? "2" : num < 1 ? "1" : num.toString())
-            }}
-            required
-          />
-          <input
-            className="input"
-            type="password"
-            placeholder={t("Login.Password")}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Button variant="primary" type="submit" fullWidth>
-            {t("Login.SignIn")}
-          </Button>
-        </form>
+        <AuthCard title="Bem-vindo de volta" subtitle="Entre com os dados do seu condominio">
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="login-field">
+              <label htmlFor="organizationSlug">Codigo do condominio</label>
+              <input
+                id="organizationSlug"
+                className="login-input"
+                type="text"
+                placeholder={t("Login.CondominiumCode")}
+                value={organizationSlug}
+                onChange={(e) => setOrganizationSlug(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="login-row">
+              <div className="login-field">
+                <label htmlFor="apartment">Apartamento</label>
+                <input
+                  id="apartment"
+                  className="login-input"
+                  type="text"
+                  placeholder={t("Login.Apartment")}
+                  value={apartment}
+                  onChange={(e) => setApartment(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="login-field login-field-small">
+                <label htmlFor="block">Bloco</label>
+                <input
+                  id="block"
+                  className="login-input"
+                  type="text"
+                  placeholder={t("Login.Block")}
+                  value={block}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "")
+                    setBlock(value)
+                  }}
+                  onBlur={() => {
+                    const num = Number.parseInt(block) || 1
+                    setBlock(num > 2 ? "2" : num < 1 ? "1" : num.toString())
+                  }}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="login-field">
+              <div className="login-label-row">
+                <label htmlFor="password">Senha</label>
+                <button type="button" className="login-link-button">
+                  Esqueceu a senha?
+                </button>
+              </div>
+              <div className="login-password-wrap">
+                <input
+                  id="password"
+                  className="login-input"
+                  type={isPasswordVisible ? "text" : "password"}
+                  placeholder={t("Login.Password")}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="login-password-toggle"
+                  onClick={() => setIsPasswordVisible((value) => !value)}
+                  aria-label={isPasswordVisible ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {isPasswordVisible ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            <button className="login-submit" type="submit">
+              {t("Login.SignIn")}
+            </button>
+
+            <div className="login-divider">
+              <span>Novo por aqui?</span>
+            </div>
+
+            <button className="login-secondary" type="button" onClick={() => navigate("/signup")}>
+              Cadastrar novo condominio
+            </button>
+          </form>
+        </AuthCard>
+
+        <div className="login-demo-box">
+          <strong>Demo:</strong> Codigo SACOPA, apto 201, bloco 2 e qualquer senha.
+        </div>
+
+        <p className="login-caption">Sistema de Gestao Condominial</p>
       </div>
     </div>
   )

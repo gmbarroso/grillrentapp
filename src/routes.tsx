@@ -3,7 +3,22 @@
 import type React from "react"
 import { Route, Routes, Navigate, useLocation, Outlet } from "react-router-dom"
 import { useAuth } from "./context/AuthContext"
-import { Home, LoginScreen, SignUp, Profile, Contact, Notices, MyReservations } from "./pages"
+import {
+  AdminBookings,
+  AdminNotices,
+  AdminResidents,
+  AdminResources,
+  AdminSettings,
+  AdminSettingsBranding,
+  AdminSettingsWhatsapp,
+  Home,
+  LoginScreen,
+  SignUp,
+  Profile,
+  Contact,
+  Notices,
+  MyReservations,
+} from "./pages"
 import { DashboardHomeSkeleton, DashboardLayout, LoadingSpinner } from "./components"
 
 const ProtectedDashboardLayout: React.FC = () => {
@@ -44,6 +59,13 @@ export const AppRoutes = () => {
         <Route path="/notices" element={<Notices />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/admin/reservas" element={<AdminBookings />} />
+        <Route path="/admin/moradores" element={<AdminResidents />} />
+        <Route path="/admin/recursos" element={<AdminResources />} />
+        <Route path="/admin/avisos" element={<AdminNotices />} />
+        <Route path="/admin/configuracoes" element={<AdminSettings />} />
+        <Route path="/admin/configuracoes/identidade" element={<AdminSettingsBranding />} />
+        <Route path="/admin/configuracoes/whatsapp" element={<AdminSettingsWhatsapp />} />
       </Route>
     </Routes>
   )

@@ -1,0 +1,138 @@
+.admin-residents-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.admin-page-heading h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #111827;
+}
+
+.admin-page-heading p {
+  margin: 0.24rem 0 0;
+  color: #687489;
+}
+
+.admin-page-heading.with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.admin-filter-card,
+.admin-table-card {
+  border: 1px solid #d4deed;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  padding: 0.78rem;
+}
+
+.admin-search-input {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+}
+
+.admin-search-input svg {
+  color: #7a879d;
+}
+
+.admin-search-input input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.94rem;
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+}
+
+.admin-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.admin-table-scroll th,
+.admin-table-scroll td {
+  padding: 0.62rem 0.38rem;
+  text-align: left;
+  border-bottom: 1px solid #e7ebf4;
+  font-size: 0.92rem;
+}
+
+.admin-table-scroll td {
+  color: #253047;
+}
+
+.resident-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resident-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e8f0fb;
+  color: #1e5fbf;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.role-pill {
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  border: 1px solid #d4deed;
+}
+
+.role-pill.admin {
+  color: #1e5fbf;
+  border-color: #9dc2ef;
+  background: #f1f7ff;
+}
+
+.role-pill.resident {
+  color: #5f6d83;
+  background: #f6f8fb;
+}
+
+.resident-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.table-icon-button {
+  border: none;
+  background: transparent;
+  color: #4a5568;
+  cursor: pointer;
+}
+
+.table-icon-button.danger {
+  color: #e31d2f;
+}
+
+@media (max-width: 760px) {
+  .admin-page-heading.with-action {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-page-heading h2 {
+    font-size: 1.45rem;
+  }
+}

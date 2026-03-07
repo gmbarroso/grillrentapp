@@ -17,9 +17,6 @@ interface DashboardSidebarProps {
   adminNav: DashboardSidebarNavItem[]
   userName: string
   userContext: string
-  collapsed?: boolean
-  mobileOpen?: boolean
-  onNavigate?: () => void
   onLogout: () => void
 }
 
@@ -30,19 +27,12 @@ export default function DashboardSidebar({
   adminNav,
   userName,
   userContext,
-  collapsed = false,
-  mobileOpen = false,
-  onNavigate,
   onLogout,
 }: DashboardSidebarProps) {
   const location = useLocation()
 
-  const handleNavigate = () => {
-    if (onNavigate) onNavigate()
-  }
-
   return (
-    <aside className={`dashboard-sidebar ${collapsed ? "collapsed" : ""} ${mobileOpen ? "mobile-open" : ""}`.trim()}>
+    <aside className="dashboard-sidebar">
       <div className="dashboard-condominium">
         <BrandMark compact showTagline={false} />
         <div className="dashboard-condominium-text">
@@ -51,46 +41,44 @@ export default function DashboardSidebar({
         </div>
       </div>
 
-      <div className="dashboard-nav-group">
-        <h3>Menu Principal</h3>
-        {primaryNav.map((item) => {
-          const Icon = item.icon
-          const isActive = location.pathname === item.to
-          return (
-            <Link
-              key={`primary-${item.to}-${item.label}`}
-              to={item.to}
-              className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}
-              onClick={handleNavigate}
-              title={collapsed ? item.label : undefined}
-            >
-              <Icon size={17} />
-              <span>{item.label}</span>
-              {item.badge ? <small>{item.badge}</small> : null}
-            </Link>
-          )
-        })}
-      </div>
+      <div className="dashboard-sidebar-scroll">
+        <div className="dashboard-nav-group">
+          <h3>Menu Principal</h3>
+          {primaryNav.map((item) => {
+            const Icon = item.icon
+            const isActive = location.pathname === item.to
+            return (
+              <Link
+                key={`primary-${item.to}-${item.label}`}
+                to={item.to}
+                className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}
+              >
+                <Icon size={17} />
+                <span>{item.label}</span>
+                {item.badge ? <small>{item.badge}</small> : null}
+              </Link>
+            )
+          })}
+        </div>
 
-      <div className="dashboard-nav-group">
-        <h3>Administracao</h3>
-        {adminNav.map((item) => {
-          const Icon = item.icon
-          const isActive = location.pathname === item.to
-          return (
-            <Link
-              key={`admin-${item.to}-${item.label}`}
-              to={item.to}
-              className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}
-              onClick={handleNavigate}
-              title={collapsed ? item.label : undefined}
-            >
-              <Icon size={17} />
-              <span>{item.label}</span>
-              {item.badge ? <small>{item.badge}</small> : null}
-            </Link>
-          )
-        })}
+        <div className="dashboard-nav-group">
+          <h3>Administracao</h3>
+          {adminNav.map((item) => {
+            const Icon = item.icon
+            const isActive = location.pathname === item.to
+            return (
+              <Link
+                key={`admin-${item.to}-${item.label}`}
+                to={item.to}
+                className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}
+              >
+                <Icon size={17} />
+                <span>{item.label}</span>
+                {item.badge ? <small>{item.badge}</small> : null}
+              </Link>
+            )
+          })}
+        </div>
       </div>
 
       <div className="dashboard-user-box">

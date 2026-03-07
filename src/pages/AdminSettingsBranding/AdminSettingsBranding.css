@@ -1,0 +1,162 @@
+.admin-branding-page {
+  max-width: 980px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.settings-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  text-decoration: none;
+  color: #66748a;
+  font-weight: 600;
+}
+
+.admin-page-heading h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #111827;
+}
+
+.admin-page-heading p {
+  margin: 0.22rem 0 0;
+  color: #687489;
+}
+
+.branding-card {
+  border: 1px solid #d4deed;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  padding: 0.95rem;
+}
+
+.branding-card > header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.branding-card > header h3 {
+  margin: 0;
+  color: #111827;
+}
+
+.branding-card > header p {
+  margin: 0.18rem 0 0;
+  color: #687489;
+}
+
+.settings-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-icon.blue {
+  background: #eaf2ff;
+  color: #1e5fbf;
+}
+
+.logo-row {
+  margin: 0.85rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border-bottom: 1px solid #e7ebf4;
+  padding-bottom: 0.85rem;
+}
+
+.logo-box {
+  width: 64px;
+  height: 64px;
+  border: 1px dashed #c4d3e9;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e5fbf;
+  font-weight: 700;
+  background: #f7faff;
+}
+
+.logo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.logo-actions button {
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  background: #fff;
+  color: #1f2937;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.logo-actions button.danger {
+  color: #d21f35;
+}
+
+.logo-actions small {
+  color: #7a879d;
+}
+
+.branding-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.branding-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.branding-form-grid label.full {
+  grid-column: 1 / -1;
+}
+
+.branding-form-grid label > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.branding-form-grid input,
+.branding-form-grid textarea {
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.92rem;
+}
+
+.branding-card footer {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@media (max-width: 760px) {
+  .branding-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .branding-card footer {
+    flex-direction: column-reverse;
+  }
+}

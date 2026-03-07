@@ -1,0 +1,119 @@
+.admin-resources-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.admin-page-heading h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #111827;
+}
+
+.admin-page-heading p {
+  margin: 0.24rem 0 0;
+  color: #687489;
+}
+
+.admin-page-heading.with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.7rem;
+}
+
+.resource-card {
+  border: 1px solid #d4deed;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  padding: 0.75rem;
+}
+
+.resource-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.resource-title-block {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.resource-icon-box {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #eef5ff;
+  color: var(--color-blue);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resource-title-block h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #111827;
+}
+
+.resource-title-block p {
+  margin: 0.06rem 0 0;
+  color: #66748a;
+  text-transform: lowercase;
+}
+
+.resource-card header small {
+  border: 1px solid #d4deed;
+  border-radius: 999px;
+  padding: 0.18rem 0.48rem;
+  color: #475569;
+  font-size: 0.72rem;
+}
+
+.resource-description {
+  color: #5f6e85;
+  margin: 0.75rem 0;
+  border-bottom: 1px solid #e7ebf4;
+  padding-bottom: 0.75rem;
+}
+
+.resource-card footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+}
+
+.resource-card footer button {
+  border: none;
+  background: transparent;
+  color: #4f5d74;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.resource-card footer button.danger {
+  color: #e31d2f;
+}
+
+@media (max-width: 760px) {
+  .admin-page-heading.with-action {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-page-heading h2 {
+    font-size: 1.45rem;
+  }
+}

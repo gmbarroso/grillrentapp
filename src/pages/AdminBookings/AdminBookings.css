@@ -1,0 +1,153 @@
+.admin-bookings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.admin-page-heading h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #111827;
+}
+
+.admin-page-heading p {
+  margin: 0.24rem 0 0;
+  color: #687489;
+}
+
+.admin-filter-card,
+.admin-table-card {
+  border: 1px solid #d4deed;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  padding: 0.78rem;
+}
+
+.admin-search-input {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+}
+
+.admin-search-input svg {
+  color: #7a879d;
+}
+
+.admin-search-input input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.94rem;
+}
+
+.admin-filter-row {
+  margin-top: 0.6rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.admin-select-wrap {
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.admin-select-wrap select {
+  height: 36px;
+  border: none;
+  outline: none;
+  width: 100%;
+  background: transparent;
+}
+
+.admin-table-card header h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.02rem;
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+}
+
+.admin-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.admin-table-scroll th,
+.admin-table-scroll td {
+  padding: 0.62rem 0.38rem;
+  text-align: left;
+  border-bottom: 1px solid #e7ebf4;
+  font-size: 0.92rem;
+}
+
+.admin-table-scroll td {
+  color: #253047;
+}
+
+.resource-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 0.45rem;
+}
+
+.resource-dot.tennis {
+  background: #1e5fbf;
+}
+
+.resource-dot.grill {
+  background: #f0b02e;
+}
+
+.status-pill {
+  padding: 0.2rem 0.5rem;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.status-pill.confirmed {
+  color: #fff;
+  background: #1b9a4b;
+}
+
+.status-pill.pending {
+  color: #4e3510;
+  background: #f0b02e;
+}
+
+.table-icon-button {
+  border: none;
+  background: transparent;
+  color: #e31d2f;
+  cursor: pointer;
+}
+
+.admin-modal-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@media (max-width: 760px) {
+  .admin-page-heading h2 {
+    font-size: 1.45rem;
+  }
+
+  .admin-filter-row {
+    grid-template-columns: 1fr;
+  }
+}

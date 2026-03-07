@@ -18,18 +18,13 @@ const Notices = () => {
 
   const {
     notices,
-    total,
     currentPage,
     lastPage,
     isLoading,
     isError,
     currentLimit,
-    currentSort,
-    currentOrder,
     changePage,
     changeLimit,
-    changeSort,
-    changeOrder,
     refreshNotices,
   } = useAllNotices(token ?? "")
 
@@ -59,7 +54,10 @@ const Notices = () => {
 
   return (
     <div className="notices-page">
-      <h1>{t("Notices.Title")}</h1>
+      <header className="notices-page-header">
+        <h1>Avisos do Condominio</h1>
+        <p>Fique por dentro das novidades e comunicados</p>
+      </header>
 
       {isAdmin && <NoticeForm onNoticeCreated={handleNoticeCreated} />}
 
@@ -68,18 +66,13 @@ const Notices = () => {
       ) : (
         <NoticeBoard
           notices={notices}
-          total={total}
           currentPage={currentPage}
           lastPage={lastPage}
           currentLimit={currentLimit}
-          currentSort={currentSort}
-          currentOrder={currentOrder}
           onNoticeDeleted={handleNoticeDeleted}
           onNoticeUpdated={handleNoticeUpdated}
           onChangePage={changePage}
           onChangeLimit={changeLimit}
-          onChangeSort={changeSort}
-          onChangeOrder={changeOrder}
         />
       )}
     </div>
@@ -87,4 +80,3 @@ const Notices = () => {
 }
 
 export default Notices
-

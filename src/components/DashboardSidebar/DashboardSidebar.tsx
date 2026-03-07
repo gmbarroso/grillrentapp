@@ -17,6 +17,9 @@ interface DashboardSidebarProps {
   adminNav: DashboardSidebarNavItem[]
   userName: string
   userContext: string
+  collapsed?: boolean
+  mobileOpen?: boolean
+  onNavigate?: () => void
   onLogout: () => void
 }
 
@@ -27,15 +30,22 @@ export default function DashboardSidebar({
   adminNav,
   userName,
   userContext,
+  collapsed = false,
+  mobileOpen = false,
+  onNavigate,
   onLogout,
 }: DashboardSidebarProps) {
   const location = useLocation()
 
+  const handleNavigate = () => {
+    if (onNavigate) onNavigate()
+  }
+
   return (
-    <aside className="dashboard-sidebar">
+    <aside className={`dashboard-sidebar ${collapsed ? "collapsed" : ""} ${mobileOpen ? "mobile-open" : ""}`.trim()}>
       <div className="dashboard-condominium">
         <BrandMark compact showTagline={false} />
-        <div>
+        <div className="dashboard-condominium-text">
           <h2>{condominiumName}</h2>
           <p>{condominiumSubtitle}</p>
         </div>
@@ -47,7 +57,13 @@ export default function DashboardSidebar({
           const Icon = item.icon
           const isActive = location.pathname === item.to
           return (
-            <Link key={`primary-${item.to}-${item.label}`} to={item.to} className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}>
+            <Link
+              key={`primary-${item.to}-${item.label}`}
+              to={item.to}
+              className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}
+              onClick={handleNavigate}
+              title={collapsed ? item.label : undefined}
+            >
               <Icon size={17} />
               <span>{item.label}</span>
               {item.badge ? <small>{item.badge}</small> : null}
@@ -62,7 +78,13 @@ export default function DashboardSidebar({
           const Icon = item.icon
           const isActive = location.pathname === item.to
           return (
-            <Link key={`admin-${item.to}-${item.label}`} to={item.to} className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}>
+            <Link
+              key={`admin-${item.to}-${item.label}`}
+              to={item.to}
+              className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}
+              onClick={handleNavigate}
+              title={collapsed ? item.label : undefined}
+            >
               <Icon size={17} />
               <span>{item.label}</span>
               {item.badge ? <small>{item.badge}</small> : null}

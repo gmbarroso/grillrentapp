@@ -13,6 +13,7 @@ import {
 import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
 import { useToast } from "../../context/ToastContext"
+import { compareBookingStartAsc, isBookingForCurrentUser, isUpcomingBooking } from "../../utils/booking-visibility"
 import "./Home.css"
 
 const Home = () => {
@@ -39,23 +40,15 @@ const Home = () => {
     }
   }, [noticesError, showToast])
 
-  const upcomingBookings = useMemo(
-    () => {
-      if (!user?.id) return []
+  const upcomingBookings = useMemo(() => {
+    const now = new Date()
 
-      const now = new Date()
-      return [...bookings]
-        .filter((booking) => {
-          const sameUserId = booking.userId === user.id
-          const sameUnit = booking.userApartment === user.apartment && Number(booking.userBlock) === Number(user.block)
-          return sameUserId || sameUnit
-        })
-        .filter((booking) => new Date(booking.endTime).getTime() > now.getTime())
-        .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
-        .slice(0, 4)
-    },
-    [bookings, user?.id, user?.apartment, user?.block],
-  )
+    return [...bookings]
+      .filter((booking) => isBookingForCurrentUser(booking, user))
+      .filter((booking) => isUpcomingBooking(booking, now))
+      .sort(compareBookingStartAsc)
+      .slice(0, 4)
+  }, [bookings, user])
 
   const recentNotices = useMemo(
     () =>

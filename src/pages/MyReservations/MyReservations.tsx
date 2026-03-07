@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
 import { BookingSection, DashboardHomeSkeleton, ReservationPreviewCard } from "../../components"
 import { useAllBookings } from "../../hooks/booking/useAllBookings"
+import { compareBookingStartAsc, isBookingForCurrentUser, isUpcomingBooking } from "../../utils/booking-visibility"
 import "./MyReservations.css"
 
 const MyReservations = () => {
@@ -25,18 +26,13 @@ const MyReservations = () => {
   }, [isError, showToast])
 
   const myBookings = useMemo(() => {
-    if (!user?.id) return []
-
     const now = new Date()
+
     return [...bookings]
-      .filter((booking) => {
-        const sameUserId = booking.userId === user.id
-        const sameUnit = booking.userApartment === user.apartment && Number(booking.userBlock) === Number(user.block)
-        return sameUserId || sameUnit
-      })
-      .filter((booking) => new Date(booking.endTime).getTime() > now.getTime())
-      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
-  }, [bookings, user?.id, user?.apartment, user?.block])
+      .filter((booking) => isBookingForCurrentUser(booking, user))
+      .filter((booking) => isUpcomingBooking(booking, now))
+      .sort(compareBookingStartAsc)
+  }, [bookings, user])
 
   const upcomingPreview = useMemo(() => myBookings.slice(0, 4), [myBookings])
 

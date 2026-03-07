@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext"
 import { useDeleteNotice } from "../../hooks/notice/useDeleteNotice"
 import { Modal, Button } from "../"
 import { useToast } from "../../context/ToastContext"
-import { Trash2, Edit } from "lucide-react"
+import { Trash2, Edit, Bell, MessageCircle } from "lucide-react"
 import EditNoticeForm from "../NoticeForm/EditNoticeForm"
 import "./NoticeBoard.css"
 import type { Notice } from "../../types/Notice"
@@ -15,34 +15,24 @@ import { useLoading } from "../../context/LoadingContext"
 
 interface NoticeBoardProps {
   notices: Notice[]
-  total: number
   currentPage: number
   lastPage: number
   currentLimit: number
-  currentSort: string
-  currentOrder: "ASC" | "DESC"
   onNoticeDeleted: (noticeId: string) => void
   onNoticeUpdated: () => void
   onChangePage: (page: number) => void
   onChangeLimit: (limit: number) => void
-  onChangeSort: (sort: string) => void
-  onChangeOrder: (order: "ASC" | "DESC") => void
 }
 
 const NoticeBoard: React.FC<NoticeBoardProps> = ({
   notices,
-  total,
   currentPage,
   lastPage,
   currentLimit,
-  currentSort,
-  currentOrder,
   onNoticeDeleted,
   onNoticeUpdated,
   onChangePage,
   onChangeLimit,
-  onChangeSort,
-  onChangeOrder,
 }) => {
   const { t } = useTranslation()
   const { user } = useAuth()
@@ -97,20 +87,11 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
     setSelectedNoticeId(null)
   }, [])
 
-  const handleSortChange = (column: string) => {
-    if (currentSort === column) {
-      onChangeOrder(currentOrder === "ASC" ? "DESC" : "ASC")
-    } else {
-      onChangeSort(column)
-      onChangeOrder("DESC")
-    }
-  }
-
   const isAdmin = user?.role === "admin"
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString("en-GB", {
+    return date.toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -142,30 +123,46 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
             {notices.map((notice) => (
               <div key={notice.id} className="notice-item">
                 <div className="notice-header">
-                  <h4 className="notice-title">{notice.title}</h4>
-                  {isAdmin && (
-                    <div className="notice-actions">
-                      <button
-                        onClick={() => handleEditClick(notice)}
-                        className="edit-button"
-                        aria-label={t("NoticeBoard.Edit")}
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(notice.id)}
-                        className="delete-button"
-                        aria-label={t("NoticeBoard.Delete")}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                  <div className="notice-heading">
+                    <div className="notice-icon-box">
+                      <Bell size={15} />
                     </div>
-                  )}
+                    <div className="notice-title-wrap">
+                      <h4 className="notice-title">{notice.title}</h4>
+                      <div className="notice-subtitle">{notice.subtitle || "Comunicado oficial"}</div>
+                    </div>
+                  </div>
+
+                  <div className="notice-header-right">
+                    {/whats/i.test(`${notice.subtitle} ${notice.content}`) ? (
+                      <span className="notice-channel-chip">
+                        <MessageCircle size={13} />
+                        WhatsApp
+                      </span>
+                    ) : null}
+                    {isAdmin && (
+                      <div className="notice-actions">
+                        <button
+                          onClick={() => handleEditClick(notice)}
+                          className="edit-button"
+                          aria-label={t("NoticeBoard.Edit")}
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(notice.id)}
+                          className="delete-button"
+                          aria-label={t("NoticeBoard.Delete")}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="notice-subtitle">{notice.subtitle}</div>
                 <div className="notice-content">{notice.content}</div>
                 <div className="notice-footer">
-                  <span className="notice-author">{notice.authorName}</span>
+                  <span className="notice-author">Por {notice.authorName}</span>
                   <span className="notice-date">{formatDate(notice.createdAt)}</span>
                 </div>
               </div>
@@ -204,4 +201,3 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
 }
 
 export default NoticeBoard
-

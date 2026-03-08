@@ -20,7 +20,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
   const { t } = useTranslation()
   const { showToast } = useToast()
   const { user } = useAuth()
-  const [selectedOption, setSelectedOption] = useState<"grill" | "tennis" | null>(null)
+  const [selectedOption, setSelectedOption] = useState<"daily" | "hourly" | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const {
@@ -28,7 +28,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
     reservedDays,
     isLoading: isLoadingTimes,
     error: timesError,
-  } = useReservedTimes(selectedOption as "tennis" | "grill" | undefined, selectedDate || undefined)
+  } = useReservedTimes(selectedOption as "hourly" | "daily" | undefined, selectedDate || undefined)
   const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
   const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false)
   const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
@@ -55,7 +55,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
   }, [isLoadingTimes, isFetchingAfterDateSelect])
 
   const handleOptionSelect = useCallback(
-    (option: "grill" | "tennis") => {
+    (option: "daily" | "hourly") => {
       if (option === selectedOption) return
 
       setSelectedOption(option)
@@ -70,7 +70,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
     setSelectedDate(date)
     setSelectedTime(null)
 
-    if (selectedOption === "grill") {
+    if (selectedOption === "daily") {
       setIsFetchingAfterDateSelect(true)
     }
   }
@@ -99,7 +99,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
       const startTime = new Date(selectedDate)
       const endTime = new Date(selectedDate)
 
-      if (selectedOption === "tennis" && selectedTime) {
+      if (selectedOption === "hourly" && selectedTime) {
         const [hours] = selectedTime.split(":")
         startTime.setHours(Number.parseInt(hours, 10), 0, 0, 0)
         endTime.setHours(startTime.getHours() + 1, 0, 0, 0)
@@ -108,7 +108,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
         endTime.setHours(22, 0, 0, 0)
       }
 
-      if (startTime.toDateString() === now.toDateString() && selectedOption === "grill") {
+      if (startTime.toDateString() === now.toDateString() && selectedOption === "daily") {
         const currentHour = now.getHours()
         if (currentHour >= 7 && currentHour < 22) {
           startTime.setHours(currentHour + 1, 0, 0, 0)
@@ -123,7 +123,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
           resourceId: selectedResource.id,
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
-          needTablesAndChairs: selectedOption === "grill" ? needTablesAndChairs : false,
+          needTablesAndChairs: selectedOption === "daily" ? needTablesAndChairs : false,
           ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
         }
         await createBooking(bookingData)
@@ -141,9 +141,9 @@ const BookingSection: React.FC<BookingSectionProps> = ({
     }
   }
 
-  const handleRulesForEachResource = (option: "grill" | "tennis") => {
-    const title = t(`Card.${option === "tennis" ? "TennisTitle" : "GrillTitle"}`)
-    const content = t(`Card.${option === "tennis" ? "TennisContent" : "GrillContent"}`, {
+  const handleRulesForEachResource = (option: "daily" | "hourly") => {
+    const title = t(`Card.${option === "hourly" ? "TennisTitle" : "GrillTitle"}`)
+    const content = t(`Card.${option === "hourly" ? "TennisContent" : "GrillContent"}`, {
       returnObjects: true,
     }) as string[]
 
@@ -160,7 +160,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
   }
 
   const canConfirmBooking = () => {
-    if (selectedOption === "tennis") {
+    if (selectedOption === "hourly") {
       return selectedDate && selectedTime
     }
     return selectedDate
@@ -170,7 +170,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
     showToast(t("ErrorLoadingResources"), "error")
   }
 
-  if (timesError && !(selectedOption === "tennis" && !selectedDate)) {
+  if (timesError && !(selectedOption === "hourly" && !selectedDate)) {
     showToast(t("ErrorFetchingSlots"), "error")
   }
 
@@ -198,14 +198,14 @@ const BookingSection: React.FC<BookingSectionProps> = ({
       {selectedOption && (
         <div className="calendar-section">
           <div className="calendar-container">
-            {selectedOption === "grill" && (isLoadingTimes || isFetchingAfterDateSelect) ? (
+            {selectedOption === "daily" && (isLoadingTimes || isFetchingAfterDateSelect) ? (
               <div className="calendar-loading">
                 <LoadingSpinner inline />
               </div>
             ) : (
               <CustomCalendar
                 key={calendarKey}
-                reservedDays={selectedOption === "grill" ? reservedDays : []}
+                reservedDays={selectedOption === "daily" ? reservedDays : []}
                 onDateSelect={handleDateSelect}
                 resourceType={selectedOption}
                 selectedDate={selectedDate}
@@ -213,7 +213,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
             )}
           </div>
 
-          {selectedDate && selectedOption === "grill" && !isLoadingTimes && !isFetchingAfterDateSelect && (
+          {selectedDate && selectedOption === "daily" && !isLoadingTimes && !isFetchingAfterDateSelect && (
             <div className="tables-chairs-option">
               <label className="checkbox-label">
                 <input
@@ -228,7 +228,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({
             </div>
           )}
 
-          {selectedDate && selectedOption === "tennis" && (
+          {selectedDate && selectedOption === "hourly" && (
             <TimeSlotSelector
               selectedTime={selectedTime}
               onTimeSelect={handleTimeSelect}

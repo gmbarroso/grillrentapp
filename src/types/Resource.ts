@@ -1,18 +1,18 @@
 export interface Resource {
   id: string
-  type: "grill" | "tennis"
+  type: "daily" | "hourly"
   name: string
 }
 
 export const RESOURCES: Resource[] = [
   {
-    id: "grill-1",
-    type: "grill",
-    name: "Grill",
+    id: "daily-1",
+    type: "daily",
+    name: "Daily Resource",
   },
   {
-    id: "tennis-1",
-    type: "tennis",
-    name: "Tennis Court",
+    id: "hourly-1",
+    type: "hourly",
+    name: "Hourly Resource",
   },
 ]

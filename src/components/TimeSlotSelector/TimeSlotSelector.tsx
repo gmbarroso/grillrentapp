@@ -9,7 +9,7 @@ import "./TimeSlotSelector.css"
 interface TimeSlotSelectorProps {
   selectedTime: string | null
   onTimeSelect: (time: string) => void
-  resourceType: "tennis" | "grill"
+  resourceType: "hourly" | "daily"
   selectedDate?: Date | null
   unavailableSlots?: string[]
   isLoading?: boolean
@@ -38,7 +38,7 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   }
 
   const isPastSlotForSelectedDate = (slot: string) => {
-    if (!selectedDate || resourceType !== "tennis") {
+    if (!selectedDate || resourceType !== "hourly") {
       return false
     }
 
@@ -69,7 +69,7 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   }
 
   const isSlotDisabled = (slot: string) => {
-    if (resourceType === "tennis") {
+    if (resourceType === "hourly") {
       return unavailableSlots.includes(slot) || isPastSlotForSelectedDate(slot)
     }
     return false

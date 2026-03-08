@@ -1,6 +1,6 @@
 export interface Availability {
     id: string
-    resourceType: "grill" | "tennis"
+    resourceType: "daily" | "hourly"
     resourceId: string
   }
   

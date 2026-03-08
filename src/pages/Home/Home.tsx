@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import {
   DashboardHomeSkeleton,
+  MyNextBookedDates,
   NoticeCarousel,
   QuickActionCard,
-  ReservationPreviewCard,
 } from "../../components"
 import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
@@ -79,43 +79,22 @@ const Home = () => {
               Apt {user?.apartment} - Bloco {user?.block}
             </p>
           </div>
-          <div className="dashboard-home-meta">
-            <span>{dateLabel}</span>
-            <b>{user?.role === "admin" ? "Admin" : "Residente"}</b>
-          </div>
         </header>
 
         <div className="dashboard-home-actions">
-          <QuickActionCard title="Nova Reserva" subtitle="Agendar quadra ou churrasqueira" to="/minhas-reservas" icon={CalendarDays} />
+          <QuickActionCard title="Nova Reserva" subtitle="Agendar quadra ou churrasqueira" to="/mybookeddates" icon={CalendarDays} />
           <QuickActionCard title="Avisos" subtitle={`${recentNotices.length} avisos recentes`} to="/notices" icon={Bell} tone="yellow" />
         </div>
 
-        <section className="dashboard-section" id="reservas">
-          <header>
-            <h3>Minhas proximas reservas</h3>
-            <button type="button" onClick={() => navigate("/minhas-reservas")}>
-              Minhas reservas →
-            </button>
-          </header>
-
-          <div className={`dashboard-reservation-grid count-${upcomingBookings.length}`.trim()}>
-            {upcomingBookings.length > 0 ? (
-              upcomingBookings.map((booking) => {
-                const pending = booking.bookedOnBehalf?.trim()
-                return (
-                  <ReservationPreviewCard
-                    key={booking.id}
-                    booking={booking}
-                    statusLabel={pending ? "Pag. Pendente" : "Confirmado"}
-                    pending={Boolean(pending)}
-                  />
-                )
-                })
-              ) : (
-                <p className="dashboard-empty-message">Voce nao tem reservas.</p>
-              )}
-          </div>
-        </section>
+        <MyNextBookedDates
+          id="reservas"
+          bookings={upcomingBookings}
+          title="Minhas próximas reservas"
+          headingLevel="h3"
+          actionLabel="Minhas reservas →"
+          onActionClick={() => navigate("/mybookeddates")}
+          emptyMessage="Voce nao tem reservas."
+        />
 
         <section className="dashboard-section">
           <header>

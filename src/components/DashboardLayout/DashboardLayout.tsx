@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pageTitle = useMemo(() => {
     const labels: Record<string, string> = {
       "/": "Inicio",
-      "/minhas-reservas": "Minhas reservas",
+      "/mybookeddates": "Minhas reservas",
       "/notices": "Avisos",
       "/profile": "Perfil",
       "/contact": "Contato",
@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const primaryNav: DashboardSidebarNavItem[] = [
     { label: "Inicio", to: "/", icon: House },
-    { label: "Minhas reservas", to: "/minhas-reservas", icon: CalendarDays },
+    { label: "Minhas reservas", to: "/mybookeddates", icon: CalendarDays },
     { label: "Avisos", to: "/notices", icon: Bell },
     { label: "Perfil", to: "/profile", icon: CircleUserRound },
     { label: "Contato", to: "/contact", icon: Phone },

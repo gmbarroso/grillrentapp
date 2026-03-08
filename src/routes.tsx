@@ -55,7 +55,7 @@ export const AppRoutes = () => {
       <Route path="/signup" element={<SignUp />} />
       <Route element={<ProtectedDashboardLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/minhas-reservas" element={<MyReservations />} />
+        <Route path="/mybookeddates" element={<MyReservations />} />
         <Route path="/notices" element={<Notices />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact />} />

@@ -1,6 +1,6 @@
 .booking-section.booking-scheduler {
   background-color: var(--color-card-background);
-  padding: 0;
+  padding: 0.5rem;
   border-radius: 12px;
   margin-bottom: 0;
   box-shadow: none;

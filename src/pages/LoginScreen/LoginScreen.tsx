@@ -71,7 +71,7 @@ export default function LoginScreen() {
         <div className="login-brand-wrap">
           <BrandMark />
         </div>
-        <AuthCard title="Bem-vindo de volta" subtitle="Entre com os dados do seu condominio">
+        <AuthCard title="Bem-vindo" subtitle="Entre com os dados do seu condominio">
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="login-field">
               <label htmlFor="organizationSlug">Codigo do condominio</label>
@@ -152,19 +152,15 @@ export default function LoginScreen() {
               {t("Login.SignIn")}
             </button>
 
-            <div className="login-divider">
+            {/* <div className="login-divider">
               <span>Novo por aqui?</span>
-            </div>
+            </div> */}
 
-            <button className="login-secondary" type="button" onClick={() => navigate("/signup")}>
+            {/* <button className="login-secondary" type="button" onClick={() => navigate("/signup")}>
               Cadastrar novo condominio
-            </button>
+            </button> */}
           </form>
         </AuthCard>
-
-        <div className="login-demo-box">
-          <strong>Demo:</strong> Codigo SACOPA, apto 201, bloco 2 e qualquer senha.
-        </div>
 
         <p className="login-caption">Sistema de Gestao Condominial</p>
       </div>

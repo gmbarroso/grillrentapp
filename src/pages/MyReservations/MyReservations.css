@@ -4,50 +4,9 @@
   gap: 1rem;
 }
 
-.my-reservations-preview {
-  border: 1px solid #d4deed;
-  border-radius: 12px;
-  background: #ffffff;
-  padding: 1rem;
-}
-
-.my-reservations-preview h2 {
-  margin: 0;
-  font-size: 1.35rem;
-  color: #1f2937;
-}
-
-.my-reservations-grid {
-  margin-top: 0.9rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.8rem;
-}
-
-.my-reservations-grid.count-1 {
-  grid-template-columns: minmax(220px, 340px);
-}
-
-.my-reservations-grid.count-2 {
-  grid-template-columns: repeat(2, minmax(220px, 320px));
-}
-
-.my-reservations-empty {
-  margin: 0;
-  color: #5f6e85;
-  font-size: 0.9rem;
-  padding: 0.35rem 0.1rem;
-}
-
 .my-reservations-booking .booking-section {
   margin-bottom: 0;
   border: 1px solid #d4deed;
   border-radius: 12px;
   box-shadow: none;
-}
-
-@media (max-width: 900px) {
-  .my-reservations-grid.count-2 {
-    grid-template-columns: 1fr;
-  }
 }

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import { BookingSection, DashboardHomeSkeleton, ReservationPreviewCard } from "../../components"
+import { BookingSection, DashboardHomeSkeleton, MyNextBookedDates } from "../../components"
 import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { compareBookingStartAsc, isBookingForCurrentUser, isUpcomingBooking } from "../../utils/booking-visibility"
 import "./MyReservations.css"
@@ -46,33 +46,16 @@ const MyReservations = () => {
 
   return (
     <div className="my-reservations-page">
-      <section className="my-reservations-preview">
-        <header>
-          <h2>Minhas proximas reservas</h2>
-        </header>
+      <MyNextBookedDates
+        bookings={upcomingPreview}
+        title="Minhas próximas reservas"
+        headingLevel="h2"
+        emptyMessage="Voce nao tem reservas."
+      />
 
-        <div className={`my-reservations-grid count-${upcomingPreview.length}`.trim()}>
-          {upcomingPreview.length > 0 ? (
-            upcomingPreview.map((booking) => {
-              const pending = booking.bookedOnBehalf?.trim()
-              return (
-                <ReservationPreviewCard
-                  key={booking.id}
-                  booking={booking}
-                  statusLabel={pending ? "Pag. Pendente" : "Confirmado"}
-                  pending={Boolean(pending)}
-                />
-              )
-            })
-          ) : (
-            <p className="my-reservations-empty">Voce nao tem reservas.</p>
-          )}
-        </div>
-      </section>
-
-      <section className="my-reservations-booking">
+      <div className="my-reservations-booking">
         <BookingSection token={token ?? ""} onBookingCreated={handleBookingCreated} />
-      </section>
+      </div>
     </div>
   )
 }

@@ -21,22 +21,6 @@
   color: #5f6e85;
 }
 
-.dashboard-home-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  color: #687489;
-  font-size: 0.82rem;
-}
-
-.dashboard-home-meta b {
-  color: var(--color-blue);
-  border: 1px solid #9dc2ef;
-  border-radius: 8px;
-  padding: 0.1rem 0.45rem;
-  font-size: 0.72rem;
-}
-
 .dashboard-home-actions {
   display: grid;
   grid-template-columns: repeat(2, minmax(220px, 1fr));
@@ -73,20 +57,6 @@
   cursor: pointer;
 }
 
-.dashboard-reservation-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.8rem;
-}
-
-.dashboard-reservation-grid.count-1 {
-  grid-template-columns: minmax(220px, 340px);
-}
-
-.dashboard-reservation-grid.count-2 {
-  grid-template-columns: repeat(2, minmax(220px, 320px));
-}
-
 .dashboard-notice-list {
   display: flex;
   flex-direction: column;
@@ -101,16 +71,7 @@
 }
 
 @media (max-width: 900px) {
-  .dashboard-home-meta {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
   .dashboard-home-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-reservation-grid.count-2 {
     grid-template-columns: 1fr;
   }
 }

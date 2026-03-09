@@ -114,8 +114,8 @@
     "TablesAndChairsIncluded": "Esta reserva incluye mesas y sillas"
   },
   "Resource": {
-    "grill": "Parrilla",
-    "tennis": "Cancha de Tenis"
+    "daily": "Parrilla",
+    "hourly": "Cancha de Tenis"
   },
   "Header": {
     "Title": "App de Alquiler de Parrillas",

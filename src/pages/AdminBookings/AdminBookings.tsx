@@ -2,14 +2,14 @@ import { useMemo, useState } from "react"
 import { Filter, Search, Trash2 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import { Button, LoadingSpinner, Modal } from "../../components"
+import { Button, LoadingSpinner, Modal, Tooltip } from "../../components"
 import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
 import type { Booking } from "../../types/Booking"
 import { formatBookingDate, formatBookingTimeInterval, parseBookingDateTime } from "../../utils/booking-datetime"
 import "./AdminBookings.css"
 
-type StatusFilter = "all" | "confirmed" | "pending"
+type StatusFilter = "all" | "confirmed"
 type ResourceFilter = "all" | "hourly" | "daily"
 
 const AdminBookings = () => {
@@ -29,7 +29,7 @@ const AdminBookings = () => {
     return [...bookings]
       .sort((a, b) => parseBookingDateTime(a.startTime).getTime() - parseBookingDateTime(b.startTime).getTime())
       .filter((booking) => {
-        const status = booking.bookedOnBehalf?.trim() ? "pending" : "confirmed"
+        const status = "confirmed"
         if (statusFilter !== "all" && status !== statusFilter) return false
 
         if (resourceFilter !== "all" && booking.resourceType !== resourceFilter) return false
@@ -82,7 +82,6 @@ const AdminBookings = () => {
             <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}>
               <option value="all">Todos Status</option>
               <option value="confirmed">Confirmado</option>
-              <option value="pending">Pag. Pendente</option>
             </select>
           </label>
 
@@ -116,7 +115,6 @@ const AdminBookings = () => {
             </thead>
             <tbody>
               {filteredBookings.map((booking) => {
-                const isPending = Boolean(booking.bookedOnBehalf?.trim())
                 return (
                   <tr key={booking.id}>
                     <td>
@@ -132,7 +130,12 @@ const AdminBookings = () => {
                     <td>{`Apt ${booking.userApartment} Bl. ${booking.userBlock}`}</td>
                     <td>{`${booking.userApartment} Bl. ${booking.userBlock}`}</td>
                     <td>
-                      <span className={`status-pill ${isPending ? "pending" : "confirmed"}`}>{isPending ? "Pag. Pendente" : "Confirmado"}</span>
+                      <span className="status-pill confirmed">Confirmado</span>
+                      {booking.bookedOnBehalf?.trim() ? (
+                        <span className="status-tooltip-wrap">
+                          <Tooltip content={`Reservado para o apartamento ${booking.bookedOnBehalf}`} iconText="!" />
+                        </span>
+                      ) : null}
                     </td>
                     <td>
                       <button type="button" className="table-icon-button" onClick={() => setDeletingBooking(booking)} aria-label="Excluir reserva">

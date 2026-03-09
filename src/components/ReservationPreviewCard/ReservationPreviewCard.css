@@ -22,6 +22,10 @@
   font-size: 0.82rem;
 }
 
+.reservation-on-behalf-tooltip {
+  margin-left: 0.2rem;
+}
+
 .reservation-status {
   position: absolute;
   top: 0.9rem;

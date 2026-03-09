@@ -228,7 +228,7 @@
     "Cancel": "Cancelar"
   },
   "Loading": "Carregando...",
-  "BookOnBehalf": "Reservar em nome do apartamento",
+  "BookOnBehalf": "Reservar em nome de um apartamento",
   "BookOnBehalfTooltip": "Digite o número do apartamento para o qual você está reservando",
   "BookOnBehalfPlaceholder": "Digite o número do apartamento"
 }

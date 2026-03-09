@@ -42,13 +42,12 @@ export default function MyNextBookedDates({
       <div className={`next-booked-dates-grid count-${bookings.length}`.trim()}>
         {bookings.length > 0 ? (
           bookings.map((booking) => {
-            const pending = booking.bookedOnBehalf?.trim()
             return (
               <ReservationPreviewCard
                 key={booking.id}
                 booking={booking}
-                statusLabel={pending ? "Pag. Pendente" : "Confirmado"}
-                pending={Boolean(pending)}
+                statusLabel="Confirmado"
+                pending={false}
                 onDelete={onDeleteBooking}
                 isDeleting={isDeletingBooking}
               />

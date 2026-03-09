@@ -310,9 +310,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
 
                     {booking ? (
                       <div className="scheduler-slot-actions">
-                        <span className={`reservation-status ${booking.bookedOnBehalf ? "pending" : "confirmed"}`.trim()}>
-                          {booking.bookedOnBehalf ? "Pag. Pendente" : "Confirmado"}
-                        </span>
+                        <span className="reservation-status confirmed">Confirmado</span>
                         {canDelete ? (
                           <Button
                             variant="danger"
@@ -356,9 +354,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
                   <p>Apt {dailyBooking.userApartment} Bl. {dailyBooking.userBlock}</p>
                   {dailyBooking.needTablesAndChairs ? <a href="#">Mesas e cadeiras solicitadas</a> : null}
                 </div>
-                <span className={`reservation-status ${dailyBooking.bookedOnBehalf ? "pending" : "confirmed"}`.trim()}>
-                  {dailyBooking.bookedOnBehalf ? "Pag. Pendente" : "Confirmado"}
-                </span>
+                <span className="reservation-status confirmed">Confirmado</span>
               </div>
               <Button variant="secondary" size="sm" disabled={true} className="scheduler-reserve-button">
                 Reservado
@@ -418,11 +414,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
           </div>
           <div className="scheduler-side-card scheduler-resource-card">
             <h4>{selectedResource?.name ?? ""}</h4>
-            <p>
-              {selectedOption === "hourly"
-                ? "Quadra profissional com iluminacao noturna"
-                : "Area de churrasqueira com mesas, cadeiras e espaco coberto"}
-            </p>
+            <p>{selectedResource?.description ?? ""}</p>
           </div>
         </aside>
       </div>

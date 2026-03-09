@@ -226,7 +226,7 @@
     "Cancel": "Cancelar"
   },
   "ErrorFetchingSlots": "Error al obtener los horarios disponibles. Por favor, inténtalo de nuevo.",
-  "BookOnBehalf": "Reservar en nombre del apartamento",
+  "BookOnBehalf": "Reservar en nombre de un apartamento",
   "BookOnBehalfTooltip": "Ingrese el número de apartamento para el que está reservando",
   "BookOnBehalfPlaceholder": "Ingrese el número de apartamento"
 }

@@ -1,5 +1,7 @@
 import { Calendar, Clock3, MapPin, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import type { Booking } from "../../types/Booking"
+import Tooltip from "../Tooltip/Tooltip"
 import "./ReservationPreviewCard.css"
 
 interface ReservationPreviewCardProps {
@@ -22,6 +24,7 @@ export default function ReservationPreviewCard({
   onDelete,
   isDeleting = false,
 }: ReservationPreviewCardProps) {
+  const { t } = useTranslation()
   const start = toDate(booking.startTime)
   const end = toDate(booking.endTime)
   const isAllDay = start.getHours() === 0 && end.getHours() === 23
@@ -42,6 +45,11 @@ export default function ReservationPreviewCard({
       <p>
         <MapPin size={14} />
         Apto {booking.userApartment} Bl. {booking.userBlock}
+        {booking.bookedOnBehalf?.trim() ? (
+          <span className="reservation-on-behalf-tooltip">
+            <Tooltip content={t("BookingList.BookedOnBehalf", { apartment: booking.bookedOnBehalf })} iconText="!" />
+          </span>
+        ) : null}
       </p>
       {onDelete ? (
         <button

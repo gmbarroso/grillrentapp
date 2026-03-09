@@ -231,7 +231,7 @@
     "Available": "Available",
     "Reserved": "Reserved"
   },
-  "BookOnBehalf": "Book on behalf of apartment",
+  "BookOnBehalf": "Book on behalf of an apartment",
   "BookOnBehalfTooltip": "Enter the apartment number you are booking for",
   "BookOnBehalfPlaceholder": "Enter apartment number"
 }

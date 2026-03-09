@@ -103,11 +103,11 @@
   margin-right: 0.45rem;
 }
 
-.resource-dot.tennis {
+.resource-dot.hourly {
   background: #1e5fbf;
 }
 
-.resource-dot.grill {
+.resource-dot.daily {
   background: #f0b02e;
 }
 

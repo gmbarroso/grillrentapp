@@ -14,7 +14,7 @@ const timeFormatter = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute
 const toDate = (value: string): Date => new Date(value)
 
 const getResourceName = (type: Booking["resourceType"]): string => {
-  return type === "tennis" ? "Quadra de Tenis" : "Churrasqueira"
+  return type === "hourly" ? "Por hora" : "Dia inteiro"
 }
 
 export default function ReservationPreviewCard({ booking, statusLabel, pending = false }: ReservationPreviewCardProps) {

@@ -10,7 +10,7 @@ interface CalendarProps {
   onDateSelect: (date: Date) => void
   minDate?: Date
   maxDate?: Date
-  resourceType?: "grill" | "tennis"
+  resourceType?: "daily" | "hourly"
   selectedDate?: Date | null
 }
 
@@ -20,7 +20,7 @@ const Calendar: React.FC<CalendarProps> = ({
   onDateSelect,
   minDate,
   maxDate,
-  resourceType = "grill",
+  resourceType = "daily",
   selectedDate = null,
 }) => {
   const normalizedReservedDays = useMemo(() => {

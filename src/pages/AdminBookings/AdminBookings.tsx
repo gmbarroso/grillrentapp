@@ -10,7 +10,7 @@ import { formatBookingDate, formatBookingTimeInterval, parseBookingDateTime } fr
 import "./AdminBookings.css"
 
 type StatusFilter = "all" | "confirmed" | "pending"
-type ResourceFilter = "all" | "tennis" | "grill"
+type ResourceFilter = "all" | "hourly" | "daily"
 
 const AdminBookings = () => {
   const { token } = useAuth()
@@ -37,7 +37,7 @@ const AdminBookings = () => {
         if (!query) return true
 
         const apt = `${booking.userApartment} bl. ${booking.userBlock}`.toLowerCase()
-        const resource = booking.resourceType === "tennis" ? "quadra de tenis" : "churrasqueira"
+        const resource = booking.resourceType === "hourly" ? "por hora" : "dia inteiro"
         return apt.includes(query) || resource.includes(query)
       })
   }, [bookings, search, statusFilter, resourceFilter])
@@ -89,8 +89,8 @@ const AdminBookings = () => {
           <label className="admin-select-wrap">
             <select value={resourceFilter} onChange={(event) => setResourceFilter(event.target.value as ResourceFilter)}>
               <option value="all">Todos Recursos</option>
-              <option value="tennis">Quadra de Tenis</option>
-              <option value="grill">Churrasqueira</option>
+              <option value="hourly">Por hora</option>
+              <option value="daily">Dia inteiro</option>
             </select>
           </label>
         </div>
@@ -121,11 +121,11 @@ const AdminBookings = () => {
                   <tr key={booking.id}>
                     <td>
                       <span className={`resource-dot ${booking.resourceType}`}></span>
-                      {booking.resourceType === "tennis" ? "Quadra de Tenis" : "Churrasqueira"}
+                      {booking.resourceType === "hourly" ? "Por hora" : "Dia inteiro"}
                     </td>
                     <td>{formatBookingDate(booking.startTime, "pt-BR")}</td>
                     <td>
-                      {booking.resourceType === "grill"
+                      {booking.resourceType === "daily"
                         ? "Dia inteiro"
                         : formatBookingTimeInterval(booking.startTime, booking.endTime).replace("h", "").replace(" - ", " - ")}
                     </td>

@@ -31,7 +31,7 @@ export function useReservedTimes(resourceType: "hourly" | "daily" | undefined, d
 
   useEffect(() => {
     const fetchReservedTimes = async () => {
-      // For hourly resources, only fetch if both resourceType and date are provided
+      // Hourly resources require a specific date.
       if (!resourceType || (resourceType === "hourly" && !date)) {
         setReservedTimes([])
         setReservedDays([])

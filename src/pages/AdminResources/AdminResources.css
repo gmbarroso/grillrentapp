@@ -87,24 +87,66 @@
   padding-bottom: 0.75rem;
 }
 
-.resource-card footer {
+.resource-modal {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.resource-modal h3 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.resource-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #334155;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+.resource-modal input,
+.resource-modal select,
+.resource-modal textarea {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0.58rem 0.65rem;
+  font-size: 0.92rem;
+  color: #0f172a;
+  background: #fff;
+}
+
+.resource-modal textarea {
+  display: block;
+  min-height: 100px;
+  resize: vertical;
+  overflow: auto;
+}
+
+.resource-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
   gap: 0.8rem;
 }
 
-.resource-card footer button {
-  border: none;
-  background: transparent;
-  color: #4f5d74;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
+.description-counter {
+  display: block;
+  margin-top: -0.35rem;
+  margin-bottom: 0.6rem;
+  color: #64748b;
 }
 
-.resource-card footer button.danger {
-  color: #e31d2f;
+.resource-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
 }
 
 @media (max-width: 760px) {
@@ -115,5 +157,13 @@
 
   .admin-page-heading h2 {
     font-size: 1.45rem;
+  }
+
+  .resource-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resource-modal-actions {
+    flex-direction: column-reverse;
   }
 }

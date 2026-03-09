@@ -2,6 +2,7 @@ export interface Resource {
   id: string
   type: "daily" | "hourly"
   name: string
+  description?: string
 }
 
 export const RESOURCES: Resource[] = [

@@ -61,7 +61,7 @@ export const AppRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/reservas" element={<AdminBookings />} />
         <Route path="/admin/moradores" element={<AdminResidents />} />
-        <Route path="/admin/recursos" element={<AdminResources />} />
+        <Route path="/admin/resources" element={<AdminResources />} />
         <Route path="/admin/avisos" element={<AdminNotices />} />
         <Route path="/admin/configuracoes" element={<AdminSettings />} />
         <Route path="/admin/configuracoes/identidade" element={<AdminSettingsBranding />} />

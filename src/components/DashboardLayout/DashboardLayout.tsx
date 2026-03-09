@@ -36,7 +36,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/contact": "Contato",
       "/admin/reservas": "Gerenciar Reservas",
       "/admin/moradores": "Gerenciar Moradores",
-      "/admin/recursos": "Recursos",
+      "/admin/resources": "Recursos",
       "/admin/avisos": "Gerenciar Avisos",
       "/admin/configuracoes": "Configuracoes",
       "/admin/configuracoes/identidade": "Identidade do Condominio",
@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const adminNav: DashboardSidebarNavItem[] = [
     { label: "Reservas", to: "/admin/reservas", icon: CalendarDays },
     { label: "Moradores", to: "/admin/moradores", icon: Users },
-    { label: "Recursos", to: "/admin/recursos", icon: Boxes },
+    { label: "Recursos", to: "/admin/resources", icon: Boxes },
     { label: "Avisos", to: "/admin/avisos", icon: MessageSquare, badge: 2 },
     { label: "Configuracoes", to: "/admin/configuracoes", icon: Cog },
   ]

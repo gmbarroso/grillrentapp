@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import NoticeForm from "../../components/NoticeForm/NoticeForm"
-import { Button, LoadingSpinner, NoticeBoard } from "../../components"
+import { Button, LoadingSpinner, Modal, NoticeBoard } from "../../components"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
@@ -67,11 +67,11 @@ const AdminNotices = () => {
         </Button>
       </header>
 
-      {showCreateForm ? (
-        <div className="admin-notice-form-wrap">
-          <NoticeForm onNoticeCreated={handleNoticeCreated} />
+      <Modal isOpen={showCreateForm} onClose={() => setShowCreateForm(false)} wide>
+        <div className="admin-notices-modal-body">
+          <NoticeForm onNoticeCreated={handleNoticeCreated} onCancel={() => setShowCreateForm(false)} />
         </div>
-      ) : null}
+      </Modal>
 
       {isLoading ? (
         <LoadingSpinner />

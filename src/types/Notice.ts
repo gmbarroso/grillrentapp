@@ -3,16 +3,18 @@ export interface Notice {
     title: string
     subtitle: string
     content: string
+    sendViaWhatsapp?: boolean
     createdAt: string
     updatedAt: string
     authorId: string
     authorName: string
   }
   
-  export interface CreateNoticeDto {
+export interface CreateNoticeDto {
     title: string
     subtitle: string
     content: string
+    sendViaWhatsapp?: boolean
   }
   
   export interface UpdateNoticeDto {

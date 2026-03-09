@@ -1,15 +1,19 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { mutate as mutateSWRCache } from "swr"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
+import type { CreateNoticeDto } from "../../types/Notice"
 
 const API_BASE_URL = getApiBaseUrl()
+const UNREAD_COUNT_ENDPOINT = `${API_BASE_URL}/notices/unread-count`
+const NOTICE_LIST_ENDPOINT_PREFIX = `${API_BASE_URL}/notices?`
 
 export function useCreateNotice() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
-  const createNotice = useCallback(async (noticeData: { title: string; subtitle: string; content: string }) => {
+  const createNotice = useCallback(async (noticeData: CreateNoticeDto) => {
     setIsLoading(true)
     setError(null)
 
@@ -31,6 +35,11 @@ export function useCreateNotice() {
       if (!response.ok) {
         throw new Error(data.message || `Failed to create notice: ${response.status}`)
       }
+
+      await Promise.all([
+        mutateSWRCache(UNREAD_COUNT_ENDPOINT),
+        mutateSWRCache((key) => typeof key === "string" && key.startsWith(NOTICE_LIST_ENDPOINT_PREFIX)),
+      ])
 
       setIsLoading(false)
       return { success: true, data }

@@ -1,20 +1,24 @@
 "use client"
 
-import { useEffect, useCallback } from "react"
+import { useEffect, useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { NoticeBoard } from "../../components"
-import NoticeForm from "../../components/NoticeForm/NoticeForm"
 import { LoadingSpinner } from "../../components"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
+import { isNoticeUnread, useMarkNoticesAsSeen, useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import { useToast } from "../../context/ToastContext"
+import { authError, sanitizeForLog } from "../../utils/auth-logger"
 import "./Notices.css"
 
 const Notices = () => {
-  const { user, token } = useAuth()
+  const { token } = useAuth()
   const { t } = useTranslation()
   const { showToast } = useToast()
-  const isAdmin = user?.role === "admin"
+  const hasMarkedSeenRef = useRef(false)
+  const hasInitializedUnreadAnimationRef = useRef(false)
+  const [unreadNoticeIdsForAnimation, setUnreadNoticeIdsForAnimation] = useState<Set<string>>(new Set())
+  const [shouldFadeUnreadBadges, setShouldFadeUnreadBadges] = useState(false)
 
   const {
     notices,
@@ -27,6 +31,8 @@ const Notices = () => {
     changeLimit,
     refreshNotices,
   } = useAllNotices(token ?? "")
+  const { isNoticeReadTrackingEnabled } = useNoticeUnreadState()
+  const { markNoticesAsSeen } = useMarkNoticesAsSeen()
 
   const handleNoticeDeleted = useCallback(
     async (noticeId: string) => {
@@ -52,6 +58,47 @@ const Notices = () => {
     }
   }, [isError, showToast, t])
 
+  useEffect(() => {
+    if (!isNoticeReadTrackingEnabled) {
+      return
+    }
+    if (isLoading) {
+      return
+    }
+    if (hasMarkedSeenRef.current) {
+      return
+    }
+    hasMarkedSeenRef.current = true
+
+    const applyReadState = async () => {
+      try {
+        const markResult = await markNoticesAsSeen()
+        if (!hasInitializedUnreadAnimationRef.current) {
+          const unreadBeforeSeen = new Set(
+            notices
+              .filter((notice) => isNoticeUnread(notice.createdAt, markResult.previousLastSeenNoticesAt))
+              .map((notice) => notice.id),
+          )
+          hasInitializedUnreadAnimationRef.current = true
+          setUnreadNoticeIdsForAnimation(unreadBeforeSeen)
+          if (unreadBeforeSeen.size > 0) {
+            setShouldFadeUnreadBadges(true)
+            window.setTimeout(() => {
+              setUnreadNoticeIdsForAnimation(new Set())
+              setShouldFadeUnreadBadges(false)
+            }, 1800)
+          }
+        }
+        await refreshNotices()
+      } catch (error) {
+        authError("[NoticesReadTracking] mark-seen failed", sanitizeForLog({ message: (error as Error)?.message }))
+        showToast("Nao foi possivel atualizar leitura dos avisos. Tentaremos novamente depois.", "warning")
+      }
+    }
+
+    void applyReadState()
+  }, [isLoading, isNoticeReadTrackingEnabled, markNoticesAsSeen, notices, refreshNotices, showToast])
+
   return (
     <div className="notices-page">
       <header className="notices-page-header">
@@ -64,6 +111,8 @@ const Notices = () => {
       ) : (
         <NoticeBoard
           notices={notices}
+          unreadNoticeIds={unreadNoticeIdsForAnimation}
+          shouldFadeUnreadBadges={shouldFadeUnreadBadges}
           currentPage={currentPage}
           lastPage={lastPage}
           currentLimit={currentLimit}

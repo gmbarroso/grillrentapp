@@ -12,10 +12,31 @@
   gap: 0.8rem;
 }
 
+.notice-carousel-title-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .notice-carousel-header h4 {
   margin: 0;
   font-size: 0.94rem;
   color: #101828;
+}
+
+.notice-carousel-novo-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid #f6bf8c;
+  background: #fff2e6;
+  color: #9a4f0a;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .notice-carousel-header time {

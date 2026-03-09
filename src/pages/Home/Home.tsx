@@ -12,6 +12,7 @@ import {
 } from "../../components"
 import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
+import { isNoticeUnread, useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import { useToast } from "../../context/ToastContext"
 import { compareBookingStartAsc, isBookingForCurrentUser, isUpcomingBooking } from "../../utils/booking-visibility"
 import "./Home.css"
@@ -27,6 +28,7 @@ const Home = () => {
     isError: bookingsError,
   } = useAllBookings({ initialLimit: 200 })
   const { notices, isLoading: isLoadingNotices, isError: noticesError } = useAllNotices(token || "cookie-session")
+  const { lastSeenNoticesAt } = useNoticeUnreadState()
 
   useEffect(() => {
     if (bookingsError) {
@@ -56,6 +58,15 @@ const Home = () => {
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 3),
     [notices],
+  )
+  const unreadRecentNoticeIds = useMemo(
+    () =>
+      new Set(
+        recentNotices
+          .filter((notice) => isNoticeUnread(notice.createdAt, lastSeenNoticesAt))
+          .map((notice) => notice.id),
+      ),
+    [lastSeenNoticesAt, recentNotices],
   )
 
   const dateLabel = new Intl.DateTimeFormat("pt-BR", {
@@ -105,7 +116,11 @@ const Home = () => {
           </header>
 
           <div className="dashboard-notice-list">
-            {recentNotices.length > 0 ? <NoticeCarousel notices={recentNotices} /> : <p className="dashboard-empty-message">Nao ha avisos recentes.</p>}
+            {recentNotices.length > 0 ? (
+              <NoticeCarousel notices={recentNotices} unreadNoticeIds={unreadRecentNoticeIds} />
+            ) : (
+              <p className="dashboard-empty-message">Nao ha avisos recentes.</p>
+            )}
           </div>
         </section>
       </div>

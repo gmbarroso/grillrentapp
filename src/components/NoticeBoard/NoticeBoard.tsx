@@ -15,6 +15,8 @@ import { useLoading } from "../../context/LoadingContext"
 
 interface NoticeBoardProps {
   notices: Notice[]
+  unreadNoticeIds?: Set<string>
+  shouldFadeUnreadBadges?: boolean
   currentPage: number
   lastPage: number
   currentLimit: number
@@ -26,6 +28,8 @@ interface NoticeBoardProps {
 
 const NoticeBoard: React.FC<NoticeBoardProps> = ({
   notices,
+  unreadNoticeIds,
+  shouldFadeUnreadBadges = false,
   currentPage,
   lastPage,
   currentLimit,
@@ -100,19 +104,6 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
     })
   }
 
-  if (editingNotice) {
-    return (
-      <EditNoticeForm
-        notice={editingNotice}
-        onNoticeUpdated={() => {
-          setEditingNotice(null)
-          onNoticeUpdated()
-        }}
-        onCancel={handleCancelEdit}
-      />
-    )
-  }
-
   return (
     <div className="notice-board">
       {notices.length === 0 ? (
@@ -128,13 +119,20 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
                       <Bell size={15} />
                     </div>
                     <div className="notice-title-wrap">
-                      <h4 className="notice-title">{notice.title}</h4>
+                      <div className="notice-title-line">
+                        <h4 className="notice-title">{notice.title}</h4>
+                        {unreadNoticeIds?.has(notice.id) ? (
+                          <span className={`notice-new-chip ${shouldFadeUnreadBadges ? "fade-out" : ""}`.trim()}>
+                            Novo
+                          </span>
+                        ) : null}
+                      </div>
                       <div className="notice-subtitle">{notice.subtitle || "Comunicado oficial"}</div>
                     </div>
                   </div>
 
                   <div className="notice-header-right">
-                    {/whats/i.test(`${notice.subtitle} ${notice.content}`) ? (
+                    {notice.sendViaWhatsapp || /whats/i.test(`${notice.subtitle} ${notice.content}`) ? (
                       <span className="notice-channel-chip">
                         <MessageCircle size={13} />
                         WhatsApp
@@ -195,6 +193,19 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
             {t("NoticeBoard.CancelDelete")}
           </Button>
         </div>
+      </Modal>
+
+      <Modal isOpen={Boolean(editingNotice)} onClose={handleCancelEdit} wide>
+        {editingNotice ? (
+          <EditNoticeForm
+            notice={editingNotice}
+            onNoticeUpdated={() => {
+              setEditingNotice(null)
+              onNoticeUpdated()
+            }}
+            onCancel={handleCancelEdit}
+          />
+        ) : null}
       </Modal>
     </div>
   )

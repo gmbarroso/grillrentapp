@@ -12,7 +12,7 @@ import {
   Users,
 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
-import { useAllNotices } from "../../hooks/notice/useAllNotices"
+import { useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import DashboardSidebar, { type DashboardSidebarNavItem } from "../DashboardSidebar/DashboardSidebar"
 import "./DashboardLayout.css"
 
@@ -21,9 +21,10 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user, token, logout } = useAuth()
+  const { user, logout } = useAuth()
   const location = useLocation()
-  const { total: totalNotices } = useAllNotices(token ?? "")
+  const { unreadCount } = useNoticeUnreadState()
+  const isAdminRoute = location.pathname.startsWith("/admin/")
 
   const onLogout = useCallback(async () => {
     await logout()
@@ -62,7 +63,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const primaryNav: DashboardSidebarNavItem[] = [
     { label: "Inicio", to: "/", icon: House },
     { label: "Minhas reservas", to: "/mybookeddates", icon: CalendarDays },
-    { label: "Avisos", to: "/notices", icon: Bell, badge: totalNotices > 0 ? totalNotices : undefined },
+    { label: "Avisos", to: "/notices", icon: Bell, badge: !isAdminRoute && unreadCount > 0 ? unreadCount : undefined },
     { label: "Perfil", to: "/profile", icon: CircleUserRound },
     { label: "Contato", to: "/contact", icon: Phone },
   ]

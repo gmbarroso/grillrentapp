@@ -53,6 +53,7 @@ export const fetchWithAuthHandling = async (url: string, options: RequestInit = 
     method,
     headers,
     credentials: "include",
+    cache: "no-store",
   })
 
   if (response.status === 401) {

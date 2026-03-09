@@ -4,11 +4,12 @@ import "./NoticeCarousel.css"
 
 interface NoticeCarouselProps {
   notices: Notice[]
+  unreadNoticeIds?: Set<string>
 }
 
 const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" })
 
-export default function NoticeCarousel({ notices }: NoticeCarouselProps) {
+export default function NoticeCarousel({ notices, unreadNoticeIds }: NoticeCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const hasManyNotices = notices.length > 1
 
@@ -51,7 +52,10 @@ export default function NoticeCarousel({ notices }: NoticeCarouselProps) {
   return (
     <article className="notice-carousel-card">
       <header className="notice-carousel-header">
-        <h4>{activeNotice.title}</h4>
+        <div className="notice-carousel-title-wrap">
+          <h4>{activeNotice.title}</h4>
+          {unreadNoticeIds?.has(activeNotice.id) ? <span className="notice-carousel-novo-chip">Novo</span> : null}
+        </div>
         <time>{shortDateFormatter.format(new Date(activeNotice.createdAt))}</time>
       </header>
 

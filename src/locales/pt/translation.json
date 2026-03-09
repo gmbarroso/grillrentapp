@@ -113,8 +113,8 @@
     "TablesAndChairsIncluded": "Esta reserva inclui mesas e cadeiras"
   },
   "Resource": {
-    "grill": "Churrasqueira",
-    "tennis": "Quadra de Tênis"
+    "daily": "Churrasqueira",
+    "hourly": "Quadra de Tênis"
   },
   "Header": {
     "Title": "App de Aluguel de Churrasqueiras",

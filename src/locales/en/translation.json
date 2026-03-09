@@ -114,8 +114,8 @@
     "TablesAndChairsIncluded": "This reservation includes tables and chairs"
   },
   "Resource": {
-    "grill": "Grill",
-    "tennis": "Tennis Court"
+    "daily": "Grill",
+    "hourly": "Tennis Court"
   },
   "Header": {
     "Title": "Grill Rent App",

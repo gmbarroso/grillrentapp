@@ -59,8 +59,6 @@ const Notices = () => {
         <p>Fique por dentro das novidades e comunicados</p>
       </header>
 
-      {isAdmin && <NoticeForm onNoticeCreated={handleNoticeCreated} />}
-
       {isLoading ? (
         <LoadingSpinner />
       ) : (

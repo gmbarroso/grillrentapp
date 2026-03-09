@@ -12,6 +12,7 @@ import {
   Users,
 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
+import { useAllNotices } from "../../hooks/notice/useAllNotices"
 import DashboardSidebar, { type DashboardSidebarNavItem } from "../DashboardSidebar/DashboardSidebar"
 import "./DashboardLayout.css"
 
@@ -20,8 +21,9 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user, logout } = useAuth()
+  const { user, token, logout } = useAuth()
   const location = useLocation()
+  const { total: totalNotices } = useAllNotices(token ?? "")
 
   const onLogout = useCallback(async () => {
     await logout()
@@ -37,7 +39,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/admin/reservas": "Gerenciar Reservas",
       "/admin/moradores": "Gerenciar Moradores",
       "/admin/resources": "Recursos",
-      "/admin/avisos": "Gerenciar Avisos",
+      "/admin/notices": "Gerenciar Avisos",
       "/admin/configuracoes": "Configuracoes",
       "/admin/configuracoes/identidade": "Identidade do Condominio",
       "/admin/configuracoes/whatsapp": "Integracao WhatsApp",
@@ -60,7 +62,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const primaryNav: DashboardSidebarNavItem[] = [
     { label: "Inicio", to: "/", icon: House },
     { label: "Minhas reservas", to: "/mybookeddates", icon: CalendarDays },
-    { label: "Avisos", to: "/notices", icon: Bell },
+    { label: "Avisos", to: "/notices", icon: Bell, badge: totalNotices > 0 ? totalNotices : undefined },
     { label: "Perfil", to: "/profile", icon: CircleUserRound },
     { label: "Contato", to: "/contact", icon: Phone },
   ]
@@ -69,7 +71,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: "Reservas", to: "/admin/reservas", icon: CalendarDays },
     { label: "Moradores", to: "/admin/moradores", icon: Users },
     { label: "Recursos", to: "/admin/resources", icon: Boxes },
-    { label: "Avisos", to: "/admin/avisos", icon: MessageSquare, badge: 2 },
+    { label: "Avisos", to: "/admin/notices", icon: MessageSquare },
     { label: "Configuracoes", to: "/admin/configuracoes", icon: Cog },
   ]
 

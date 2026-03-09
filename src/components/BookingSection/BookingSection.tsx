@@ -235,7 +235,8 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
       setBookedOnBehalf("")
     } catch (error) {
       console.error("Error creating booking:", error)
-      showToast(t("ErrorCreatingBooking"), "error")
+      const message = error instanceof Error && error.message ? error.message : t("ErrorCreatingBooking")
+      showToast(message, "error")
     } finally {
       setIsConfirmBookingModalOpen(false)
       setPendingBookingData(null)

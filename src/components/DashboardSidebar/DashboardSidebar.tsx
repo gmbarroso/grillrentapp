@@ -62,7 +62,7 @@ export default function DashboardSidebar({
         </div>
 
         <div className="dashboard-nav-group">
-          <h3>Administracao</h3>
+          <h3>Administração</h3>
           {adminNav.map((item) => {
             const Icon = item.icon
             const isActive = location.pathname === item.to

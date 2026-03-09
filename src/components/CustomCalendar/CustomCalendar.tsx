@@ -11,7 +11,7 @@ interface CustomCalendarProps {
   onDateSelect: (date: Date) => void
   minDate?: Date
   maxDate?: Date
-  resourceType?: "grill" | "tennis"
+  resourceType?: "daily" | "hourly"
   selectedDate?: Date | null
 }
 
@@ -20,7 +20,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   onDateSelect,
   minDate = new Date(),
   maxDate,
-  resourceType = "grill",
+  resourceType = "daily",
   selectedDate = null,
 }) => {
   const { t } = useTranslation()
@@ -215,7 +215,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
       <div className="calendar-grid">{renderCalendarDays()}</div>
 
-      {resourceType === "grill" && (
+      {resourceType === "daily" && (
         <div className="calendar-legend">
           <div className="legend-item">
             <div className="legend-color available"></div>

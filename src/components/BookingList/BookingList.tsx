@@ -126,14 +126,14 @@ const BookingList: React.FC<BookingListProps> = ({
                     <td>
                       <div className="resource-with-tooltip">
                         {t(`Resource.${booking.resourceType}`)}
-                        {booking.resourceType === "grill" && booking.needTablesAndChairs && (
+                        {booking.resourceType === "daily" && booking.needTablesAndChairs && (
                           <Tooltip content={t("BookingList.TablesAndChairsIncluded")} />
                         )}
                       </div>
                     </td>
                     <td>{formatBookingDate(booking.startTime)}</td>
                     <td>
-                      {booking.resourceType === "grill"
+                      {booking.resourceType === "daily"
                         ? t("BookingList.AllDay")
                         : formatBookingTimeInterval(booking.startTime, booking.endTime)}
                     </td>

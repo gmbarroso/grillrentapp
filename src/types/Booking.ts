@@ -1,7 +1,7 @@
 export interface Booking {
   id: string
   userId: string
-  resourceType: "grill" | "tennis"
+  resourceType: "daily" | "hourly"
   resourceId: string
   startTime: string
   endTime: string
@@ -14,7 +14,7 @@ export interface Booking {
 export interface BookingListInterface {
   id: string
   resourceId: string
-  resourceType: "grill" | "tennis"
+  resourceType: "daily" | "hourly"
   startTime: string
   endTime: string
   userId: string

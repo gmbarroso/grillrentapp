@@ -12,7 +12,7 @@ interface ReservedTimesResponse {
   reservedDays?: string[]
 }
 
-export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, date?: Date) {
+export function useReservedTimes(resourceType: "hourly" | "daily" | undefined, date?: Date) {
   const [reservedTimes, setReservedTimes] = useState<string[]>([])
   const [reservedDays, setReservedDays] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -31,8 +31,8 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
 
   useEffect(() => {
     const fetchReservedTimes = async () => {
-      // For tennis, only fetch if both resourceType and date are provided
-      if (!resourceType || (resourceType === "tennis" && !date)) {
+      // For hourly resources, only fetch if both resourceType and date are provided
+      if (!resourceType || (resourceType === "hourly" && !date)) {
         setReservedTimes([])
         setReservedDays([])
         return
@@ -45,7 +45,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
 
       try {
         let endpoint = `/bookings/reserved-times?resourceType=${resourceType}`
-        if (resourceType === "tennis" && dateKey) {
+        if (resourceType === "hourly" && dateKey) {
           endpoint += `&date=${dateKey}`
         }
 
@@ -64,7 +64,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
 
         if (!isMounted.current) return
 
-        if (resourceType === "tennis" && data.reservedTimes) {
+        if (resourceType === "hourly" && data.reservedTimes) {
           const bookedTimes: string[] = []
 
           data.reservedTimes.forEach((slot) => {
@@ -72,7 +72,7 @@ export function useReservedTimes(resourceType: "tennis" | "grill" | undefined, d
           })
 
           setReservedTimes(bookedTimes)
-        } else if (resourceType === "grill" && data.reservedDays) {
+        } else if (resourceType === "daily" && data.reservedDays) {
           setReservedDays(data.reservedDays)
         }
       } catch (err) {

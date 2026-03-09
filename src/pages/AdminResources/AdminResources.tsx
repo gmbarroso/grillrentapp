@@ -94,7 +94,6 @@ const AdminResources = () => {
                   </span>
                   <div>
                     <h3>{resource.name}</h3>
-                    <p>{resource.type}</p>
                   </div>
                 </div>
                 <small>{isHourly ? "Por hora" : "Dia inteiro"}</small>

@@ -3,6 +3,7 @@ export interface Booking {
   userId: string
   resourceType: "daily" | "hourly"
   resourceId: string
+  resourceName: string
   startTime: string
   endTime: string
   userApartment: string
@@ -15,6 +16,7 @@ export interface BookingListInterface {
   id: string
   resourceId: string
   resourceType: "daily" | "hourly"
+  resourceName: string
   startTime: string
   endTime: string
   userId: string

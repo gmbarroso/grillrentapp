@@ -41,3 +41,27 @@
   background: #fff4db;
   color: #8b6000;
 }
+
+.reservation-delete-button {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  padding: 0.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reservation-delete-button:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.reservation-delete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

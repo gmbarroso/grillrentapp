@@ -47,12 +47,30 @@ const sameDateKey = (iso: string, key: string) => formatBookingDateKey(new Date(
 const isSameUnit = (booking: Booking, apartment?: string, block?: number) =>
   booking.userApartment === apartment && Number(booking.userBlock) === Number(block)
 
+const dayFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: BOOKING_DISPLAY_TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+})
+
+const hourFormatter = new Intl.DateTimeFormat("en-GB", {
+  hour: "2-digit",
+  hour12: false,
+  timeZone: BOOKING_DISPLAY_TIMEZONE,
+})
+
+const SAO_PAULO_UTC_OFFSET_HOURS = 3
+
+const toSaoPauloUtcInstant = (date: Date, hour: number, minute: number = 0) =>
+  new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), hour + SAO_PAULO_UTC_OFFSET_HOURS, minute, 0, 0))
+
 const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated }) => {
   const { t } = useTranslation()
   const { showToast } = useToast()
   const { user } = useAuth()
 
-  const [selectedOption, setSelectedOption] = useState<"grill" | "tennis">("tennis")
+  const [selectedOption, setSelectedOption] = useState<"daily" | "hourly">("hourly")
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedTime, setSelectedTime] = useState<string | null>(null)
   const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
@@ -64,6 +82,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
 
   const {
     reservedTimes: unavailableTimes,
+    reservedDays,
     isLoading: isLoadingTimes,
     error: timesError,
   } = useReservedTimes(selectedOption, selectedDate)
@@ -78,6 +97,8 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
   const selectedResource = useMemo(() => {
     return resources?.find((resource: Resource) => resource.type === selectedOption) ?? null
   }, [resources, selectedOption])
+  const hourlyResource = useMemo(() => resources?.find((resource: Resource) => resource.type === "hourly") ?? null, [resources])
+  const dailyResource = useMemo(() => resources?.find((resource: Resource) => resource.type === "daily") ?? null, [resources])
 
   const resourceBookings = useMemo(() => {
     const now = new Date()
@@ -85,11 +106,6 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
       .filter((booking) => booking.resourceType === selectedOption)
       .filter((booking) => new Date(booking.endTime).getTime() > now.getTime())
   }, [bookings, selectedOption])
-
-  const reservedDayKeys = useMemo(
-    () => [...new Set(resourceBookings.map((booking) => formatBookingDateKey(new Date(booking.startTime))))],
-    [resourceBookings],
-  )
 
   const dayBookings = useMemo(
     () =>
@@ -99,7 +115,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
     [resourceBookings, selectedDateKey],
   )
 
-  const tennisBookingByHour = useMemo(() => {
+  const hourlyBookingByHour = useMemo(() => {
     const map = new Map<string, Booking>()
     dayBookings.forEach((booking) => {
       const hour = new Date(booking.startTime).getHours().toString().padStart(2, "0")
@@ -108,7 +124,15 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
     return map
   }, [dayBookings])
 
-  const grillBooking = selectedOption === "grill" ? dayBookings[0] ?? null : null
+  const dailyBooking = selectedOption === "daily" ? dayBookings[0] ?? null : null
+  const isDailyBookingClosedForSelectedDate = useMemo(() => {
+    if (selectedOption !== "daily") return false
+
+    const now = new Date()
+    const selectedDayKey = selectedDateKey
+    const todayKey = dayFormatter.format(now)
+    return selectedDayKey === todayKey
+  }, [selectedDateKey, selectedOption])
 
   const canDeleteBooking = useCallback(
     (booking: Booking) => {
@@ -119,7 +143,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
   )
 
   const isPastSlotForSelectedDate = (slot: string) => {
-    if (selectedOption !== "tennis") return false
+    if (selectedOption !== "hourly") return false
 
     const now = new Date()
     const dayFormatter = new Intl.DateTimeFormat("en-CA", {
@@ -152,7 +176,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
   }, [resourcesError, showToast, t])
 
   useEffect(() => {
-    if (timesError && !(selectedOption === "tennis" && !selectedDate)) {
+    if (timesError && !(selectedOption === "hourly" && !selectedDate)) {
       showToast(t("ErrorFetchingSlots"), "error")
     }
   }, [timesError, selectedDate, selectedOption, showToast, t])
@@ -161,34 +185,32 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
     if (!selectedResource) return null
 
     const now = new Date()
-    const startTime = new Date(selectedDate)
-    const endTime = new Date(selectedDate)
+    const todayInSaoPauloKey = dayFormatter.format(now)
+    const isSelectedDateTodayInSaoPaulo = selectedDateKey === todayInSaoPauloKey
+    let startTime: Date
+    let endTime: Date
 
-    if (selectedOption === "tennis") {
+    if (selectedOption === "hourly") {
       if (!slot) return null
       const [hourText] = slot.split(":")
-      startTime.setHours(Number.parseInt(hourText, 10), 0, 0, 0)
-      endTime.setHours(startTime.getHours() + 1, 0, 0, 0)
+      const hour = Number.parseInt(hourText, 10)
+      startTime = toSaoPauloUtcInstant(selectedDate, hour)
+      endTime = toSaoPauloUtcInstant(selectedDate, hour + 1)
     } else {
-      startTime.setHours(7, 0, 0, 0)
-      endTime.setHours(22, 0, 0, 0)
+      startTime = toSaoPauloUtcInstant(selectedDate, 7)
+      endTime = toSaoPauloUtcInstant(selectedDate, 22)
     }
 
-    if (startTime.toDateString() === now.toDateString() && selectedOption === "grill") {
-      const currentHour = now.getHours()
-      if (currentHour >= 7 && currentHour < 22) {
-        startTime.setHours(currentHour + 1, 0, 0, 0)
-      } else if (currentHour >= 22) {
-        showToast(t("ErrorBookingClosedForToday"), "error")
-        return null
-      }
+    if (selectedOption === "daily" && isSelectedDateTodayInSaoPaulo) {
+      showToast(t("ErrorBookingClosedForToday"), "error")
+      return null
     }
 
     return {
       resourceId: selectedResource.id,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
-      needTablesAndChairs: selectedOption === "grill" ? needTablesAndChairs : false,
+      needTablesAndChairs: selectedOption === "daily" ? needTablesAndChairs : false,
       ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
     }
   }
@@ -234,7 +256,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
   }
 
   const rules = useMemo(() => {
-    const content = t(`Card.${selectedOption === "tennis" ? "TennisContent" : "GrillContent"}`, {
+    const content = t(`Card.${selectedOption === "hourly" ? "TennisContent" : "GrillContent"}`, {
       returnObjects: true,
     }) as string[]
     return content
@@ -245,17 +267,17 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
       <div className="scheduler-tabs">
         <Button
           variant="secondary"
-          className={selectedOption === "tennis" ? "selected" : ""}
-          onClick={() => setSelectedOption("tennis")}
+          className={selectedOption === "hourly" ? "selected" : ""}
+          onClick={() => setSelectedOption("hourly")}
         >
-          Quadra de Tenis
+          {hourlyResource?.name ?? ""}
         </Button>
         <Button
           variant="secondary"
-          className={selectedOption === "grill" ? "selected" : ""}
-          onClick={() => setSelectedOption("grill")}
+          className={selectedOption === "daily" ? "selected" : ""}
+          onClick={() => setSelectedOption("daily")}
         >
-          Churrasqueira
+          {dailyResource?.name ?? ""}
         </Button>
       </div>
 
@@ -270,10 +292,10 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
             <div className="scheduler-loading">
               <LoadingSpinner inline />
             </div>
-          ) : selectedOption === "tennis" ? (
+          ) : selectedOption === "hourly" ? (
             <div className="scheduler-slot-list">
               {timeSlots.map((slot) => {
-                const booking = tennisBookingByHour.get(slot.value)
+                const booking = hourlyBookingByHour.get(slot.value)
                 const isPast = isPastSlotForSelectedDate(slot.value)
                 const isBooked = Boolean(booking) || unavailableTimes.includes(slot.value)
                 const isBlocked = isPast || isBooked
@@ -314,48 +336,51 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
                         }}
                         className="scheduler-reserve-button"
                       >
-                        {isBlocked ? "Reservado" : "Reservar"}
+                        Reservar
                       </Button>
                     )}
                   </div>
                 )
               })}
             </div>
-          ) : grillBooking ? (
+          ) : dailyBooking ? (
             <div className="scheduler-grill-booking">
               <div className="scheduler-grill-row">
                 <div>
                   <strong>Reservado - Dia inteiro</strong>
                   <p>
-                    Morador: {grillBooking.userId === user?.id || isSameUnit(grillBooking, user?.apartment, user?.block)
+                    Morador: {dailyBooking.userId === user?.id || isSameUnit(dailyBooking, user?.apartment, user?.block)
                       ? user?.name || "Morador"
-                      : `Apt ${grillBooking.userApartment} Bl. ${grillBooking.userBlock}`}
+                      : `Apt ${dailyBooking.userApartment} Bl. ${dailyBooking.userBlock}`}
                   </p>
-                  <p>Apt {grillBooking.userApartment} Bl. {grillBooking.userBlock}</p>
-                  {grillBooking.needTablesAndChairs ? <a href="#">Mesas e cadeiras solicitadas</a> : null}
+                  <p>Apt {dailyBooking.userApartment} Bl. {dailyBooking.userBlock}</p>
+                  {dailyBooking.needTablesAndChairs ? <a href="#">Mesas e cadeiras solicitadas</a> : null}
                 </div>
-                <span className={`reservation-status ${grillBooking.bookedOnBehalf ? "pending" : "confirmed"}`.trim()}>
-                  {grillBooking.bookedOnBehalf ? "Pag. Pendente" : "Confirmado"}
+                <span className={`reservation-status ${dailyBooking.bookedOnBehalf ? "pending" : "confirmed"}`.trim()}>
+                  {dailyBooking.bookedOnBehalf ? "Pag. Pendente" : "Confirmado"}
                 </span>
               </div>
-              {canDeleteBooking(grillBooking) ? (
-                <Button variant="danger" size="sm" onClick={() => setBookingToDelete(grillBooking)} className="scheduler-delete-button">
-                  <Trash2 size={13} />
-                  Cancelar
-                </Button>
-              ) : null}
+              <Button variant="secondary" size="sm" disabled={true} className="scheduler-reserve-button">
+                Reservado
+              </Button>
             </div>
           ) : (
             <div className="scheduler-grill-empty">
-              <p>Disponivel para reserva</p>
-              <Button variant="primary" onClick={() => openConfirmBookingModal(null)}>
-                Reservar Churrasqueira
+              <p className={isDailyBookingClosedForSelectedDate ? "scheduler-grill-warning" : ""}>
+                {isDailyBookingClosedForSelectedDate ? "Já não é mais possível reservar para hoje" : "Disponível para reserva"}
+              </p>
+              <Button variant="primary" disabled={isDailyBookingClosedForSelectedDate} onClick={() => openConfirmBookingModal(null)}>
+                Reservar
               </Button>
               <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={needTablesAndChairs}
-                  onChange={() => setIsAgreementModalOpen(true)}
+                  disabled={isDailyBookingClosedForSelectedDate}
+                  onChange={() => {
+                    if (isDailyBookingClosedForSelectedDate) return
+                    setIsAgreementModalOpen(true)
+                  }}
                   className="checkbox-input"
                 />
                 <span className="checkbox-text">{t("NeedTablesAndChairs")}</span>
@@ -385,16 +410,16 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
         <aside className="scheduler-side">
           <div className="scheduler-side-card">
             <Calendar
-              reservedDays={reservedDayKeys}
+              reservedDays={selectedOption === "daily" ? reservedDays : []}
               onDateSelect={setSelectedDate}
               resourceType={selectedOption}
               selectedDate={selectedDate}
             />
           </div>
           <div className="scheduler-side-card scheduler-resource-card">
-            <h4>{selectedOption === "tennis" ? "Quadra de Tenis" : "Churrasqueira"}</h4>
+            <h4>{selectedResource?.name ?? ""}</h4>
             <p>
-              {selectedOption === "tennis"
+              {selectedOption === "hourly"
                 ? "Quadra profissional com iluminacao noturna"
                 : "Area de churrasqueira com mesas, cadeiras e espaco coberto"}
             </p>
@@ -403,7 +428,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
       </div>
 
       <section className="scheduler-rules">
-        <h3>Regras de Uso - {selectedOption === "tennis" ? "Quadra de Tenis" : "Churrasqueira"}</h3>
+        <h3>Regras de Uso - {selectedResource?.name ?? ""}</h3>
         <ul className="card-content">
           {rules.map((item, index) => (
             <li key={index}>{item}</li>
@@ -456,7 +481,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
         <div className="confirm-booking-modal">
           <h2>Confirmar reserva</h2>
           <p>
-            {selectedOption === "tennis" && selectedTime
+            {selectedOption === "hourly" && selectedTime
               ? `Deseja reservar ${formatBookingTimeInterval(
                   new Date(`${selectedDateKey}T${selectedTime}:00`),
                   new Date(`${selectedDateKey}T${(Number.parseInt(selectedTime, 10) + 1).toString().padStart(2, "0")}:00:00`),

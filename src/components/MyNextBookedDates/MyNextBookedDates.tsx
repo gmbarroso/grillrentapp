@@ -10,6 +10,8 @@ interface MyNextBookedDatesProps {
   onActionClick?: () => void
   emptyMessage?: string
   id?: string
+  onDeleteBooking?: (bookingId: string) => void
+  isDeletingBooking?: boolean
 }
 
 export default function MyNextBookedDates({
@@ -20,6 +22,8 @@ export default function MyNextBookedDates({
   onActionClick,
   emptyMessage = "Voce nao tem reservas.",
   id,
+  onDeleteBooking,
+  isDeletingBooking = false,
 }: MyNextBookedDatesProps) {
   const HeadingTag = headingLevel
   const showAction = Boolean(actionLabel && onActionClick)
@@ -45,6 +49,8 @@ export default function MyNextBookedDates({
                 booking={booking}
                 statusLabel={pending ? "Pag. Pendente" : "Confirmado"}
                 pending={Boolean(pending)}
+                onDelete={onDeleteBooking}
+                isDeleting={isDeletingBooking}
               />
             )
           })

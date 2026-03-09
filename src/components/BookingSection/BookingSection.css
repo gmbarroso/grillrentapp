@@ -145,6 +145,10 @@
   font-weight: 600;
 }
 
+.scheduler-grill-empty p.scheduler-grill-warning {
+  color: #dc2626;
+}
+
 .scheduler-grill-empty .checkbox-label {
   margin-top: 0.1rem;
 }

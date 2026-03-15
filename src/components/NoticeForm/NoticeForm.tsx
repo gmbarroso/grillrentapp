@@ -1,11 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Bell, MessageCircle } from "lucide-react"
 import { useCreateNotice } from "../../hooks/notice/useCreateNotice"
 import { useToast } from "../../context/ToastContext"
 import { Button } from "../"
+import { fetchWithAuthHandling, getApiBaseUrl } from "../../utils/api"
 import "./NoticeForm.css"
 import { useLoading } from "../../context/LoadingContext"
 
@@ -19,9 +20,32 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
   const [subtitle, setSubtitle] = useState("")
   const [content, setContent] = useState("")
   const [sendViaWhatsapp, setSendViaWhatsapp] = useState(false)
+  const [isLoadingWhatsappDefault, setIsLoadingWhatsappDefault] = useState(true)
   const { createNotice, isLoading } = useCreateNotice()
   const { showToast } = useToast()
   const { setIsLoading } = useLoading()
+  const didSetDefaultRef = useRef(false)
+
+  useEffect(() => {
+    const loadWhatsappDefault = async () => {
+      try {
+        const response = await fetchWithAuthHandling(`${getApiBaseUrl()}/whatsapp/settings`)
+        if (!response.ok) return
+
+        const payload = (await response.json()) as { autoSendNotices?: boolean }
+        if (payload.autoSendNotices && !didSetDefaultRef.current) {
+          setSendViaWhatsapp(true)
+          didSetDefaultRef.current = true
+        }
+      } catch {
+        // Keep default false when settings cannot be loaded.
+      } finally {
+        setIsLoadingWhatsappDefault(false)
+      }
+    }
+
+    void loadWhatsappDefault()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,7 +146,12 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
         </div>
 
         <label className="notice-compose-switch" aria-label="Enviar via WhatsApp">
-          <input type="checkbox" checked={sendViaWhatsapp} onChange={(e) => setSendViaWhatsapp(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={sendViaWhatsapp}
+            onChange={(e) => setSendViaWhatsapp(e.target.checked)}
+            disabled={isLoadingWhatsappDefault}
+          />
           <span />
         </label>
       </div>

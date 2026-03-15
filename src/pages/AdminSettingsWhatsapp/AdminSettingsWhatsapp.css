@@ -1,5 +1,4 @@
 .admin-whatsapp-page {
-  max-width: 980px;
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
@@ -82,6 +81,12 @@
   background: #fff1f3;
 }
 
+.status-chip.connected {
+  color: #0c7a3e;
+  border-color: #9fd8b5;
+  background: #ecfbf2;
+}
+
 .wh-form-grid {
   margin-top: 0.7rem;
   display: grid;
@@ -104,6 +109,12 @@
   border-radius: 8px;
   padding: 0.55rem 0.65rem;
   font-size: 0.92rem;
+}
+
+.wh-form-grid input:disabled {
+  opacity: 0.78;
+  background: #f6f8fb;
+  color: #4b5563;
 }
 
 .toggle-row {
@@ -155,6 +166,11 @@
   transform: translateX(20px);
 }
 
+.switch:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .whatsapp-card footer {
   margin-top: 0.72rem;
   display: flex;
@@ -166,6 +182,56 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+}
+
+.group-binding-row {
+  margin-top: 0.72rem;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.55rem;
+  align-items: end;
+}
+
+.group-binding-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.group-binding-row label span {
+  font-weight: 600;
+  color: #111827;
+}
+
+.group-binding-row select {
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0.56rem 0.65rem;
+  font-size: 0.92rem;
+  background: #fff;
+}
+
+.group-sync-error {
+  margin-top: 0.68rem;
+  border: 1px solid #f3b8c0;
+  background: #fff1f3;
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  color: #8b1d2c;
+}
+
+.group-sync-error strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.group-sync-error p {
+  margin: 0.16rem 0;
+}
+
+.bound-group-hint {
+  margin: 0.6rem 0 0;
+  color: #455468;
 }
 
 .status-list {
@@ -195,14 +261,42 @@
 }
 
 .status-list span {
-  color: #6b7280;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
 }
 
-.back-button {
-  width: fit-content;
+.status-indicator {
+  border: 1px solid #d4deed;
+  border-radius: 999px;
+  padding: 0.18rem 0.48rem;
+  color: #6b7280;
+  background: #f7f9fc;
+}
+
+.status-indicator.ok {
+  color: #0c7a3e;
+  border-color: #9fd8b5;
+  background: #ecfbf2;
+}
+
+.status-indicator.off {
+  color: #7a8598;
+  border-color: #d9e1ee;
+  background: #f7f9fc;
+}
+
+.icon-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 760px) {
@@ -210,7 +304,7 @@
     flex-direction: column;
   }
 
-  .back-button {
-    width: 100%;
+  .group-binding-row {
+    grid-template-columns: 1fr;
   }
 }

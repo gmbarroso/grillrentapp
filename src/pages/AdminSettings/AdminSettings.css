@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.95rem;
-  max-width: 980px;
 }
 
 .admin-page-heading h2 {
@@ -86,6 +85,12 @@
   color: #d21f35;
   border-color: #f3b8c0;
   background: #fff1f3;
+}
+
+.status-chip.connected {
+  color: #0c7a3e;
+  border-color: #9fd8b5;
+  background: #ecfbf2;
 }
 
 .status-chip.soon {

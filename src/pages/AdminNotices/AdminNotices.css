@@ -3,7 +3,6 @@
   flex-direction: column;
   margin: 0 auto;
   gap: 0.95rem;
-  max-width: 1060px;
 }
 
 .admin-page-heading.with-action {

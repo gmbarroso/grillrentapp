@@ -40,9 +40,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/admin/moradores": "Gerenciar Moradores",
       "/admin/resources": "Recursos",
       "/admin/notices": "Gerenciar Avisos",
-      "/admin/configuracoes": "Configuracoes",
-      "/admin/configuracoes/identidade": "Identidade do Condominio",
-      "/admin/configuracoes/whatsapp": "Integracao WhatsApp",
+      "/admin/settings": "Settings",
+      "/admin/settings/identity": "Condominium Identity",
+      "/admin/settings/whatsapp": "WhatsApp Integration",
     }
 
     return labels[location.pathname] ?? "Dashboard"
@@ -72,7 +72,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: "Moradores", to: "/admin/moradores", icon: Users },
     { label: "Recursos", to: "/admin/resources", icon: Boxes },
     { label: "Avisos", to: "/admin/notices", icon: MessageSquare },
-    { label: "Configuracoes", to: "/admin/configuracoes", icon: Cog },
+    { label: "Settings", to: "/admin/settings", icon: Cog },
   ]
 
   return (

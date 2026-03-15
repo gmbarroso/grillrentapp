@@ -9,14 +9,14 @@ const AdminSettingsBranding = () => {
 
   return (
     <div className="admin-branding-page">
-      <Link to="/admin/configuracoes" className="settings-back-link">
+      <Link to="/admin/settings" className="settings-back-link">
         <Undo2 size={14} />
-        Configuracoes
+        Settings
       </Link>
 
       <header className="admin-page-heading">
-        <h2>Identidade do Condominio</h2>
-        <p>Personalize o nome, logotipo e informacoes de contato do condominio</p>
+        <h2>Identity</h2>
+        <p>Customize your condominium name, logo, and contact details</p>
       </header>
 
       <section className="branding-card">

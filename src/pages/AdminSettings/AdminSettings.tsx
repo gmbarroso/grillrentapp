@@ -1,13 +1,33 @@
 import { Bell, Building2, ChevronRight, MessageSquareText, Palette, Shield } from "lucide-react"
 import { Link } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { fetchWithAuthHandling, getApiBaseUrl } from "../../utils/api"
 import "./AdminSettings.css"
 
 const AdminSettings = () => {
+  const [whatsappConnected, setWhatsappConnected] = useState(false)
+  const API_BASE_URL = getApiBaseUrl()
+
+  useEffect(() => {
+    const loadWhatsappStatus = async () => {
+      try {
+        const response = await fetchWithAuthHandling(`${API_BASE_URL}/whatsapp/settings`)
+        if (!response.ok) return
+        const data = (await response.json()) as { status?: string }
+        setWhatsappConnected(data.status === "connected")
+      } catch {
+        setWhatsappConnected(false)
+      }
+    }
+
+    void loadWhatsappStatus()
+  }, [API_BASE_URL])
+
   return (
     <div className="admin-settings-page">
       <header className="admin-page-heading">
-        <h2>Configuracoes</h2>
-        <p>Gerencie as configuracoes e integracoes do condominio</p>
+        <h2>Settings</h2>
+        <p>Manage condominium identity and integrations</p>
       </header>
 
       <section className="admin-settings-grid">
@@ -17,10 +37,10 @@ const AdminSettings = () => {
               <Building2 size={15} />
             </span>
           </div>
-          <h3>Identidade do Condominio</h3>
-          <p>Nome, logotipo, endereco e informacoes de contato</p>
-          <Link to="/admin/configuracoes/identidade" className="settings-link">
-            Configurar <ChevronRight size={14} />
+          <h3>Identity</h3>
+          <p>Name, logo, address and contact details</p>
+          <Link to="/admin/settings/identity" className="settings-link">
+            Configure <ChevronRight size={14} />
           </Link>
         </article>
 
@@ -29,12 +49,14 @@ const AdminSettings = () => {
             <span className="settings-icon green">
               <MessageSquareText size={15} />
             </span>
-            <small className="status-chip disconnected">Desconectado</small>
+            <small className={`status-chip ${whatsappConnected ? "connected" : "disconnected"}`}>
+              {whatsappConnected ? "Connected" : "Disconnected"}
+            </small>
           </div>
-          <h3>Integracao WhatsApp</h3>
-          <p>Conectar Evolution API para envio de avisos</p>
-          <Link to="/admin/configuracoes/whatsapp" className="settings-link">
-            Configurar <ChevronRight size={14} />
+          <h3>WhatsApp Integration</h3>
+          <p>Connect Evolution API and map your organization groups</p>
+          <Link to="/admin/settings/whatsapp" className="settings-link">
+            Configure <ChevronRight size={14} />
           </Link>
         </article>
 

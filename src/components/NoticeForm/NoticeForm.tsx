@@ -33,7 +33,7 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
 
     try {
       setIsLoading(true)
-      const { success, error } = await createNotice({
+      const { success, error, data } = await createNotice({
         title: title.trim(),
         subtitle: subtitle.trim(),
         content: content.trim(),
@@ -41,7 +41,19 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
       })
 
       if (success) {
-        showToast("Aviso publicado com sucesso.", "success")
+        const status = (data as { whatsappDeliveryStatus?: string } | undefined)?.whatsappDeliveryStatus
+        const failureReason = (data as { whatsappLastError?: string } | undefined)?.whatsappLastError
+
+        if (sendViaWhatsapp && status && status !== "sent") {
+          showToast(
+            status === "failed"
+              ? `Aviso publicado, mas o envio no WhatsApp falhou.${failureReason ? ` Motivo: ${failureReason}` : ""}`
+              : "Aviso publicado, mas o envio no WhatsApp ficou pendente.",
+            "error",
+          )
+        } else {
+          showToast("Aviso publicado com sucesso.", "success")
+        }
         onNoticeCreated()
       } else {
         console.error("Error creating notice:", error)

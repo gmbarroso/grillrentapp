@@ -116,6 +116,39 @@
   gap: 0.25rem;
 }
 
+.notice-whatsapp-status {
+  border-radius: 8px;
+  padding: 0.2rem 0.46rem;
+  font-size: 0.76rem;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.notice-whatsapp-status-sent {
+  background: #edf9f0;
+  color: #1f7a3e;
+  border-color: #b8e0c1;
+}
+
+.notice-whatsapp-status-pending,
+.notice-whatsapp-status-retrying {
+  background: #fff7e8;
+  color: #8a6400;
+  border-color: #f2d18f;
+}
+
+.notice-whatsapp-status-failed {
+  background: #feeeee;
+  color: #a63131;
+  border-color: #f4bcbc;
+}
+
+.notice-whatsapp-status-skipped {
+  background: #f3f5f9;
+  color: #556070;
+  border-color: #d5dce8;
+}
+
 .notice-content {
   margin-bottom: 0.9rem;
   color: #535f74;

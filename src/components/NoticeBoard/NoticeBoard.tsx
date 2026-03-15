@@ -104,6 +104,15 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
     })
   }
 
+  const whatsappStatusLabel = (status?: string) => {
+    if (!status) return null
+    if (status === "sent") return "WhatsApp enviado"
+    if (status === "retrying" || status === "pending") return "WhatsApp pendente"
+    if (status === "failed") return "WhatsApp falhou"
+    if (status === "skipped") return "WhatsApp desativado"
+    return null
+  }
+
   return (
     <div className="notice-board">
       {notices.length === 0 ? (
@@ -136,6 +145,11 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
                       <span className="notice-channel-chip">
                         <MessageCircle size={13} />
                         WhatsApp
+                      </span>
+                    ) : null}
+                    {notice.sendViaWhatsapp && whatsappStatusLabel(notice.whatsappDeliveryStatus) ? (
+                      <span className={`notice-whatsapp-status notice-whatsapp-status-${notice.whatsappDeliveryStatus || "pending"}`}>
+                        {whatsappStatusLabel(notice.whatsappDeliveryStatus)}
                       </span>
                     ) : null}
                     {isAdmin && (

@@ -11,6 +11,8 @@ import { useToast } from "../../context/ToastContext"
 import { authError, sanitizeForLog } from "../../utils/auth-logger"
 import "./Notices.css"
 
+const UNREAD_ANIMATION_FADE_MS = 2000
+
 const Notices = () => {
   const { token } = useAuth()
   const { t } = useTranslation()
@@ -86,10 +88,9 @@ const Notices = () => {
             window.setTimeout(() => {
               setUnreadNoticeIdsForAnimation(new Set())
               setShouldFadeUnreadBadges(false)
-            }, 1800)
+            }, UNREAD_ANIMATION_FADE_MS)
           }
         }
-        await refreshNotices()
       } catch (error) {
         authError("[NoticesReadTracking] mark-seen failed", sanitizeForLog({ message: (error as Error)?.message }))
         showToast("Nao foi possivel atualizar leitura dos avisos. Tentaremos novamente depois.", "warning")
@@ -97,7 +98,7 @@ const Notices = () => {
     }
 
     void applyReadState()
-  }, [isLoading, isNoticeReadTrackingEnabled, markNoticesAsSeen, notices, refreshNotices, showToast])
+  }, [isLoading, isNoticeReadTrackingEnabled, markNoticesAsSeen, notices, showToast])
 
   return (
     <div className="notices-page">

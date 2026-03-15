@@ -29,7 +29,7 @@ export function useCreateNotice() {
         body: JSON.stringify(noticeData),
       })
 
-      const data = await response.json()
+      const data = (await response.json()) as Notice
       logApiResponse(endpoint, response.status, data)
 
       if (!response.ok) {

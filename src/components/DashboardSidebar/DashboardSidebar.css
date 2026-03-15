@@ -81,14 +81,15 @@
 
 .dashboard-nav-item small {
   margin-left: auto;
-  min-width: 18px;
-  text-align: center;
+}
+
+.dashboard-nav-item .dashboard-nav-dot {
+  margin-left: auto;
+  width: 9px;
+  height: 9px;
   border-radius: 999px;
-  background: #ffebee;
-  color: #8c1d2b;
-  font-size: 0.7rem;
-  line-height: 1.2;
-  padding: 0.12rem 0.32rem;
+  background: #ef4444;
+  display: inline-block;
 }
 
 .dashboard-user-box {

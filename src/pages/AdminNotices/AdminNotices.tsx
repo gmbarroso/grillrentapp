@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import NoticeForm from "../../components/NoticeForm/NoticeForm"
 import { Button, LoadingSpinner, Modal, NoticeBoard } from "../../components"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
+import { useMarkNoticesAsSeen, useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
 import "./AdminNotices.css"
@@ -13,6 +14,8 @@ const AdminNotices = () => {
   const { t } = useTranslation()
   const { showToast } = useToast()
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const { markNoticesAsSeen } = useMarkNoticesAsSeen()
+  const { isNoticeReadTrackingEnabled } = useNoticeUnreadState()
 
   const {
     notices,
@@ -53,6 +56,16 @@ const AdminNotices = () => {
     }
   }, [isError, showToast, t])
 
+  useEffect(() => {
+    if (!isNoticeReadTrackingEnabled) {
+      return
+    }
+
+    void markNoticesAsSeen().catch(() => {
+      // Keep admin notices usable even if read-state sync fails.
+    })
+  }, [isNoticeReadTrackingEnabled, markNoticesAsSeen])
+
   return (
     <div className="admin-notices-page">
       <header className="admin-page-heading with-action">
@@ -78,6 +91,7 @@ const AdminNotices = () => {
       ) : (
         <NoticeBoard
           notices={sortedNotices}
+          canManageNotices
           currentPage={currentPage}
           lastPage={lastPage}
           currentLimit={currentLimit}

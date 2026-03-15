@@ -23,8 +23,7 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth()
   const location = useLocation()
-  const { unreadCount } = useNoticeUnreadState()
-  const isAdminRoute = location.pathname.startsWith("/admin/")
+  const { hasUnread } = useNoticeUnreadState()
 
   const onLogout = useCallback(async () => {
     await logout()
@@ -63,7 +62,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const primaryNav: DashboardSidebarNavItem[] = [
     { label: "Inicio", to: "/", icon: House },
     { label: "Minhas reservas", to: "/mybookeddates", icon: CalendarDays },
-    { label: "Avisos", to: "/notices", icon: Bell, badge: !isAdminRoute && unreadCount > 0 ? unreadCount : undefined },
+    { label: "Avisos", to: "/notices", icon: Bell, hasNew: hasUnread },
     { label: "Perfil", to: "/profile", icon: CircleUserRound },
     { label: "Contato", to: "/contact", icon: Phone },
   ]

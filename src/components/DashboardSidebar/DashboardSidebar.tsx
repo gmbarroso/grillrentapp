@@ -7,7 +7,7 @@ export interface DashboardSidebarNavItem {
   label: string
   to: string
   icon: LucideIcon
-  badge?: number
+  hasNew?: boolean
 }
 
 interface DashboardSidebarProps {
@@ -55,7 +55,7 @@ export default function DashboardSidebar({
               >
                 <Icon size={17} />
                 <span>{item.label}</span>
-                {item.badge ? <small>{item.badge}</small> : null}
+                {item.hasNew ? <small className="dashboard-nav-dot" aria-label="Novos avisos" /> : null}
               </Link>
             )
           })}
@@ -74,7 +74,7 @@ export default function DashboardSidebar({
               >
                 <Icon size={17} />
                 <span>{item.label}</span>
-                {item.badge ? <small>{item.badge}</small> : null}
+                {item.hasNew ? <small className="dashboard-nav-dot" aria-label="Novos avisos" /> : null}
               </Link>
             )
           })}

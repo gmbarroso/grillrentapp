@@ -17,6 +17,7 @@ interface NoticeBoardProps {
   notices: Notice[]
   unreadNoticeIds?: Set<string>
   shouldFadeUnreadBadges?: boolean
+  canManageNotices?: boolean
   currentPage: number
   lastPage: number
   currentLimit: number
@@ -30,6 +31,7 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
   notices,
   unreadNoticeIds,
   shouldFadeUnreadBadges = false,
+  canManageNotices = false,
   currentPage,
   lastPage,
   currentLimit,
@@ -91,7 +93,7 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
     setSelectedNoticeId(null)
   }, [])
 
-  const isAdmin = user?.role === "admin"
+  const canShowManageActions = user?.role === "admin" && canManageNotices
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -152,7 +154,7 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
                         {whatsappStatusLabel(notice.whatsappDeliveryStatus)}
                       </span>
                     ) : null}
-                    {isAdmin && (
+                    {canShowManageActions && (
                       <div className="notice-actions">
                         <button
                           onClick={() => handleEditClick(notice)}

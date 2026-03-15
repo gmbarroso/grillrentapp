@@ -8,11 +8,10 @@ import { getApiBaseUrl, handleApiError, logApiRequest, logApiResponse } from "..
 
 const API_BASE_URL = getApiBaseUrl()
 const UNREAD_COUNT_ENDPOINT = `${API_BASE_URL}/notices/unread-count`
-const NOTICE_LIST_ENDPOINT_PREFIX = `${API_BASE_URL}/notices?`
 const NOTICE_READ_TRACKING_ENABLED = import.meta.env.VITE_NOTICES_READ_TRACKING !== "false"
 
 interface NoticeUnreadStateResponse {
-  unreadCount: number
+  hasUnread: boolean
   lastSeenNoticesAt: string | null
 }
 
@@ -61,14 +60,16 @@ export function useNoticeUnreadState() {
   const { data, isError, isLoading, mutate } = useFetch<NoticeUnreadStateResponse>(
     NOTICE_READ_TRACKING_ENABLED ? UNREAD_COUNT_ENDPOINT : null,
     {
-    fetcher,
+      fetcher,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
     },
   )
 
   const refreshUnreadState = useCallback(() => mutate(), [mutate])
 
   return {
-    unreadCount: data?.unreadCount ?? 0,
+    hasUnread: data?.hasUnread ?? false,
     lastSeenNoticesAt: data?.lastSeenNoticesAt ?? null,
     isLoadingUnreadState: isLoading,
     unreadStateError: isError,
@@ -106,17 +107,11 @@ export function useMarkNoticesAsSeen() {
       await mutateSWRCache(
         UNREAD_COUNT_ENDPOINT,
         {
-          unreadCount: 0,
+          hasUnread: false,
           lastSeenNoticesAt: data.markedAsSeenAt,
         },
         false,
       )
-      const unreadResponse = await authenticatedFetch(UNREAD_COUNT_ENDPOINT)
-      if (unreadResponse.ok) {
-        const unreadData = (await unreadResponse.json()) as NoticeUnreadStateResponse
-        await mutateSWRCache(UNREAD_COUNT_ENDPOINT, unreadData, false)
-      }
-      await mutateSWRCache((key) => typeof key === "string" && key.startsWith(NOTICE_LIST_ENDPOINT_PREFIX))
 
       return data
     } catch (error) {

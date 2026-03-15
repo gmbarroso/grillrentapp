@@ -191,19 +191,8 @@
   color: var(--color-error);
 }
 
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.notice-board-pagination {
   margin-top: 1rem;
-  gap: 0.55rem;
-}
-
-.pagination select {
-  padding: 0.4rem;
-  border: 1px solid #c2d0e6;
-  border-radius: 8px;
-  background-color: #ffffff;
 }
 
 .no-notices-message {
@@ -232,7 +221,7 @@
     justify-content: flex-end;
   }
 
-  .pagination {
-    flex-wrap: wrap;
+  .notice-board-pagination {
+    width: 100%;
   }
 }

@@ -5,7 +5,7 @@ import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useDeleteNotice } from "../../hooks/notice/useDeleteNotice"
-import { Modal, Button } from "../"
+import { Modal, Button, PaginationControls } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, Edit, Bell, MessageCircle } from "lucide-react"
 import EditNoticeForm from "../NoticeForm/EditNoticeForm"
@@ -182,20 +182,15 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
               </div>
             ))}
           </div>
-          <div className="pagination">
-            <Button variant="secondary" onClick={() => onChangePage(currentPage - 1)} disabled={currentPage === 1}>
-              {t("NoticeBoard.PreviousPage")}
-            </Button>
-            <span>{t("NoticeBoard.PageInfo", { current: currentPage, total: lastPage })}</span>
-            <Button variant="secondary" onClick={() => onChangePage(currentPage + 1)} disabled={currentPage === lastPage}>
-              {t("NoticeBoard.NextPage")}
-            </Button>
-            <select value={currentLimit} onChange={(e) => onChangeLimit(Number(e.target.value))}>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-            </select>
-          </div>
+          <PaginationControls
+            className="notice-board-pagination"
+            currentPage={currentPage}
+            lastPage={lastPage}
+            currentLimit={currentLimit}
+            onChangePage={onChangePage}
+            onChangeLimit={onChangeLimit}
+            pageSizeOptions={[10, 20, 50]}
+          />
         </>
       )}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>

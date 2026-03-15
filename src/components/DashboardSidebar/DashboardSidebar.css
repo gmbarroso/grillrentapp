@@ -92,6 +92,21 @@
   display: inline-block;
 }
 
+.dashboard-nav-item .dashboard-nav-unread-tag {
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  padding: 0 0.38rem;
+  background: #fecdd3;
+  color: #9f1239;
+  font-weight: 700;
+  font-size: 0.68rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dashboard-user-box {
   margin-top: auto;
   border-top: 1px solid #e7ebf4;

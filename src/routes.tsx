@@ -6,10 +6,12 @@ import { useAuth } from "./context/AuthContext"
 import {
   AdminBookings,
   AdminNotices,
+  AdminMessages,
   AdminResidents,
   AdminResources,
   AdminSettings,
   AdminSettingsBranding,
+  AdminSettingsContactEmail,
   AdminSettingsWhatsapp,
   Home,
   LoginScreen,
@@ -63,12 +65,15 @@ export const AppRoutes = () => {
         <Route path="/admin/moradores" element={<AdminResidents />} />
         <Route path="/admin/resources" element={<AdminResources />} />
         <Route path="/admin/notices" element={<AdminNotices />} />
+        <Route path="/admin/messages" element={<AdminMessages />} />
         <Route path="/admin/settings" element={<AdminSettings />} />
         <Route path="/admin/settings/identity" element={<AdminSettingsBranding />} />
         <Route path="/admin/settings/whatsapp" element={<AdminSettingsWhatsapp />} />
+        <Route path="/admin/settings/contact-email" element={<AdminSettingsContactEmail />} />
         <Route path="/admin/configuracoes" element={<Navigate to="/admin/settings" replace />} />
         <Route path="/admin/configuracoes/identidade" element={<Navigate to="/admin/settings/identity" replace />} />
         <Route path="/admin/configuracoes/whatsapp" element={<Navigate to="/admin/settings/whatsapp" replace />} />
+        <Route path="/admin/configuracoes/email-contato" element={<Navigate to="/admin/settings/contact-email" replace />} />
       </Route>
     </Routes>
   )

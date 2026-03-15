@@ -24,3 +24,4 @@ export { default as MyNextBookedDates } from "./MyNextBookedDates/MyNextBookedDa
 export { default as NoticePreviewItem } from "./NoticePreviewItem/NoticePreviewItem"
 export { default as NoticeCarousel } from "./NoticeCarousel/NoticeCarousel"
 export { default as DashboardHomeSkeleton } from "./DashboardHomeSkeleton/DashboardHomeSkeleton"
+export { default as PaginationControls } from "./PaginationControls/PaginationControls"

@@ -1,0 +1,39 @@
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.pagination-page-info {
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.pagination-limit {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.pagination-limit select {
+  padding: 0.4rem;
+  border: 1px solid #c2d0e6;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.pagination-controls.compact {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  .pagination-limit {
+    margin-left: 0;
+  }
+}

@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom"
 import type { LucideIcon } from "lucide-react"
 import BrandMark from "../Brand/BrandMark"
+import SidebarUnreadTag from "../SidebarUnreadTag/SidebarUnreadTag"
 import "./DashboardSidebar.css"
 
 export interface DashboardSidebarNavItem {
@@ -8,6 +9,7 @@ export interface DashboardSidebarNavItem {
   to: string
   icon: LucideIcon
   hasNew?: boolean
+  unreadCount?: number
 }
 
 interface DashboardSidebarProps {
@@ -55,7 +57,11 @@ export default function DashboardSidebar({
               >
                 <Icon size={17} />
                 <span>{item.label}</span>
-                {item.hasNew ? <small className="dashboard-nav-dot" aria-label="Novos avisos" /> : null}
+                <SidebarUnreadTag
+                  unreadCount={item.unreadCount || 0}
+                  showDot={Boolean(item.hasNew)}
+                  ariaLabel={`Itens nao lidos em ${item.label}`}
+                />
               </Link>
             )
           })}
@@ -74,7 +80,11 @@ export default function DashboardSidebar({
               >
                 <Icon size={17} />
                 <span>{item.label}</span>
-                {item.hasNew ? <small className="dashboard-nav-dot" aria-label="Novos avisos" /> : null}
+                <SidebarUnreadTag
+                  unreadCount={item.unreadCount || 0}
+                  showDot={Boolean(item.hasNew)}
+                  ariaLabel={`Itens nao lidos em ${item.label}`}
+                />
               </Link>
             )
           })}

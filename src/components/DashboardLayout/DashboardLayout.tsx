@@ -7,12 +7,14 @@ import {
   CircleUserRound,
   Cog,
   House,
+  Inbox,
   MessageSquare,
   Phone,
   Users,
 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
+import { useMessageUnreadState } from "../../hooks/message/useMessageUnreadState"
 import DashboardSidebar, { type DashboardSidebarNavItem } from "../DashboardSidebar/DashboardSidebar"
 import "./DashboardLayout.css"
 
@@ -24,6 +26,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth()
   const location = useLocation()
   const { hasUnread } = useNoticeUnreadState()
+  const isAdmin = user?.role === "admin"
+  const { hasUnread: hasUnreadMessages } = useMessageUnreadState(isAdmin)
 
   const onLogout = useCallback(async () => {
     await logout()
@@ -40,9 +44,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/admin/moradores": "Gerenciar Moradores",
       "/admin/resources": "Recursos",
       "/admin/notices": "Gerenciar Avisos",
+      "/admin/messages": "Mensagens",
       "/admin/settings": "Settings",
       "/admin/settings/identity": "Condominium Identity",
       "/admin/settings/whatsapp": "WhatsApp Integration",
+      "/admin/settings/contact-email": "Contact Email Delivery",
     }
 
     return labels[location.pathname] ?? "Dashboard"
@@ -72,6 +78,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: "Moradores", to: "/admin/moradores", icon: Users },
     { label: "Recursos", to: "/admin/resources", icon: Boxes },
     { label: "Avisos", to: "/admin/notices", icon: MessageSquare },
+    { label: "Mensagens", to: "/admin/messages", icon: Inbox, hasNew: hasUnreadMessages },
     { label: "Settings", to: "/admin/settings", icon: Cog },
   ]
 

@@ -1,18 +1,21 @@
 import { useState, type FormEvent } from "react"
 import { Mail, Phone, MapPin, Clock3, Send } from "lucide-react"
 import { useToast } from "../../context/ToastContext"
+import { useCreateContactMessage } from "../../hooks/message/useMessages"
 import { Button } from "../../components"
 import "./Contact.css"
 
-type ContactCategory = "Sugestao" | "Reclamacao" | "Duvida"
+type ContactCategory = "suggestion" | "complaint" | "question"
 
 const Contact = () => {
   const { showToast } = useToast()
+  const { createContactMessage } = useCreateContactMessage()
   const [subject, setSubject] = useState("")
-  const [category, setCategory] = useState<ContactCategory>("Sugestao")
+  const [category, setCategory] = useState<ContactCategory>("suggestion")
   const [message, setMessage] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!subject.trim() || !message.trim()) {
@@ -20,10 +23,24 @@ const Contact = () => {
       return
     }
 
-    showToast("Mensagem enviada com sucesso.", "success")
-    setSubject("")
-    setCategory("Sugestao")
-    setMessage("")
+    setIsSubmitting(true)
+    try {
+      await createContactMessage({
+        subject: subject.trim(),
+        category,
+        content: message.trim(),
+      })
+
+      showToast("Mensagem enviada com sucesso.", "success")
+      setSubject("")
+      setCategory("suggestion")
+      setMessage("")
+    } catch (error) {
+      console.error("Error sending contact message:", error)
+      showToast("Nao foi possivel enviar a mensagem. Tente novamente.", "error")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -99,9 +116,9 @@ const Contact = () => {
             value={category}
             onChange={(event) => setCategory(event.target.value as ContactCategory)}
           >
-            <option value="Sugestao">Sugestao</option>
-            <option value="Reclamacao">Reclamacao</option>
-            <option value="Duvida">Duvida</option>
+            <option value="suggestion">Sugestao</option>
+            <option value="complaint">Reclamacao</option>
+            <option value="question">Duvida</option>
           </select>
 
           <label htmlFor="contact-message">Mensagem</label>
@@ -113,9 +130,9 @@ const Contact = () => {
             onChange={(event) => setMessage(event.target.value)}
           />
 
-          <Button variant="primary" type="submit" fullWidth>
+          <Button variant="primary" type="submit" fullWidth disabled={isSubmitting}>
             <Send size={14} />
-            Enviar Mensagem
+            {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
           </Button>
         </form>
       </section>

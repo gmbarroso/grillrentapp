@@ -20,11 +20,29 @@ import {
   Contact,
   Notices,
   MyReservations,
+  OnboardingEmail,
+  OnboardingVerifyEmail,
+  OnboardingChangePassword,
 } from "./pages"
 import { DashboardHomeSkeleton, DashboardLayout, LoadingSpinner } from "./components"
 
+const resolveOnboardingRoute = (flags: {
+  mustProvideEmail: boolean
+  mustVerifyEmail: boolean
+  mustChangePassword: boolean
+}): string => {
+  if (flags.mustProvideEmail) return "/onboarding/email"
+  if (flags.mustVerifyEmail) return "/onboarding/verify-email"
+  if (flags.mustChangePassword) return "/onboarding/change-password"
+  return "/"
+}
+
+const residentOnboardingAllowedDashboardPaths = new Set([
+  "/profile",
+])
+
 const ProtectedDashboardLayout: React.FC = () => {
-  const { isAuthenticated, isAuthResolved } = useAuth()
+  const { isAuthenticated, isAuthResolved, onboarding, user } = useAuth()
   const location = useLocation()
 
   if (!isAuthResolved) {
@@ -42,6 +60,13 @@ const ProtectedDashboardLayout: React.FC = () => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
+  if (
+    user?.role === "resident"
+    && onboarding.onboardingRequired
+    && !residentOnboardingAllowedDashboardPaths.has(location.pathname)
+  ) {
+    return <Navigate to={resolveOnboardingRoute(onboarding)} replace />
+  }
 
   return (
     <DashboardLayout>
@@ -50,11 +75,44 @@ const ProtectedDashboardLayout: React.FC = () => {
   )
 }
 
+const ProtectedOnboardingLayout: React.FC = () => {
+  const { isAuthenticated, isAuthResolved, onboarding, user } = useAuth()
+  const location = useLocation()
+  if (!isAuthResolved) {
+    if (location.pathname === "/") {
+      return <DashboardHomeSkeleton />
+    }
+
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+  if (user?.role !== "resident") {
+    return <Navigate to="/" replace />
+  }
+  if (!onboarding.onboardingRequired) {
+    return <Navigate to="/" replace />
+  }
+
+  return <Outlet />
+}
+
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route element={<ProtectedOnboardingLayout />}>
+        <Route path="/onboarding/email" element={<OnboardingEmail />} />
+        <Route path="/onboarding/verify-email" element={<OnboardingVerifyEmail />} />
+        <Route path="/onboarding/change-password" element={<OnboardingChangePassword />} />
+      </Route>
       <Route element={<ProtectedDashboardLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/mybookeddates" element={<MyReservations />} />

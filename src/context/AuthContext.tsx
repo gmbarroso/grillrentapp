@@ -16,12 +16,13 @@ import {
 } from "../utils/auth-storage"
 import { clearStoredCsrfToken } from "../utils/csrf"
 import { authDebug, authError } from "../utils/auth-logger"
-import type { User } from "../types/User"
+import type { OnboardingFlags, User } from "../types/User"
 
 interface AuthContextType {
   isAuthenticated: boolean
   isAuthResolved: boolean
   user: User | null
+  onboarding: OnboardingFlags
   token: string | null
   login: (
     organizationSlug: string,
@@ -35,6 +36,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const COOKIE_SESSION_TOKEN = "cookie-session"
+const defaultOnboardingState: OnboardingFlags = {
+  mustProvideEmail: false,
+  mustVerifyEmail: false,
+  mustChangePassword: false,
+  onboardingRequired: false,
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -175,12 +182,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAuthenticated,
       isAuthResolved,
       user: userError ? null : (userResponse?.user ?? null),
+      onboarding: userError
+        ? defaultOnboardingState
+        : {
+            mustProvideEmail: Boolean(userResponse?.mustProvideEmail ?? userResponse?.onboarding?.mustProvideEmail),
+            mustVerifyEmail: Boolean(userResponse?.mustVerifyEmail ?? userResponse?.onboarding?.mustVerifyEmail),
+            mustChangePassword: Boolean(userResponse?.mustChangePassword ?? userResponse?.onboarding?.mustChangePassword),
+            onboardingRequired: Boolean(userResponse?.onboardingRequired ?? userResponse?.onboarding?.onboardingRequired),
+          },
       token,
       login,
       logout,
       deleteUser: handleDeleteUser,
     }),
-    [isAuthenticated, isAuthResolved, userError, userResponse?.user, token, logout, handleDeleteUser],
+    [
+      isAuthenticated,
+      isAuthResolved,
+      userError,
+      userResponse?.mustChangePassword,
+      userResponse?.mustProvideEmail,
+      userResponse?.mustVerifyEmail,
+      userResponse?.onboarding?.mustChangePassword,
+      userResponse?.onboarding?.mustProvideEmail,
+      userResponse?.onboarding?.mustVerifyEmail,
+      userResponse?.onboarding?.onboardingRequired,
+      userResponse?.onboardingRequired,
+      userResponse?.user,
+      token,
+      logout,
+      handleDeleteUser,
+    ],
   )
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

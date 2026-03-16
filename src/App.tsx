@@ -18,8 +18,13 @@ function AppContent() {
   const { isLoading } = useLoading()
   const location = useLocation()
   const dashboardRoutes = ["/", "/mybookeddates", "/notices", "/profile", "/contact"]
+  const onboardingRoutes = ["/onboarding/email", "/onboarding/verify-email", "/onboarding/change-password"]
   const isDashboardRoute = dashboardRoutes.includes(location.pathname) || location.pathname.startsWith("/admin/")
-  const hideGlobalChrome = location.pathname === "/login" || location.pathname === "/signup" || isDashboardRoute
+  const hideGlobalChrome =
+    location.pathname === "/login"
+    || location.pathname === "/signup"
+    || onboardingRoutes.includes(location.pathname)
+    || isDashboardRoute
 
   return (
     <div className="app">

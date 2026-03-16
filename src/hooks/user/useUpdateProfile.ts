@@ -2,15 +2,14 @@
 
 import { useState } from "react"
 import { useFetch } from "../useFetch"
-import type { User, UserResponse } from "../../types/User"
+import type { UserResponse } from "../../types/User"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
 interface UpdateUserProfileDto {
   name?: string
-  email?: string
-  password?: string
+  email?: string | null
 }
 
 export function useUpdateProfile(token: string | null) {
@@ -19,7 +18,7 @@ export function useUpdateProfile(token: string | null) {
 
   const { mutate } = useFetch<UserResponse>(token ? `${API_BASE_URL}/users/profile` : null)
 
-  const updateProfile = async (updateData: UpdateUserProfileDto): Promise<User | null> => {
+  const updateProfile = async (updateData: UpdateUserProfileDto): Promise<UserResponse | null> => {
     setIsLoading(true)
     setError(null)
 
@@ -43,7 +42,7 @@ export function useUpdateProfile(token: string | null) {
       logApiResponse(endpoint, response.status, data)
 
       await mutate(data, false)
-      return data.user
+      return data
     } catch (err) {
       const apiError = handleApiError(err, "/users/profile")
       setError(apiError.message)

@@ -2,7 +2,8 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Mail, Lock, UserRound, Building2, Layers } from "lucide-react"
+import { Mail, UserRound, Building2, Layers } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useUserProfile } from "../../hooks/user/useUserProfile"
@@ -17,10 +18,10 @@ const Profile: React.FC = () => {
   const { data: userResponse, error: userError, isLoading: isUserLoading, fetchProfile } = useUserProfile(token)
   const { updateProfile, isLoading: isUpdating } = useUpdateProfile(token ?? "")
   const { showToast } = useToast()
+  const navigate = useNavigate()
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
 
   const { t } = useTranslation()
   const { setIsLoading } = useLoading()
@@ -32,7 +33,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (userResponse?.user) {
       setName(userResponse.user.name)
-      setEmail(userResponse.user.email)
+      setEmail(userResponse.user.email || "")
     }
   }, [userResponse])
 
@@ -48,36 +49,33 @@ const Profile: React.FC = () => {
     return null
   }
 
-  const validatePassword = (value: string) => {
-    if (value && value.length > 8) return t("Profile.PasswordTooLong")
-    if (value && !/^(?=.*[A-Za-z])(?=.*\d).{8,8}$/.test(value)) return t("Profile.PasswordInvalid")
-    return null
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     const nameError = validateName(name)
     const emailError = validateEmail(email)
-    const passwordError = validatePassword(password)
 
-    if (nameError || emailError || passwordError) {
-      showToast((nameError || emailError || passwordError) ?? t("Profile.Error"), "error")
+    if (nameError || emailError) {
+      showToast((nameError || emailError) ?? t("Profile.Error"), "error")
       return
     }
 
     const updateData = {
       name,
       email,
-      ...(password ? { password } : {}),
     }
 
     try {
-      const updatedUser = await updateProfile(updateData)
-      if (updatedUser) {
+      const response = await updateProfile(updateData)
+      if (response?.user) {
         showToast(t("Profile.Success"), "success")
-        setPassword("")
         await fetchProfile()
+        const onboardingRequired = Boolean(response.onboardingRequired ?? response.onboarding?.onboardingRequired)
+        const mustVerifyEmail = Boolean(response.mustVerifyEmail ?? response.onboarding?.mustVerifyEmail)
+        if (onboardingRequired && mustVerifyEmail) {
+          showToast("Email updated. Verify your new email to continue.", "success")
+          navigate("/onboarding/verify-email")
+        }
       }
     } catch {
       showToast(t("Profile.Error"), "error")
@@ -117,20 +115,6 @@ const Profile: React.FC = () => {
             <Mail size={15} />
             <input id="profile-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
-
-          <label htmlFor="profile-password">Nova Senha</label>
-          <div className="profile-input-wrap">
-            <Lock size={15} />
-            <input
-              id="profile-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              maxLength={8}
-              placeholder="Deixe em branco para manter a atual"
-            />
-          </div>
-
           <div className="profile-unit-row">
             <div>
               <label htmlFor="profile-apartment">Apartamento</label>

@@ -130,3 +130,21 @@
   justify-content: flex-end;
   gap: 0.55rem;
 }
+
+.smtp-guidance-card {
+  border: 1px solid #cdd9ef;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  padding: 0.85rem 0.95rem;
+}
+
+.smtp-guidance-card h3 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.smtp-guidance-card ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1rem;
+  color: #374151;
+}

@@ -230,6 +230,17 @@ const AdminSettingsContactEmail = () => {
           </Button>
         </footer>
       </section>
+
+      <section className="smtp-guidance-card">
+        <h3>SMTP setup guidance</h3>
+        <ul>
+          <li>Recipient Emails are admin inboxes only. Residents are never auto-added.</li>
+          <li>Default mode is In-app only. Keep this mode until your organization SMTP is configured.</li>
+          <li>For In-app and email, configure SMTP host, port, security, user, and from address at the organization level.</li>
+          <li>SMTP app password is write-only and encrypted at rest. It is never returned in plaintext.</li>
+          <li>There is no global SMTP fallback when your organization enables email delivery.</li>
+        </ul>
+      </section>
     </div>
   )
 }

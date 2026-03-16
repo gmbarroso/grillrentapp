@@ -126,6 +126,58 @@
   color: #e31d2f;
 }
 
+.admin-residents-pagination {
+  margin-top: 0.75rem;
+}
+
+.resident-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.resident-modal h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.resident-modal p {
+  margin: 0.2rem 0 0.5rem;
+  color: #475569;
+}
+
+.resident-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.resident-modal input,
+.resident-modal select {
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0.58rem 0.65rem;
+  font-size: 0.92rem;
+  color: #0f172a;
+  background: #fff;
+}
+
+.resident-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 130px;
+  gap: 0.8rem;
+}
+
+.resident-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
 @media (max-width: 760px) {
   .admin-page-heading.with-action {
     align-items: flex-start;
@@ -134,5 +186,13 @@
 
   .admin-page-heading h2 {
     font-size: 1.45rem;
+  }
+
+  .resident-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resident-modal-actions {
+    flex-direction: column-reverse;
   }
 }

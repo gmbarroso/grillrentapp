@@ -165,7 +165,7 @@ export const AppRoutes = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/admin/reservas" element={<AdminBookings />} />
+        <Route path="/admin/bookeddates" element={<AdminBookings />} />
         <Route path="/admin/residents" element={<AdminResidents />} />
         <Route path="/admin/resources" element={<AdminResources />} />
         <Route path="/admin/notices" element={<AdminNotices />} />
@@ -175,6 +175,7 @@ export const AppRoutes = () => {
         <Route path="/admin/settings/whatsapp" element={<AdminSettingsWhatsapp />} />
         <Route path="/admin/settings/contact-email" element={<AdminSettingsContactEmail />} />
         <Route path="/admin/moradores" element={<Navigate to="/admin/residents" replace />} />
+        <Route path="/admin/reservas" element={<Navigate to="/admin/bookeddates" replace />} />
         <Route path="/admin/configuracoes" element={<Navigate to="/admin/settings" replace />} />
         <Route path="/admin/configuracoes/identidade" element={<Navigate to="/admin/settings/identity" replace />} />
         <Route path="/admin/configuracoes/whatsapp" element={<Navigate to="/admin/settings/whatsapp" replace />} />

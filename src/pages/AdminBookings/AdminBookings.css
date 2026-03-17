@@ -95,6 +95,11 @@
   color: #253047;
 }
 
+.admin-bookings-empty-row {
+  text-align: center !important;
+  color: #687489 !important;
+}
+
 .resource-dot {
   display: inline-block;
   width: 7px;
@@ -145,6 +150,10 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+.admin-bookings-pagination {
+  padding: 0 0.2rem;
 }
 
 @media (max-width: 760px) {

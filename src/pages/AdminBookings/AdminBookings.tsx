@@ -2,8 +2,8 @@ import { useMemo, useState } from "react"
 import { Filter, Search, Trash2 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import { Button, LoadingSpinner, Modal, Tooltip } from "../../components"
-import { useAllBookings } from "../../hooks/booking/useAllBookings"
+import { Button, LoadingSpinner, Modal, PaginationControls, Tooltip } from "../../components"
+import { useAdminBookedDates } from "../../hooks/booking/useAdminBookedDates"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
 import type { Booking } from "../../types/Booking"
 import { formatBookingDate, formatBookingTimeInterval, parseBookingDateTime } from "../../utils/booking-datetime"
@@ -20,7 +20,7 @@ const AdminBookings = () => {
   const [resourceFilter, setResourceFilter] = useState<ResourceFilter>("all")
   const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null)
 
-  const { bookings, isLoading, refreshBookings } = useAllBookings({ initialLimit: 500 })
+  const { bookings, total, page, lastPage, limit, setPage, setLimit, isLoading, refreshBookedDates } = useAdminBookedDates({ initialLimit: 10 })
   const { deleteBooking, isLoading: isDeleting } = useDeleteBooking(token ?? "")
 
   const filteredBookings = useMemo(() => {
@@ -47,7 +47,7 @@ const AdminBookings = () => {
 
     const result = await deleteBooking(deletingBooking.id)
     if (result.success) {
-      await refreshBookings()
+      await refreshBookedDates()
       showToast("Reserva removida com sucesso.", "success")
     } else {
       showToast("Erro ao remover reserva.", "error")
@@ -97,7 +97,7 @@ const AdminBookings = () => {
 
       <section className="admin-table-card">
         <header>
-          <h3>{filteredBookings.length} reservas encontradas</h3>
+          <h3>{total} reservas encontradas</h3>
         </header>
 
         <div className="admin-table-scroll">
@@ -114,6 +114,13 @@ const AdminBookings = () => {
               </tr>
             </thead>
             <tbody>
+              {filteredBookings.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="admin-bookings-empty-row">
+                    Nenhuma reserva encontrada para os filtros aplicados nesta pagina.
+                  </td>
+                </tr>
+              ) : null}
               {filteredBookings.map((booking) => {
                 return (
                   <tr key={booking.id}>
@@ -149,6 +156,19 @@ const AdminBookings = () => {
           </table>
         </div>
       </section>
+
+      {total > 0 ? (
+        <PaginationControls
+          compact
+          currentPage={page}
+          lastPage={lastPage}
+          currentLimit={limit}
+          onChangePage={setPage}
+          onChangeLimit={setLimit}
+          pageSizeOptions={[10, 20, 50]}
+          className="admin-bookings-pagination"
+        />
+      ) : null}
 
       <Modal isOpen={Boolean(deletingBooking)} onClose={() => setDeletingBooking(null)}>
         <h2>Cancelar reserva</h2>

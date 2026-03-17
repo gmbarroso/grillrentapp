@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/profile": "Perfil",
       "/change-password": "Change Password",
       "/contact": "Contato",
-      "/admin/reservas": "Gerenciar Reservas",
+      "/admin/bookeddates": "Gerenciar Reservas",
       "/admin/residents": "Manage Residents",
       "/admin/resources": "Recursos",
       "/admin/notices": "Gerenciar Avisos",
@@ -75,7 +75,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ]
 
   const adminNav: DashboardSidebarNavItem[] = [
-    { label: "Reservas", to: "/admin/reservas", icon: CalendarDays },
+    { label: "Reservas", to: "/admin/bookeddates", icon: CalendarDays },
     { label: "Residents", to: "/admin/residents", icon: Users },
     { label: "Recursos", to: "/admin/resources", icon: Boxes },
     { label: "Avisos", to: "/admin/notices", icon: MessageSquare },

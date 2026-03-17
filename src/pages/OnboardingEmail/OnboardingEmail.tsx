@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../../components"
+import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import { fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
+import { extractApiErrorMessage, fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
 import "./OnboardingFlow.css"
 
 const API_BASE_URL = getApiBaseUrl()
@@ -10,6 +11,7 @@ const API_BASE_URL = getApiBaseUrl()
 export default function OnboardingEmail() {
   const navigate = useNavigate()
   const { showToast } = useToast()
+  const { refreshProfile } = useAuth()
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -24,14 +26,16 @@ export default function OnboardingEmail() {
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to submit onboarding email (${response.status})`)
+        const message = await extractApiErrorMessage(response, `Failed to submit onboarding email (${response.status})`)
+        throw new Error(message)
       }
 
+      await refreshProfile()
       showToast("Email saved. Verify to continue onboarding.", "success")
       navigate("/onboarding/verify-email")
     } catch (error) {
       console.error(handleApiError(error, "/users/onboarding/email"))
-      showToast("Could not save onboarding email.", "error")
+      showToast(error instanceof Error ? error.message : "Could not save onboarding email.", "error")
     } finally {
       setIsSubmitting(false)
     }
@@ -58,7 +62,7 @@ export default function OnboardingEmail() {
           </label>
 
           <div className="onboarding-actions">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting} loadingText="Saving...">
               Continue
             </Button>
           </div>

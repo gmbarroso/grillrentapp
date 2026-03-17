@@ -9,10 +9,11 @@ const API_BASE_URL = getApiBaseUrl()
 interface RegisterRequestBody {
   organizationSlug: string
   name: string
-  email: string
+  email?: string | null
   password: string
   apartment: string
   block: number
+  role?: "admin" | "resident"
 }
 
 interface RegisterResponse {

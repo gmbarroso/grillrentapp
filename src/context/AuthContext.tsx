@@ -32,6 +32,7 @@ interface AuthContextType {
   ) => Promise<{ success: boolean; errorCode?: string; errorMessage?: string }>
   logout: () => Promise<void>
   deleteUser: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -48,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthResolved, setIsAuthResolved] = useState(false)
   const [token, setToken] = useState<string | null>(COOKIE_SESSION_TOKEN)
 
-  const { data: userResponse, error: userError, isLoading: isUserLoading } = useUserProfile(token)
+  const { data: userResponse, error: userError, isLoading: isUserLoading, fetchProfile } = useUserProfile(token)
   const { login: loginMutate, isLoading: isLoginLoading } = useLoginUser()
   const { logout: logoutMutate, isLoading: isLogoutLoading } = useLogoutUser()
   const { setIsLoading } = useLoading()
@@ -177,6 +178,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return
   }, [])
 
+  const refreshProfile = useCallback(async () => {
+    if (!token) return
+    await fetchProfile()
+  }, [fetchProfile, token])
+
   const contextValue = useMemo(
     () => ({
       isAuthenticated,
@@ -194,6 +200,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login,
       logout,
       deleteUser: handleDeleteUser,
+      refreshProfile,
     }),
     [
       isAuthenticated,
@@ -211,6 +218,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       token,
       logout,
       handleDeleteUser,
+      refreshProfile,
     ],
   )
 

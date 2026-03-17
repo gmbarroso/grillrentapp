@@ -17,11 +17,13 @@ import "./App.css"
 function AppContent() {
   const { isLoading } = useLoading()
   const location = useLocation()
-  const dashboardRoutes = ["/", "/mybookeddates", "/notices", "/profile", "/contact"]
-  const onboardingRoutes = ["/onboarding/email", "/onboarding/verify-email", "/onboarding/change-password"]
+  const dashboardRoutes = ["/", "/mybookeddates", "/notices", "/profile", "/change-password", "/contact"]
+  const onboardingRoutes = ["/onboarding/welcome", "/onboarding/email", "/onboarding/verify-email", "/onboarding/change-password"]
   const isDashboardRoute = dashboardRoutes.includes(location.pathname) || location.pathname.startsWith("/admin/")
   const hideGlobalChrome =
     location.pathname === "/login"
+    || location.pathname === "/forgot-password"
+    || location.pathname === "/reset-password"
     || location.pathname === "/signup"
     || onboardingRoutes.includes(location.pathname)
     || isDashboardRoute

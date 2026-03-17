@@ -136,6 +136,9 @@ const Profile: React.FC = () => {
           <Button variant="primary" type="submit" fullWidth>
             Atualizar Perfil
           </Button>
+          <Button variant="secondary" type="button" fullWidth onClick={() => navigate("/change-password")}>
+            Change Password
+          </Button>
         </form>
       </section>
     </div>

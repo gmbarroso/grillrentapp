@@ -39,6 +39,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/mybookeddates": "Minhas reservas",
       "/notices": "Avisos",
       "/profile": "Perfil",
+      "/change-password": "Change Password",
       "/contact": "Contato",
       "/admin/reservas": "Gerenciar Reservas",
       "/admin/residents": "Manage Residents",
@@ -88,7 +89,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         condominiumName="Chacara Sacopa"
         condominiumSubtitle="Gestao do Condominio"
         primaryNav={primaryNav}
-        adminNav={adminNav}
+        adminNav={isAdmin ? adminNav : []}
         userName={user?.name || "Morador"}
         userContext={`Apt ${user?.apartment || "--"} Bl. ${user?.block || "--"}`}
         onLogout={onLogout}

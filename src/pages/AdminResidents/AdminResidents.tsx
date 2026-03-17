@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useState } from "react"
-import { Pencil, Search, Trash2, UserRoundPlus } from "lucide-react"
+import { Eye, EyeOff, Pencil, Search, Trash2, UserRoundPlus } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
 import { Button, LoadingSpinner, Modal, PaginationControls } from "../../components"
 import { useAllUsers } from "../../hooks/user/useAllUsers"
 import { useUpdateUser } from "../../hooks/user/useUpdateUser"
 import { useDeleteUser } from "../../hooks/user/useDeleteUser"
+import { useRegisterUser } from "../../hooks/user/useRegisterUser"
+import { readStoredOrganizationSlug } from "../../utils/organization-session"
+import { meetsPasswordPolicy, PASSWORD_POLICY_MESSAGE } from "../../utils/passwordPolicy"
 import type { User } from "../../types/User"
 import "./AdminResidents.css"
 
@@ -33,9 +36,18 @@ const AdminResidents = () => {
   const { users, isLoading, refreshUsers } = useAllUsers()
   const { updateUser, isLoading: isUpdatingUser } = useUpdateUser()
   const { deleteUser, isLoading: isDeletingUser } = useDeleteUser()
+  const { register, isLoading: isRegisteringResident } = useRegisterUser()
   const [query, setQuery] = useState("")
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [createOrganizationSlug, setCreateOrganizationSlug] = useState("")
+  const [createName, setCreateName] = useState("")
+  const [createEmail, setCreateEmail] = useState("")
+  const [createApartment, setCreateApartment] = useState("")
+  const [createBlock, setCreateBlock] = useState<number>(1)
+  const [createPassword, setCreatePassword] = useState("")
+  const [showCreatePassword, setShowCreatePassword] = useState(false)
   const [editingResident, setEditingResident] = useState<ResidentRow | null>(null)
   const [deletingResident, setDeletingResident] = useState<ResidentRow | null>(null)
   const [editName, setEditName] = useState("")
@@ -49,7 +61,7 @@ const AdminResidents = () => {
         id: user.id,
         initials: getInitials(user.name),
         name: user.name,
-        email: user.email,
+        email: user.email || "",
         apartmentLabel: `Apt ${user.apartment} Bl. ${user.block}`,
         apartment: user.apartment,
         block: user.block,
@@ -95,6 +107,21 @@ const AdminResidents = () => {
     setEditBlock(resident.block)
   }
 
+  const openCreateModal = () => {
+    setCreateOrganizationSlug(readStoredOrganizationSlug())
+    setCreateName("")
+    setCreateEmail("")
+    setCreateApartment("")
+    setCreateBlock(1)
+    setCreatePassword("")
+    setShowCreatePassword(false)
+    setIsCreateModalOpen(true)
+  }
+
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false)
+  }
+
   const closeEditModal = () => {
     setEditingResident(null)
     setEditName("")
@@ -108,13 +135,13 @@ const AdminResidents = () => {
 
     const payload: Partial<User> = {
       name: editName.trim(),
-      email: editEmail.trim(),
+      email: editEmail.trim() || null,
       apartment: editApartment.trim(),
       block: Number(editBlock),
     }
 
-    if (!payload.name || !payload.email || !payload.apartment) {
-      showToast("Please fill in name, email, and apartment.", "error")
+    if (!payload.name || !payload.apartment) {
+      showToast("Please fill in name and apartment.", "error")
       return
     }
 
@@ -153,6 +180,51 @@ const AdminResidents = () => {
     }
   }
 
+  const handleCreateResident = async () => {
+    const normalizedName = createName.trim()
+    const normalizedApartment = createApartment.trim()
+    const normalizedEmail = createEmail.trim().toLowerCase()
+    const normalizedOrganizationSlug = createOrganizationSlug.trim().toLowerCase()
+
+    if (!normalizedOrganizationSlug || !normalizedName || !normalizedApartment || !createPassword) {
+      showToast("Please fill in condominium code, name, apartment, and temporary password.", "error")
+      return
+    }
+
+    if (![1, 2].includes(createBlock)) {
+      showToast("Block must be 1 or 2.", "error")
+      return
+    }
+
+    if (!meetsPasswordPolicy(createPassword)) {
+      showToast(`Temporary password is invalid. ${PASSWORD_POLICY_MESSAGE}`, "error")
+      return
+    }
+
+    if (normalizedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      showToast("Invalid email format.", "error")
+      return
+    }
+
+    try {
+      await register({
+        organizationSlug: normalizedOrganizationSlug,
+        name: normalizedName,
+        email: normalizedEmail || null,
+        password: createPassword,
+        apartment: normalizedApartment,
+        block: createBlock,
+        role: "resident",
+      })
+      await refreshUsers()
+      showToast("Resident created successfully. Share temporary password for onboarding.", "success")
+      closeCreateModal()
+    } catch (error) {
+      console.error("Error creating resident:", error)
+      showToast("Could not create resident.", "error")
+    }
+  }
+
   if (isLoading) return <LoadingSpinner />
 
   return (
@@ -163,7 +235,7 @@ const AdminResidents = () => {
           <p>{rows.length} residents registered</p>
         </div>
 
-        <Button variant="primary" onClick={() => showToast("Resident registration will be implemented next.", "success")}>
+        <Button variant="primary" onClick={openCreateModal}>
           <UserRoundPlus size={14} />
           New Resident
         </Button>
@@ -206,7 +278,7 @@ const AdminResidents = () => {
                       <span>{row.name}</span>
                     </div>
                   </td>
-                  <td>{row.email}</td>
+                  <td>{row.email || "-"}</td>
                   <td>{row.apartmentLabel}</td>
                   <td>
                     <span className={`role-pill ${row.role === "Admin" ? "admin" : "resident"}`}>{row.role}</span>
@@ -242,6 +314,82 @@ const AdminResidents = () => {
         />
       </section>
 
+      <Modal isOpen={isCreateModalOpen} onClose={closeCreateModal}>
+        <div className="resident-modal">
+          <h3>New resident</h3>
+          <p>Create a resident with a temporary password for onboarding.</p>
+
+          <label>
+            Condominium code
+            <input
+              type="text"
+              value={createOrganizationSlug}
+              onChange={(event) => setCreateOrganizationSlug(event.target.value)}
+              maxLength={80}
+            />
+          </label>
+
+          <label>
+            Name
+            <input type="text" value={createName} onChange={(event) => setCreateName(event.target.value)} maxLength={50} />
+          </label>
+
+          <label>
+            Email (optional)
+            <input type="email" value={createEmail} onChange={(event) => setCreateEmail(event.target.value)} maxLength={100} />
+          </label>
+
+          <div className="resident-modal-grid">
+            <label>
+              Apartment
+              <input type="text" value={createApartment} onChange={(event) => setCreateApartment(event.target.value)} maxLength={20} />
+            </label>
+
+            <label>
+              Block
+              <select value={createBlock} onChange={(event) => setCreateBlock(Number(event.target.value))}>
+                <option value={1}>1</option>
+                <option value={2}>2</option>
+              </select>
+            </label>
+          </div>
+
+          <label>
+            Temporary password
+            <small>
+              {PASSWORD_POLICY_MESSAGE} The resident must change this on first login.
+            </small>
+            <div className="resident-password-wrap">
+              <input
+                type={showCreatePassword ? "text" : "password"}
+                value={createPassword}
+                onChange={(event) => setCreatePassword(event.target.value)}
+                minLength={8}
+                maxLength={100}
+              />
+              <button type="button" className="resident-password-toggle" onClick={() => setShowCreatePassword((value) => !value)}>
+                {showCreatePassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+          </label>
+
+          <div className="resident-modal-actions">
+            <Button variant="secondary" onClick={closeCreateModal}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleCreateResident}
+              disabled={isRegisteringResident}
+              isLoading={isRegisteringResident}
+              loadingText="Creating..."
+            >
+              Create
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       <Modal isOpen={Boolean(editingResident)} onClose={closeEditModal}>
         <div className="resident-modal">
           <h3>Edit resident</h3>
@@ -275,7 +423,13 @@ const AdminResidents = () => {
             <Button variant="secondary" onClick={closeEditModal}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={handleUpdateResident} disabled={isUpdatingUser}>
+            <Button
+              variant="primary"
+              onClick={handleUpdateResident}
+              disabled={isUpdatingUser}
+              isLoading={isUpdatingUser}
+              loadingText="Saving..."
+            >
               Save
             </Button>
           </div>
@@ -294,7 +448,13 @@ const AdminResidents = () => {
             <Button variant="secondary" onClick={() => setDeletingResident(null)}>
               Cancel
             </Button>
-            <Button variant="danger" onClick={handleDeleteResident} disabled={isDeletingUser}>
+            <Button
+              variant="danger"
+              onClick={handleDeleteResident}
+              disabled={isDeletingUser}
+              isLoading={isDeletingUser}
+              loadingText="Removing..."
+            >
               Remove
             </Button>
           </div>

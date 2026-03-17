@@ -94,3 +94,19 @@ export const handleApiError = (error: any, endpoint: string): Error => {
   authError(`[API] Error accessing ${stripSensitiveQueryParams(endpoint)}:`, error)
   return error instanceof Error ? error : new Error(`Unknown error accessing ${endpoint}`)
 }
+
+export const extractApiErrorMessage = async (response: Response, fallbackMessage: string): Promise<string> => {
+  try {
+    const payload = await response.json() as { message?: unknown; error?: unknown }
+    if (typeof payload?.message === "string" && payload.message.trim()) {
+      return payload.message
+    }
+    if (typeof payload?.error === "string" && payload.error.trim()) {
+      return payload.error
+    }
+  } catch {
+    // Ignore parse errors and return fallback below.
+  }
+
+  return fallbackMessage
+}

@@ -15,6 +15,8 @@ import {
   AdminSettingsWhatsapp,
   Home,
   LoginScreen,
+  ForgotPasswordRequest,
+  ForgotPasswordReset,
   SignUp,
   Profile,
   Contact,
@@ -23,8 +25,11 @@ import {
   OnboardingEmail,
   OnboardingVerifyEmail,
   OnboardingChangePassword,
+  OnboardingWelcome,
+  ChangePassword,
 } from "./pages"
 import { DashboardHomeSkeleton, DashboardLayout, LoadingSpinner } from "./components"
+import "./routes.css"
 
 const resolveOnboardingRoute = (flags: {
   mustProvideEmail: boolean
@@ -37,6 +42,13 @@ const resolveOnboardingRoute = (flags: {
   return "/"
 }
 
+const getWelcomeSeenKey = (userId?: string) => `onboarding_welcome_seen:${userId || "anonymous"}`
+
+const hasSeenOnboardingWelcome = (userId?: string): boolean => {
+  if (typeof window === "undefined") return true
+  return window.sessionStorage.getItem(getWelcomeSeenKey(userId)) === "true"
+}
+
 const residentOnboardingAllowedDashboardPaths = new Set([
   "/profile",
 ])
@@ -44,6 +56,10 @@ const residentOnboardingAllowedDashboardPaths = new Set([
 const ProtectedDashboardLayout: React.FC = () => {
   const { isAuthenticated, isAuthResolved, onboarding, user } = useAuth()
   const location = useLocation()
+  const shouldShowWelcome =
+    user?.role === "resident"
+    && onboarding.onboardingRequired
+    && !hasSeenOnboardingWelcome(user.id)
 
   if (!isAuthResolved) {
     if (location.pathname === "/") {
@@ -60,11 +76,17 @@ const ProtectedDashboardLayout: React.FC = () => {
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
+  if (user?.role !== "admin" && location.pathname.startsWith("/admin/")) {
+    return <Navigate to="/" replace />
+  }
   if (
     user?.role === "resident"
     && onboarding.onboardingRequired
     && !residentOnboardingAllowedDashboardPaths.has(location.pathname)
   ) {
+    if (shouldShowWelcome) {
+      return <Navigate to="/onboarding/welcome" replace />
+    }
     return <Navigate to={resolveOnboardingRoute(onboarding)} replace />
   }
 
@@ -78,6 +100,10 @@ const ProtectedDashboardLayout: React.FC = () => {
 const ProtectedOnboardingLayout: React.FC = () => {
   const { isAuthenticated, isAuthResolved, onboarding, user } = useAuth()
   const location = useLocation()
+  const shouldShowWelcome =
+    user?.role === "resident"
+    && onboarding.onboardingRequired
+    && !hasSeenOnboardingWelcome(user?.id)
   if (!isAuthResolved) {
     if (location.pathname === "/") {
       return <DashboardHomeSkeleton />
@@ -99,16 +125,35 @@ const ProtectedOnboardingLayout: React.FC = () => {
   if (!onboarding.onboardingRequired) {
     return <Navigate to="/" replace />
   }
+  if (location.pathname === "/onboarding/welcome" && !shouldShowWelcome) {
+    return <Navigate to={resolveOnboardingRoute(onboarding)} replace />
+  }
 
-  return <Outlet />
+  return (
+    <div className="onboarding-shell">
+      <div className="onboarding-shell-dashboard" aria-hidden="true">
+        <DashboardLayout>
+          <DashboardHomeSkeleton />
+        </DashboardLayout>
+      </div>
+      <div className="onboarding-shell-overlay">
+        <div className="onboarding-shell-modal">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginScreen />} />
+      <Route path="/forgot-password" element={<ForgotPasswordRequest />} />
+      <Route path="/reset-password" element={<ForgotPasswordReset />} />
       <Route path="/signup" element={<SignUp />} />
       <Route element={<ProtectedOnboardingLayout />}>
+        <Route path="/onboarding/welcome" element={<OnboardingWelcome />} />
         <Route path="/onboarding/email" element={<OnboardingEmail />} />
         <Route path="/onboarding/verify-email" element={<OnboardingVerifyEmail />} />
         <Route path="/onboarding/change-password" element={<OnboardingChangePassword />} />
@@ -118,6 +163,7 @@ export const AppRoutes = () => {
         <Route path="/mybookeddates" element={<MyReservations />} />
         <Route path="/notices" element={<Notices />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin/reservas" element={<AdminBookings />} />
         <Route path="/admin/residents" element={<AdminResidents />} />

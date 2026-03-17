@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../../components"
+import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import { fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
+import { extractApiErrorMessage, fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
 import "../OnboardingEmail/OnboardingFlow.css"
 
 const API_BASE_URL = getApiBaseUrl()
@@ -10,6 +11,7 @@ const API_BASE_URL = getApiBaseUrl()
 export default function OnboardingVerifyEmail() {
   const navigate = useNavigate()
   const { showToast } = useToast()
+  const { refreshProfile } = useAuth()
   const [token, setToken] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -24,14 +26,16 @@ export default function OnboardingVerifyEmail() {
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to verify onboarding email (${response.status})`)
+        const message = await extractApiErrorMessage(response, `Failed to verify onboarding email (${response.status})`)
+        throw new Error(message)
       }
 
+      await refreshProfile()
       showToast("Email verified. Next step: change your temporary password.", "success")
       navigate("/onboarding/change-password")
     } catch (error) {
       console.error(handleApiError(error, "/users/onboarding/verify"))
-      showToast("Email verification failed. Check token and try again.", "error")
+      showToast(error instanceof Error ? error.message : "Email verification failed. Check token and try again.", "error")
     } finally {
       setIsSubmitting(false)
     }
@@ -61,7 +65,7 @@ export default function OnboardingVerifyEmail() {
             <Button type="button" variant="secondary" onClick={() => navigate("/onboarding/email")} disabled={isSubmitting}>
               Back
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting} loadingText="Verifying...">
               Verify
             </Button>
           </div>

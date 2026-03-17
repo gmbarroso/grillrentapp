@@ -4,12 +4,14 @@ import { ArrowLeft, ArrowRight, Building2, Hash, Mail, MapPin, Phone, User } fro
 import { BrandMark } from "../../components"
 import { useRegisterUser } from "../../hooks/user/useRegisterUser"
 import { normalizeOrganizationSlug } from "../../utils/organizationSlug"
+import { meetsPasswordPolicy } from "../../utils/passwordPolicy"
 import "./SignUp.css"
 
 type Step = 1 | 2 | 3 | 4
 
 const DEFAULT_APARTMENT = "000"
 const DEFAULT_BLOCK = "1"
+const PASSWORD_POLICY_HINT = "Use 8+ chars with 1 uppercase, 1 number, and 1 special character."
 
 const SignUp = () => {
   const navigate = useNavigate()
@@ -56,8 +58,8 @@ const SignUp = () => {
       return
     }
 
-    if (!password || password.length < 6) {
-      setError("A senha deve ter no minimo 6 caracteres.")
+    if (!meetsPasswordPolicy(password)) {
+      setError("Senha invalida. " + PASSWORD_POLICY_HINT)
       return
     }
 
@@ -207,7 +209,7 @@ const SignUp = () => {
                 <div className="signup-input-wrap signup-password-wrap">
                   <input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Minimo 6 caracteres"
+                    placeholder="Sua senha"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -215,6 +217,7 @@ const SignUp = () => {
                     {showPassword ? "Ocultar" : "Mostrar"}
                   </button>
                 </div>
+                <small>{PASSWORD_POLICY_HINT}</small>
               </div>
               <div className="signup-field">
                 <label>Confirmar senha</label>

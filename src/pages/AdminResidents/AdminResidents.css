@@ -155,6 +155,12 @@
   font-size: 0.9rem;
 }
 
+.resident-modal label small {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
 .resident-modal input,
 .resident-modal select {
   border: 1px solid #d4deed;
@@ -163,6 +169,28 @@
   font-size: 0.92rem;
   color: #0f172a;
   background: #fff;
+}
+
+.resident-password-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.resident-password-wrap input {
+  border: none;
+  flex: 1;
+}
+
+.resident-password-toggle {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  padding: 0 0.65rem;
+  cursor: pointer;
 }
 
 .resident-modal-grid {

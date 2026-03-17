@@ -67,28 +67,30 @@ export default function DashboardSidebar({
           })}
         </div>
 
-        <div className="dashboard-nav-group">
-          <h3>Administração</h3>
-          {adminNav.map((item) => {
-            const Icon = item.icon
-            const isActive = location.pathname === item.to
-            return (
-              <Link
-                key={`admin-${item.to}-${item.label}`}
-                to={item.to}
-                className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}
-              >
-                <Icon size={17} />
-                <span>{item.label}</span>
-                <SidebarUnreadTag
-                  unreadCount={item.unreadCount || 0}
-                  showDot={Boolean(item.hasNew)}
-                  ariaLabel={`Itens nao lidos em ${item.label}`}
-                />
-              </Link>
-            )
-          })}
-        </div>
+        {adminNav.length > 0 && (
+          <div className="dashboard-nav-group">
+            <h3>Administração</h3>
+            {adminNav.map((item) => {
+              const Icon = item.icon
+              const isActive = location.pathname === item.to
+              return (
+                <Link
+                  key={`admin-${item.to}-${item.label}`}
+                  to={item.to}
+                  className={`dashboard-nav-item ${isActive ? "active" : ""}`.trim()}
+                >
+                  <Icon size={17} />
+                  <span>{item.label}</span>
+                  <SidebarUnreadTag
+                    unreadCount={item.unreadCount || 0}
+                    showDot={Boolean(item.hasNew)}
+                    ariaLabel={`Itens nao lidos em ${item.label}`}
+                  />
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       <div className="dashboard-user-box">

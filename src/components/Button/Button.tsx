@@ -13,6 +13,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize
   children: React.ReactNode
   className?: string
+  isLoading?: boolean
+  loadingText?: string
   showToastOnClick?: {
     message: string
     type: "success" | "error"
@@ -25,14 +27,19 @@ const Button: React.FC<ButtonProps> = ({
   size = "md",
   children,
   className = "",
+  isLoading = false,
+  loadingText,
   showToastOnClick,
   fullWidth = false,
   onClick,
+  disabled,
   ...props
 }) => {
   const { showToast } = useToast()
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isLoading || disabled) return
+
     if (onClick) {
       onClick(e)
     }
@@ -51,11 +58,21 @@ const Button: React.FC<ButtonProps> = ({
   `
 
   return (
-    <button className={buttonClasses} onClick={handleClick} {...props}>
-      {children}
+    <button
+      className={buttonClasses}
+      onClick={handleClick}
+      disabled={disabled || isLoading}
+      aria-busy={isLoading}
+      {...props}
+    >
+      {isLoading ? (
+        <span className="button-loading-content">
+          <span className="button-loading-spinner" aria-hidden="true" />
+          <span>{loadingText || (typeof children === "string" ? children : "Loading...")}</span>
+        </span>
+      ) : children}
     </button>
   )
 }
 
 export default Button
-

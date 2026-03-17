@@ -1,5 +1,7 @@
 export { default as Home } from "./Home/Home"
 export { default as LoginScreen } from "./LoginScreen/LoginScreen"
+export { default as ForgotPasswordRequest } from "./ForgotPassword/ForgotPasswordRequest"
+export { default as ForgotPasswordReset } from "./ForgotPassword/ForgotPasswordReset"
 export { default as SignUp } from "./SignUp/SignUp"
 export { default as Profile } from "./Profile/Profile"
 export { default as Contact } from "./Contact/Contact"
@@ -17,3 +19,5 @@ export { default as AdminSettingsContactEmail } from "./AdminSettingsContactEmai
 export { default as OnboardingEmail } from "./OnboardingEmail/OnboardingEmail"
 export { default as OnboardingVerifyEmail } from "./OnboardingVerifyEmail/OnboardingVerifyEmail"
 export { default as OnboardingChangePassword } from "./OnboardingChangePassword/OnboardingChangePassword"
+export { default as OnboardingWelcome } from "./OnboardingWelcome/OnboardingWelcome"
+export { default as ChangePassword } from "./ChangePassword/ChangePassword"

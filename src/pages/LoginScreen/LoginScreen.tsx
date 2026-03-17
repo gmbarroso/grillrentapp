@@ -10,6 +10,7 @@ import { useLoading } from "../../context/LoadingContext"
 import { useToast } from "../../context/ToastContext"
 import { AuthCard, BrandMark } from "../../components"
 import { normalizeOrganizationSlug } from "../../utils/organizationSlug"
+import { persistOrganizationSlug } from "../../utils/organization-session"
 import "./LoginScreen.css"
 
 export default function LoginScreen() {
@@ -50,6 +51,7 @@ export default function LoginScreen() {
 
       const result = await login(normalizedOrganizationSlug, apartment, validBlock, password)
       if (result.success) {
+        persistOrganizationSlug(normalizedOrganizationSlug)
         navigate("/")
       } else {
         const isInvalidSlug = result.errorCode === "INVALID_CONDOMINIUM_CODE"
@@ -123,7 +125,7 @@ export default function LoginScreen() {
             <div className="login-field">
               <div className="login-label-row">
                 <label htmlFor="password">Senha</label>
-                <button type="button" className="login-link-button">
+                <button type="button" className="login-link-button" onClick={() => navigate("/forgot-password")}>
                   Esqueceu a senha?
                 </button>
               </div>

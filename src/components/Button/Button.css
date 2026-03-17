@@ -2,12 +2,38 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
   text-decoration: none;
+}
+
+.button-loading-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.button-loading-spinner {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: button-spin 0.7s linear infinite;
+}
+
+@keyframes button-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .button-primary {
@@ -131,4 +157,3 @@
 .dark .button-link:hover:not(:disabled) {
   color: #b7e4c7;
 }
-

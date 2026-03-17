@@ -1,14 +1,14 @@
 .onboarding-page {
-  min-height: 100vh;
+  width: min(560px, 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.2rem;
-  background: radial-gradient(circle at top, #f0f7ff 0%, #f8fbff 40%, #ffffff 100%);
+  padding: 0;
+  background: transparent;
 }
 
 .onboarding-card {
-  width: min(560px, 100%);
+  width: 100%;
   border: 1px solid #d5e3f7;
   border-radius: 14px;
   background: #ffffff;
@@ -27,6 +27,15 @@
 .onboarding-card p {
   margin: 0;
   color: #4b5563;
+}
+
+.onboarding-rules {
+  margin: 0;
+  padding-left: 1rem;
+  color: #475569;
+  font-size: 0.86rem;
+  display: grid;
+  gap: 0.2rem;
 }
 
 .onboarding-form {
@@ -48,6 +57,28 @@
   border-radius: 8px;
   padding: 0.6rem 0.7rem;
   font-size: 0.95rem;
+}
+
+.onboarding-password-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.onboarding-password-wrap input {
+  border: none;
+  flex: 1;
+}
+
+.onboarding-password-toggle {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  padding: 0 0.65rem;
+  cursor: pointer;
 }
 
 .onboarding-actions {

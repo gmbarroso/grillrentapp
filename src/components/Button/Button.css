@@ -107,8 +107,35 @@
 }
 
 .button:disabled {
-  opacity: 0.6;
+  opacity: 1;
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+.button-primary:disabled {
+  background-color: #9fb5d6;
+  color: #f0f5ff;
+}
+
+.button-secondary:disabled {
+  background-color: #dbe4f4;
+  color: #73829c;
+  border: 1px solid #b8c7df;
+}
+
+.button-danger:disabled {
+  background-color: #eaa5ac;
+  color: #fff5f6;
+}
+
+.button-dark:disabled {
+  background-color: #4b5568;
+  color: #d8dfeb;
+}
+
+.button-link:disabled {
+  color: #7d8aa0;
+  text-decoration: none;
 }
 
 .button.selected {
@@ -156,4 +183,29 @@
 
 .dark .button-link:hover:not(:disabled) {
   color: #b7e4c7;
+}
+
+:root[data-theme="dark"] .button-primary:disabled {
+  background-color: #385477;
+  color: #c8dcff;
+}
+
+:root[data-theme="dark"] .button-secondary:disabled {
+  background-color: #24344f;
+  color: #8fa6cb;
+  border: 1px solid #35527f;
+}
+
+:root[data-theme="dark"] .button-danger:disabled {
+  background-color: #6b3038;
+  color: #fbcdd2;
+}
+
+:root[data-theme="dark"] .button-dark:disabled {
+  background-color: #31425f;
+  color: #b9cae4;
+}
+
+:root[data-theme="dark"] .button-link:disabled {
+  color: #7f96bb;
 }

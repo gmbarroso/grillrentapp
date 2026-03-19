@@ -304,15 +304,19 @@ const AdminResidents = () => {
           </table>
         </div>
 
+      </section>
+
+      {filteredRows.length > 0 ? (
         <PaginationControls
+          compact
           currentPage={page}
           lastPage={lastPage}
           currentLimit={limit}
           onChangePage={setPage}
           onChangeLimit={setLimit}
-          className="admin-residents-pagination"
+          className="admin-residents-pagination pagination-separated"
         />
-      </section>
+      ) : null}
 
       <Modal isOpen={isCreateModalOpen} onClose={closeCreateModal}>
         <div className="resident-modal">

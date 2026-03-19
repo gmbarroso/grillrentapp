@@ -270,6 +270,7 @@ export default function AdminMessages() {
           onChangePage={setPage}
           onChangeLimit={setLimit}
           pageSizeOptions={[10, 20, 50]}
+          className="pagination-separated"
         />
       ) : null}
 

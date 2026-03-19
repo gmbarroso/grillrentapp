@@ -5,6 +5,12 @@
   flex-wrap: wrap;
 }
 
+.pagination-controls.pagination-separated {
+  margin-top: 0.8rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--border-soft);
+}
+
 .pagination-page-info {
   color: var(--text-secondary);
   font-weight: 600;
@@ -36,5 +42,9 @@
 @media (max-width: 760px) {
   .pagination-limit {
     margin-left: 0;
+  }
+
+  .pagination-controls.pagination-separated {
+    padding-top: 0.55rem;
   }
 }

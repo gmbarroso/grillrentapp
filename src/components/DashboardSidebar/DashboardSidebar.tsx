@@ -101,9 +101,11 @@ export default function DashboardSidebar({
               )
             })}
           </div>
+        </div>
 
+        <div className="dashboard-sidebar-bottom">
           {adminNav.length > 0 && (
-            <div className="dashboard-nav-group">
+            <div className="dashboard-nav-group dashboard-bottom-admin">
               <h3>Administração</h3>
               {adminNav.map((item) => {
                 const Icon = item.icon
@@ -130,11 +132,8 @@ export default function DashboardSidebar({
               })}
             </div>
           )}
-        </div>
 
-        <div className="dashboard-sidebar-bottom">
           <div className="dashboard-theme-panel">
-            <p>Tema</p>
             <div className="dashboard-theme-options" role="group" aria-label="Selecao de tema">
               {themeOptions.map((option) => {
                 const Icon = option.icon

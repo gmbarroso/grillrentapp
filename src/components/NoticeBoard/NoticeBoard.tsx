@@ -183,7 +183,7 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
             ))}
           </div>
           <PaginationControls
-            className="notice-board-pagination"
+            className="notice-board-pagination pagination-separated"
             currentPage={currentPage}
             lastPage={lastPage}
             currentLimit={currentLimit}

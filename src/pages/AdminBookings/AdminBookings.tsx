@@ -166,7 +166,7 @@ const AdminBookings = () => {
           onChangePage={setPage}
           onChangeLimit={setLimit}
           pageSizeOptions={[10, 20, 50]}
-          className="admin-bookings-pagination"
+          className="admin-bookings-pagination pagination-separated"
         />
       ) : null}
 

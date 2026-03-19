@@ -81,6 +81,12 @@
   gap: 0.5rem;
 }
 
+.scheduler-occupied-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .scheduler-reserve-button.button {
   border: 1px solid #a9c6eb;
   color: var(--accent-primary);
@@ -95,6 +101,28 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+}
+
+.scheduler-delete-icon-button {
+  border: none;
+  background: transparent;
+  color: var(--accent-danger);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 999px;
+}
+
+.scheduler-delete-icon-button:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.scheduler-delete-icon-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .scheduler-loading {
@@ -245,6 +273,11 @@
 .reservation-status.confirmed {
   background: #e9f8ef;
   color: #16824b;
+}
+
+.reservation-status.occupied {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .reservation-status.pending {

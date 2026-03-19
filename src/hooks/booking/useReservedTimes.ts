@@ -8,13 +8,30 @@ import { formatBookingDateKey, formatBookingHourSlot } from "../../utils/booking
 const API_BASE_URL = getApiBaseUrl()
 
 interface ReservedTimesResponse {
-  reservedTimes?: { startTime: string; endTime: string }[]
+  reservedTimes?: {
+    startTime: string
+    endTime: string
+    userId?: string | null
+    userApartment?: string | null
+    userBlock?: number | string | null
+    bookedOnBehalf?: string | null
+  }[]
   reservedDays?: string[]
+  reservedDayDetails?: Record<string, ReservedSlotInfo>
+}
+
+export interface ReservedSlotInfo {
+  userId?: string | null
+  userApartment?: string | null
+  userBlock?: number | string | null
+  bookedOnBehalf?: string | null
 }
 
 export function useReservedTimes(resourceType: "hourly" | "daily" | undefined, date?: Date) {
   const [reservedTimes, setReservedTimes] = useState<string[]>([])
+  const [reservedTimeDetails, setReservedTimeDetails] = useState<Record<string, ReservedSlotInfo>>({})
   const [reservedDays, setReservedDays] = useState<string[]>([])
+  const [reservedDayDetails, setReservedDayDetails] = useState<Record<string, ReservedSlotInfo>>({})
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const authenticatedFetch = useAuthenticatedFetch()
@@ -34,7 +51,9 @@ export function useReservedTimes(resourceType: "hourly" | "daily" | undefined, d
       // Hourly resources require a specific date.
       if (!resourceType || (resourceType === "hourly" && !date)) {
         setReservedTimes([])
+        setReservedTimeDetails({})
         setReservedDays([])
+        setReservedDayDetails({})
         return
       }
 
@@ -66,14 +85,24 @@ export function useReservedTimes(resourceType: "hourly" | "daily" | undefined, d
 
         if (resourceType === "hourly" && data.reservedTimes) {
           const bookedTimes: string[] = []
+          const bookedTimeDetails: Record<string, ReservedSlotInfo> = {}
 
           data.reservedTimes.forEach((slot) => {
-            bookedTimes.push(formatBookingHourSlot(slot.startTime))
+            const slotKey = formatBookingHourSlot(slot.startTime)
+            bookedTimes.push(slotKey)
+            bookedTimeDetails[slotKey] = {
+              userId: slot.userId ?? null,
+              userApartment: slot.userApartment ?? null,
+              userBlock: slot.userBlock ?? null,
+              bookedOnBehalf: slot.bookedOnBehalf ?? null,
+            }
           })
 
           setReservedTimes(bookedTimes)
+          setReservedTimeDetails(bookedTimeDetails)
         } else if (resourceType === "daily" && data.reservedDays) {
           setReservedDays(data.reservedDays)
+          setReservedDayDetails(data.reservedDayDetails ?? {})
         }
       } catch (err) {
         console.error("Error fetching reserved times:", err)
@@ -93,7 +122,9 @@ export function useReservedTimes(resourceType: "hourly" | "daily" | undefined, d
 
   return {
     reservedTimes,
+    reservedTimeDetails,
     reservedDays,
+    reservedDayDetails,
     isLoading,
     error,
   }

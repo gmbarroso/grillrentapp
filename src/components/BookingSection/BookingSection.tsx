@@ -13,7 +13,7 @@ import { useToast } from "../../context/ToastContext"
 import { useAuth } from "../../context/AuthContext"
 import type { Resource } from "../../types/Resource"
 import type { Booking, BookingSectionProps } from "../../types/Booking"
-import { formatBookingDateKey, formatBookingTimeInterval, BOOKING_DISPLAY_TIMEZONE } from "../../utils/booking-datetime"
+import { formatBookingDateKey, formatBookingHourSlot, formatBookingTimeInterval, BOOKING_DISPLAY_TIMEZONE } from "../../utils/booking-datetime"
 import { LoadingSpinner, Modal, Calendar, Tooltip, Button } from "../"
 import "./BookingSection.css"
 
@@ -65,6 +65,16 @@ const SAO_PAULO_UTC_OFFSET_HOURS = 3
 const toSaoPauloUtcInstant = (date: Date, hour: number, minute: number = 0) =>
   new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), hour + SAO_PAULO_UTC_OFFSET_HOURS, minute, 0, 0))
 
+const bookingOwnerLabel = (booking: Booking) => `apt. ${booking.userApartment} bl. ${booking.userBlock}`
+
+const bookingDetailsTooltip = (booking: Booking) => {
+  const lines = [`Reservado pelo ${bookingOwnerLabel(booking)}`]
+  if (booking.bookedOnBehalf?.trim()) {
+    lines.push(`Reserva em nome de Apt ${booking.bookedOnBehalf}`)
+  }
+  return lines.join(" • ")
+}
+
 const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated }) => {
   const { t } = useTranslation()
   const { showToast } = useToast()
@@ -82,7 +92,9 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
 
   const {
     reservedTimes: unavailableTimes,
+    reservedTimeDetails,
     reservedDays,
+    reservedDayDetails,
     isLoading: isLoadingTimes,
     error: timesError,
   } = useReservedTimes(selectedOption, selectedDate)
@@ -90,7 +102,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking } = useCreateBooking(token)
   const { deleteBooking, isLoading: isDeletingBooking } = useDeleteBooking(token)
-  const { bookings, refreshBookings } = useAllBookings({ initialLimit: 200 })
+  const { bookings, refreshBookings } = useAllBookings({ initialLimit: 1000 })
 
   const selectedDateKey = useMemo(() => formatBookingDateKey(selectedDate), [selectedDate])
 
@@ -118,8 +130,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
   const hourlyBookingByHour = useMemo(() => {
     const map = new Map<string, Booking>()
     dayBookings.forEach((booking) => {
-      const hour = new Date(booking.startTime).getHours().toString().padStart(2, "0")
-      map.set(`${hour}:00`, booking)
+      map.set(formatBookingHourSlot(booking.startTime), booking)
     })
     return map
   }, [dayBookings])
@@ -297,10 +308,25 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
             <div className="scheduler-slot-list">
               {timeSlots.map((slot) => {
                 const booking = hourlyBookingByHour.get(slot.value)
+                const reservedSlotInfo = reservedTimeDetails[slot.value]
                 const isPast = isPastSlotForSelectedDate(slot.value)
                 const isBooked = Boolean(booking) || unavailableTimes.includes(slot.value)
                 const isBlocked = isPast || isBooked
                 const canDelete = booking ? canDeleteBooking(booking) : false
+                const isOwnBooking = booking
+                  ? booking.userId === user?.id || isSameUnit(booking, user?.apartment, user?.block)
+                  : reservedSlotInfo
+                    ? reservedSlotInfo.userId === user?.id ||
+                      (String(reservedSlotInfo.userApartment ?? "") === String(user?.apartment ?? "") &&
+                        Number(reservedSlotInfo.userBlock) === Number(user?.block))
+                  : false
+                const reservedOnBehalf = reservedSlotInfo?.bookedOnBehalf?.trim()
+                const tooltipContent = booking
+                  ? bookingDetailsTooltip(booking)
+                  : reservedSlotInfo?.userApartment && reservedSlotInfo?.userBlock
+                    ? `Reservado pelo apt. ${reservedSlotInfo.userApartment} bl. ${reservedSlotInfo.userBlock}`
+                    : null
+                const shouldShowBookingInfo = Boolean(tooltipContent) && (!isOwnBooking || Boolean(booking?.bookedOnBehalf?.trim() || reservedOnBehalf))
 
                 return (
                   <div key={slot.value} className={`scheduler-slot-row ${isBlocked ? "blocked" : ""}`.trim()}>
@@ -311,18 +337,32 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
 
                     {booking ? (
                       <div className="scheduler-slot-actions">
-                        <span className="reservation-status confirmed">Confirmado</span>
+                        <div className="scheduler-occupied-meta">
+                          <span className={`reservation-status ${isOwnBooking ? "confirmed" : "occupied"}`}>
+                            {isOwnBooking ? "Confirmado" : "Ocupado"}
+                          </span>
+                          {shouldShowBookingInfo ? <Tooltip content={bookingDetailsTooltip(booking)} iconText="i" /> : null}
+                        </div>
                         {canDelete ? (
-                          <Button
-                            variant="danger"
-                            size="sm"
+                          <button
+                            type="button"
                             onClick={() => setBookingToDelete(booking)}
-                            className="scheduler-delete-button"
+                            className="scheduler-delete-icon-button"
+                            disabled={isDeletingBooking}
+                            aria-label="Cancelar reserva"
                           >
                             <Trash2 size={13} />
-                            Cancelar
-                          </Button>
+                          </button>
                         ) : null}
+                      </div>
+                    ) : isBooked ? (
+                      <div className="scheduler-slot-actions">
+                        <div className="scheduler-occupied-meta">
+                          <span className={`reservation-status ${isOwnBooking ? "confirmed" : "occupied"}`}>
+                            {isOwnBooking ? "Confirmado" : "Ocupado"}
+                          </span>
+                          {shouldShowBookingInfo && tooltipContent ? <Tooltip content={tooltipContent} iconText="i" /> : null}
+                        </div>
                       </div>
                     ) : (
                       <Button
@@ -344,6 +384,10 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
             </div>
           ) : dailyBooking ? (
             <div className="scheduler-grill-booking">
+              {(() => {
+                const isOwnDailyBooking = dailyBooking.userId === user?.id || isSameUnit(dailyBooking, user?.apartment, user?.block)
+                const shouldShowDailyInfo = !isOwnDailyBooking || Boolean(dailyBooking.bookedOnBehalf?.trim())
+                return (
               <div className="scheduler-grill-row">
                 <div>
                   <strong>Reservado - Dia inteiro</strong>
@@ -355,8 +399,15 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
                   <p>Apt {dailyBooking.userApartment} Bl. {dailyBooking.userBlock}</p>
                   {dailyBooking.needTablesAndChairs ? <a href="#">Mesas e cadeiras solicitadas</a> : null}
                 </div>
-                <span className="reservation-status confirmed">Confirmado</span>
+                <div className="scheduler-occupied-meta">
+                  <span className={`reservation-status ${isOwnDailyBooking ? "confirmed" : "occupied"}`}>
+                    {isOwnDailyBooking ? "Confirmado" : "Ocupado"}
+                  </span>
+                  {shouldShowDailyInfo ? <Tooltip content={bookingDetailsTooltip(dailyBooking)} iconText="i" /> : null}
+                </div>
               </div>
+                )
+              })()}
               <Button variant="secondary" size="sm" disabled={true} className="scheduler-reserve-button">
                 Reservado
               </Button>
@@ -408,6 +459,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
           <div className="scheduler-side-card">
             <Calendar
               reservedDays={selectedOption === "daily" ? reservedDays : []}
+              reservedDayDetails={selectedOption === "daily" ? reservedDayDetails : {}}
               onDateSelect={setSelectedDate}
               resourceType={selectedOption}
               selectedDate={selectedDate}

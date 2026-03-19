@@ -4,10 +4,12 @@ import type React from "react"
 import { useTranslation } from "react-i18next"
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import type { ReservedSlotInfo } from "../../hooks/booking/useReservedTimes"
 import "./CustomCalendar.css"
 
 interface CustomCalendarProps {
   reservedDays?: string[]
+  reservedDayDetails?: Record<string, ReservedSlotInfo>
   onDateSelect: (date: Date) => void
   minDate?: Date
   maxDate?: Date
@@ -17,6 +19,7 @@ interface CustomCalendarProps {
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
   reservedDays = [],
+  reservedDayDetails = {},
   onDateSelect,
   minDate = new Date(),
   maxDate,
@@ -58,6 +61,17 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   // Memoize the reservedDaysSet to prevent unnecessary recalculations
   const reservedDaysSet = useMemo(() => new Set(reservedDays), [reservedDays])
+
+  const reservedDayTooltip = useCallback((dateKey: string) => {
+    const info = reservedDayDetails[dateKey]
+    if (!info?.userApartment || info.userBlock === undefined || info.userBlock === null) return ""
+
+    const parts = [`Reservado pelo apt. ${info.userApartment} bl. ${info.userBlock}`]
+    if (info.bookedOnBehalf?.trim()) {
+      parts.push(`Reserva em nome de Apt ${info.bookedOnBehalf}`)
+    }
+    return parts.join(" • ")
+  }, [reservedDayDetails])
 
   const defaultMaxDate = new Date()
   defaultMaxDate.setMonth(defaultMaxDate.getMonth() + 3)
@@ -178,12 +192,20 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       // Only mark as reserved if it's within the allowed date range
       const isReserved = !isOutOfRange && isDateReserved(date)
       const isSelected = isDateSelected(date)
+      const dayTooltip = isReserved ? reservedDayTooltip(dateString) : ""
 
       const className = `calendar-day ${isReserved ? "reserved" : ""} ${isOutOfRange ? "out-of-range" : ""} ${isSelected ? "selected" : ""}`
 
       days.push(
-        <div key={day} className={className} onClick={() => handleDateClick(date)}>
+        <div
+          key={day}
+          className={className}
+          onClick={() => handleDateClick(date)}
+          data-reserved-tooltip={dayTooltip || undefined}
+          aria-label={dayTooltip || undefined}
+        >
           {day}
+          {isReserved && dayTooltip ? <span className="calendar-reserved-dot" aria-hidden="true"></span> : null}
         </div>,
       )
     }

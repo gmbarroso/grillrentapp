@@ -1,7 +1,7 @@
 .notice-preview-item {
-  border: 1px solid #d4deee;
+  border: 1px solid var(--border-default);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   padding: 0.8rem;
 }
 
@@ -15,23 +15,23 @@
 .notice-preview-header h4 {
   margin: 0;
   font-size: 0.94rem;
-  color: #101828;
+  color: var(--text-primary);
 }
 
 .notice-preview-header time {
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 0.8rem;
 }
 
 .notice-preview-subtitle {
   margin: 0.35rem 0 0;
   font-size: 0.84rem;
-  color: #516179;
+  color: var(--text-secondary);
 }
 
 .notice-preview-content {
   margin: 0.4rem 0 0;
-  color: #4a596f;
+  color: var(--text-secondary);
   font-size: 0.84rem;
   line-height: 1.5;
 }

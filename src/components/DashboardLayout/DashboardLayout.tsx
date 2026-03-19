@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type ReactNode } from "react"
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
 import { Outlet, useLocation } from "react-router-dom"
 import {
   Boxes,
@@ -8,9 +8,13 @@ import {
   Cog,
   House,
   Inbox,
+  Menu,
   MessageSquare,
+  PanelLeftClose,
+  PanelLeftOpen,
   Phone,
   Users,
+  X,
 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
@@ -22,12 +26,24 @@ interface DashboardLayoutProps {
   children?: ReactNode
 }
 
+const SIDEBAR_COLLAPSED_KEY = "dashboard-sidebar-collapsed"
+const MOBILE_BREAKPOINT = 760
+
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth()
   const location = useLocation()
   const { hasUnread } = useNoticeUnreadState()
   const isAdmin = user?.role === "admin"
   const { hasUnread: hasUnreadMessages } = useMessageUnreadState(isAdmin)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false
+    return window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true"
+  })
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false
+    return window.innerWidth <= MOBILE_BREAKPOINT
+  })
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
   const onLogout = useCallback(async () => {
     await logout()
@@ -66,6 +82,47 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     [],
   )
 
+  useEffect(() => {
+    const media = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`)
+    const onChange = () => {
+      setIsMobileViewport(media.matches)
+      if (!media.matches) {
+        setIsMobileSidebarOpen(false)
+      }
+    }
+
+    onChange()
+    media.addEventListener("change", onChange)
+    return () => {
+      media.removeEventListener("change", onChange)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isMobileViewport) return
+    setIsMobileSidebarOpen(false)
+  }, [location.pathname, isMobileViewport])
+
+  useEffect(() => {
+    if (!isMobileViewport) return
+    document.body.style.overflow = isMobileSidebarOpen ? "hidden" : ""
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [isMobileSidebarOpen, isMobileViewport])
+
+  useEffect(() => {
+    window.localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(isSidebarCollapsed))
+  }, [isSidebarCollapsed])
+
+  const toggleSidebar = useCallback(() => {
+    if (isMobileViewport) {
+      setIsMobileSidebarOpen((prev) => !prev)
+      return
+    }
+    setIsSidebarCollapsed((prev) => !prev)
+  }, [isMobileViewport])
+
   const primaryNav: DashboardSidebarNavItem[] = [
     { label: "Inicio", to: "/", icon: House },
     { label: "Minhas reservas", to: "/mybookeddates", icon: CalendarDays },
@@ -84,7 +141,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ]
 
   return (
-    <div className="dashboard-layout">
+    <div
+      className={`dashboard-layout ${isSidebarCollapsed ? "sidebar-collapsed" : ""} ${isMobileSidebarOpen ? "sidebar-mobile-open" : ""}`.trim()}
+    >
       <DashboardSidebar
         condominiumName="Chacara Sacopa"
         condominiumSubtitle="Gestao do Condominio"
@@ -92,12 +151,38 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         adminNav={isAdmin ? adminNav : []}
         userName={user?.name || "Morador"}
         userContext={`Apt ${user?.apartment || "--"} Bl. ${user?.block || "--"}`}
+        isCollapsed={isSidebarCollapsed}
+        isMobileViewport={isMobileViewport}
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
         onLogout={onLogout}
       />
 
       <div className="dashboard-main">
         <header className="dashboard-shell-topbar">
           <div className="dashboard-shell-topbar-left">
+            <button
+              type="button"
+              className="dashboard-shell-sidebar-toggle"
+              onClick={toggleSidebar}
+              aria-label={
+                isMobileViewport
+                  ? isMobileSidebarOpen
+                    ? "Fechar menu"
+                    : "Abrir menu"
+                  : isSidebarCollapsed
+                    ? "Expandir barra lateral"
+                    : "Recolher barra lateral"
+              }
+            >
+              {isMobileViewport ? (
+                isMobileSidebarOpen ? <X size={17} /> : <Menu size={17} />
+              ) : isSidebarCollapsed ? (
+                <PanelLeftOpen size={17} />
+              ) : (
+                <PanelLeftClose size={17} />
+              )}
+            </button>
             <h1>{pageTitle}</h1>
           </div>
 

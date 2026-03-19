@@ -13,7 +13,7 @@
 .notice-compose-header h3 {
   margin: 0;
   font-size: 1.5rem;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .notice-compose-group {
@@ -24,7 +24,7 @@
 
 .notice-compose-group label {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .notice-compose-group input,
@@ -32,16 +32,16 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   font-size: 1rem;
-  background: #ffffff;
-  color: #111827;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
 }
 
 .notice-compose-group input::placeholder,
 .notice-compose-group textarea::placeholder {
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .notice-compose-group textarea {
@@ -54,10 +54,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-default);
   border-radius: 10px;
   padding: 0.85rem 0.9rem;
-  background: #f8fafc;
+  background: var(--surface-muted);
 }
 
 .notice-compose-channel-text {
@@ -68,13 +68,13 @@
 
 .notice-compose-channel-text strong {
   display: block;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
 .notice-compose-channel-text p {
   margin: 0.1rem 0 0;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 0.84rem;
 }
 
@@ -96,7 +96,7 @@
   position: absolute;
   inset: 0;
   cursor: pointer;
-  background-color: #d1d5db;
+  background-color: var(--border-default);
   border-radius: 999px;
   transition: 0.2s;
 }

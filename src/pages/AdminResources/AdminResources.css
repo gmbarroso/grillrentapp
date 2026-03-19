@@ -7,12 +7,12 @@
 .admin-page-heading h2 {
   margin: 0;
   font-size: 1.8rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .admin-page-heading p {
   margin: 0.24rem 0 0;
-  color: #687489;
+  color: var(--text-secondary);
 }
 
 .admin-page-heading.with-action {
@@ -29,9 +29,9 @@
 }
 
 .resource-card {
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
   padding: 0.75rem;
 }
@@ -53,7 +53,7 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  background: #eef5ff;
+  background: var(--surface-muted);
   color: var(--color-blue);
   display: inline-flex;
   align-items: center;
@@ -63,27 +63,27 @@
 .resource-title-block h3 {
   margin: 0;
   font-size: 1.05rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .resource-title-block p {
   margin: 0.06rem 0 0;
-  color: #66748a;
+  color: var(--text-secondary);
   text-transform: lowercase;
 }
 
 .resource-card header small {
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 999px;
   padding: 0.18rem 0.48rem;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 0.72rem;
 }
 
 .resource-description {
-  color: #5f6e85;
+  color: var(--text-secondary);
   margin: 0.75rem 0;
-  border-bottom: 1px solid #e7ebf4;
+  border-bottom: 1px solid var(--border-soft);
   padding-bottom: 0.75rem;
 }
 
@@ -96,14 +96,14 @@
 .resource-modal h3 {
   margin: 0 0 1rem;
   font-size: 1.25rem;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .resource-modal label {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  color: #334155;
+  color: var(--text-primary);
   font-size: 0.9rem;
   margin-bottom: 0.8rem;
 }
@@ -114,12 +114,12 @@
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 0.58rem 0.65rem;
   font-size: 0.92rem;
-  color: #0f172a;
-  background: #fff;
+  color: var(--text-primary);
+  background: var(--surface-elevated);
 }
 
 .resource-modal textarea {
@@ -140,7 +140,7 @@
   display: block;
   margin-top: -0.35rem;
   margin-bottom: 0.6rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .resource-modal-actions {

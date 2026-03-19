@@ -7,19 +7,19 @@
 .admin-page-heading h2 {
   margin: 0;
   font-size: 1.8rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .admin-page-heading p {
   margin: 0.24rem 0 0;
-  color: #687489;
+  color: var(--text-secondary);
 }
 
 .admin-filter-card,
 .admin-table-card {
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
   padding: 0.78rem;
 }
@@ -28,13 +28,13 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 0.35rem 0.55rem;
 }
 
 .admin-search-input svg {
-  color: #7a879d;
+  color: var(--text-secondary);
 }
 
 .admin-search-input input {
@@ -42,6 +42,8 @@
   outline: none;
   width: 100%;
   font-size: 0.94rem;
+  background: transparent;
+  color: var(--text-primary);
 }
 
 .admin-filter-row {
@@ -52,7 +54,7 @@
 }
 
 .admin-select-wrap {
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 0 0.55rem;
   display: flex;
@@ -66,6 +68,7 @@
   outline: none;
   width: 100%;
   background: transparent;
+  color: var(--text-primary);
 }
 
 .admin-table-card header h3 {
@@ -87,17 +90,17 @@
 .admin-table-scroll td {
   padding: 0.62rem 0.38rem;
   text-align: left;
-  border-bottom: 1px solid #e7ebf4;
+  border-bottom: 1px solid var(--border-soft);
   font-size: 0.92rem;
 }
 
 .admin-table-scroll td {
-  color: #253047;
+  color: var(--text-primary);
 }
 
 .admin-bookings-empty-row {
   text-align: center !important;
-  color: #687489 !important;
+  color: var(--text-secondary) !important;
 }
 
 .resource-dot {
@@ -129,7 +132,7 @@
 }
 
 .status-pill.pending {
-  color: #4e3510;
+  color: #55370a;
   background: #f0b02e;
 }
 

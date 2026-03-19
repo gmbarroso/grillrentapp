@@ -6,7 +6,7 @@
 }
 
 .pagination-page-info {
-  color: #475569;
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: 0.88rem;
 }
@@ -16,16 +16,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: #475569;
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: 0.82rem;
 }
 
 .pagination-limit select {
   padding: 0.4rem;
-  border: 1px solid #c2d0e6;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
 }
 
 .pagination-controls.compact {

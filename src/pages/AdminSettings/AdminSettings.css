@@ -7,12 +7,12 @@
 .admin-page-heading h2 {
   margin: 0;
   font-size: 1.75rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .admin-page-heading p {
   margin: 0.22rem 0 0;
-  color: #687489;
+  color: var(--text-secondary);
 }
 
 .admin-settings-grid {
@@ -22,9 +22,9 @@
 }
 
 .settings-card {
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface-elevated);
   padding: 0.9rem;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
@@ -100,12 +100,12 @@
 .settings-card h3 {
   margin: 0;
   font-size: 1.02rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .settings-card p {
   margin: 0.35rem 0 0.7rem;
-  color: #66748a;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -116,4 +116,50 @@
   color: var(--color-blue);
   text-decoration: none;
   font-weight: 600;
+}
+
+:root[data-theme="dark"] .settings-icon.blue {
+  background: #1f3353;
+  color: #a6c8ff;
+}
+
+:root[data-theme="dark"] .settings-icon.green {
+  background: #1d4533;
+  color: #9ae6b4;
+}
+
+:root[data-theme="dark"] .settings-icon.yellow {
+  background: #4d3b18;
+  color: #f8d48d;
+}
+
+:root[data-theme="dark"] .settings-icon.cyan {
+  background: #193c44;
+  color: #9de3ee;
+}
+
+:root[data-theme="dark"] .settings-icon.red {
+  background: #4d1f28;
+  color: #ffb4c0;
+}
+
+:root[data-theme="dark"] .status-chip {
+  border-color: var(--border-default);
+  background: var(--surface-muted);
+}
+
+:root[data-theme="dark"] .status-chip.soon {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .status-chip.disconnected {
+  background: #4d1f28;
+  color: #ffb4c0;
+  border-color: #9f3042;
+}
+
+:root[data-theme="dark"] .status-chip.connected {
+  background: #1d4533;
+  color: #9ae6b4;
+  border-color: #2f6b4f;
 }

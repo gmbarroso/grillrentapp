@@ -6,9 +6,9 @@
 
 .profile-card {
   width: min(100%, 560px);
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
   padding: 1.2rem;
 }
@@ -16,7 +16,7 @@
 .profile-card header h2 {
   margin: 0 0 1rem;
   font-size: 1.6rem;
-  color: #111827;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -33,15 +33,15 @@
 }
 
 .profile-form-v2 label {
-  color: #1f2937;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 0.94rem;
 }
 
 .profile-input-wrap {
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   display: flex;
   align-items: center;
   gap: 0.45rem;
@@ -50,7 +50,7 @@
 }
 
 .profile-input-wrap svg {
-  color: #7a879d;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
@@ -60,16 +60,16 @@
   outline: none;
   height: 38px;
   background: transparent;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 0.94rem;
 }
 
 .profile-input-wrap.readonly {
-  background: #f8faff;
+  background: var(--surface-muted);
 }
 
 .profile-input-wrap.readonly input {
-  color: #4f5d74;
+  color: var(--text-secondary);
 }
 
 .profile-unit-row {

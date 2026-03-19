@@ -18,7 +18,7 @@
 
 .dashboard-home-hero p {
   margin: 0.2rem 0 0;
-  color: #5f6e85;
+  color: var(--text-secondary);
 }
 
 .dashboard-home-actions {
@@ -28,9 +28,9 @@
 }
 
 .dashboard-section {
-  border: 1px solid #d4deed;
-  border-radius: 12px;
-  background: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  background: var(--surface-elevated);
   padding: 1rem;
 }
 
@@ -45,7 +45,7 @@
 .dashboard-section > header h3 {
   margin: 0;
   font-size: 1.35rem;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .dashboard-section > header button {
@@ -65,7 +65,7 @@
 
 .dashboard-empty-message {
   margin: 0;
-  color: #5f6e85;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   padding: 0.35rem 0.1rem;
 }
@@ -73,5 +73,23 @@
 @media (max-width: 900px) {
   .dashboard-home-actions {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-home {
+    gap: 0.8rem;
+  }
+
+  .dashboard-home-hero h2 {
+    font-size: 1.35rem;
+  }
+
+  .dashboard-section {
+    padding: 0.8rem;
+  }
+
+  .dashboard-section > header h3 {
+    font-size: 1.08rem;
   }
 }

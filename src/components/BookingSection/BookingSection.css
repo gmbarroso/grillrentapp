@@ -29,7 +29,7 @@
 .scheduler-main {
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   padding: 0.9rem;
 }
 
@@ -37,7 +37,7 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  color: #111827;
+  color: var(--text-primary);
   margin-bottom: 0.9rem;
 }
 
@@ -54,7 +54,7 @@
 .scheduler-slot-row {
   border: 1px solid var(--color-border);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   padding: 0.55rem 0.65rem;
   display: flex;
   align-items: center;
@@ -63,14 +63,14 @@
 }
 
 .scheduler-slot-row.blocked {
-  background: #f8fbff;
+  background: var(--surface-muted);
 }
 
 .scheduler-slot-time {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 0.93rem;
   font-weight: 600;
 }
@@ -83,12 +83,12 @@
 
 .scheduler-reserve-button.button {
   border: 1px solid #a9c6eb;
-  color: var(--color-blue);
-  background: #f4f8ff;
+  color: var(--accent-primary);
+  background: var(--surface-muted);
 }
 
 .scheduler-reserve-button.button:disabled {
-  color: #7f8aa1;
+  color: var(--text-muted);
 }
 
 .scheduler-delete-button.button {
@@ -107,7 +107,7 @@
 .scheduler-grill-empty {
   border: 1px solid var(--color-border);
   border-radius: 10px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   padding: 0.85rem;
 }
 
@@ -119,7 +119,7 @@
 
 .scheduler-grill-row p {
   margin: 0.25rem 0 0;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 0.87rem;
 }
 
@@ -156,7 +156,7 @@
 .admin-booking-field {
   margin-top: 0.8rem;
   padding-top: 0.8rem;
-  border-top: 1px solid #ebf0f8;
+  border-top: 1px solid var(--border-soft);
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -187,19 +187,19 @@
 .scheduler-side-card {
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   padding: 0.85rem;
 }
 
 .scheduler-resource-card h4 {
   margin: 0;
   font-size: 1rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .scheduler-resource-card p {
   margin: 0.4rem 0 0;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -207,14 +207,14 @@
   margin-top: 0.85rem;
   border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   padding: 0.9rem;
 }
 
 .scheduler-rules h3 {
   margin: 0;
   font-size: 1rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .card-content {
@@ -223,7 +223,7 @@
 }
 
 .card-content li {
-  color: #6b7280;
+  color: var(--text-secondary);
   font-size: 0.88rem;
   line-height: 1.45;
   margin-bottom: 0.35rem;
@@ -258,7 +258,7 @@
 }
 
 .checkbox-text {
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 0.86rem;
 }
 
@@ -305,12 +305,12 @@
 
 .confirm-booking-modal h2 {
   margin: 0 0 0.4rem;
-  color: #0d388e;
+  color: var(--accent-primary);
 }
 
 .confirm-booking-modal p {
   margin: 0;
-  color: #5f6e85;
+  color: var(--text-secondary);
 }
 
 @media (max-width: 1080px) {

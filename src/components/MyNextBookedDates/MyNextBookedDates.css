@@ -1,7 +1,7 @@
 .next-booked-dates {
-  border: 1px solid #d4deed;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   padding: 1rem;
 }
 
@@ -16,7 +16,7 @@
 .next-booked-dates-title {
   margin: 0;
   font-size: 1.35rem;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .next-booked-dates-action {
@@ -44,7 +44,7 @@
 
 .next-booked-dates-empty {
   margin: 0;
-  color: #5f6e85;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   padding: 0.35rem 0.1rem;
 }

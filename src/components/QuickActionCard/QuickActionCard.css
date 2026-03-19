@@ -1,10 +1,10 @@
 .quick-action-card {
   min-height: 78px;
-  border: 1px solid #cde0f7;
-  background: #ffffff;
+  border: 1px solid var(--border-default);
+  background: var(--surface-elevated);
   border-radius: 10px;
   text-decoration: none;
-  color: #152238;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.85rem;
@@ -46,11 +46,21 @@
 
 .quick-action-content span {
   font-size: 0.86rem;
-  color: #5f6f86;
+  color: var(--text-secondary);
 }
 
 .quick-action-arrow {
   margin-left: auto;
-  color: #5d6e87;
+  color: var(--text-secondary);
   font-size: 1.2rem;
+}
+
+:root[data-theme="dark"] .quick-action-card-blue .quick-action-icon {
+  background: #1f3353;
+  color: #a6c8ff;
+}
+
+:root[data-theme="dark"] .quick-action-card-yellow .quick-action-icon {
+  background: #4d3b18;
+  color: #f8d48d;
 }

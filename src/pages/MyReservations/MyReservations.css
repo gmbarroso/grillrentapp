@@ -6,7 +6,13 @@
 
 .my-reservations-booking .booking-section {
   margin-bottom: 0;
-  border: 1px solid #d4deed;
-  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
   box-shadow: none;
+}
+
+@media (max-width: 560px) {
+  .my-reservations-page {
+    gap: 0.8rem;
+  }
 }

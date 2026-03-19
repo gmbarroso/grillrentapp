@@ -8,7 +8,7 @@ import "flag-icons/css/flag-icons.min.css"
 
 const SettingsBar: React.FC = () => {
   const { t, i18n } = useTranslation()
-  const { toggleTheme } = useTheme()
+  const { toggleTheme, resolvedTheme } = useTheme()
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
@@ -20,7 +20,7 @@ const SettingsBar: React.FC = () => {
       <div className="settings-bar-content">
         <div className="theme-switch">
           <label className="switch">
-            <input type="checkbox" onChange={toggleTheme} />
+            <input type="checkbox" checked={resolvedTheme === "dark"} onChange={toggleTheme} />
             <span className="slider round"></span>
           </label>
         </div>
@@ -41,4 +41,3 @@ const SettingsBar: React.FC = () => {
 }
 
 export default SettingsBar
-

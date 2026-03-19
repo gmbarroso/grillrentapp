@@ -15,12 +15,12 @@
 .admin-page-heading h2 {
   margin: 0;
   font-size: 1.75rem;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .admin-page-heading p {
   margin: 0.22rem 0 0;
-  color: #687489;
+  color: var(--text-secondary);
 }
 
 .admin-notices-modal-body {

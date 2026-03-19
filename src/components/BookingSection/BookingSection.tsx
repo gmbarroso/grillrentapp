@@ -338,9 +338,9 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
                     {booking ? (
                       <div className="scheduler-slot-actions">
                         <div className="scheduler-occupied-meta">
-                          <span className={`reservation-status ${isOwnBooking ? "confirmed" : "occupied"}`}>
+                          {/* <span className={`reservation-status ${isOwnBooking ? "confirmed" : "occupied"}`}>
                             {isOwnBooking ? "Confirmado" : "Ocupado"}
-                          </span>
+                          </span> */}
                           {shouldShowBookingInfo ? <Tooltip content={bookingDetailsTooltip(booking)} iconText="i" /> : null}
                         </div>
                         {canDelete ? (
@@ -358,9 +358,9 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
                     ) : isBooked ? (
                       <div className="scheduler-slot-actions">
                         <div className="scheduler-occupied-meta">
-                          <span className={`reservation-status ${isOwnBooking ? "confirmed" : "occupied"}`}>
+                          {/* <span className={`reservation-status ${isOwnBooking ? "confirmed" : "occupied"}`}>
                             {isOwnBooking ? "Confirmado" : "Ocupado"}
-                          </span>
+                          </span> */}
                           {shouldShowBookingInfo && tooltipContent ? <Tooltip content={tooltipContent} iconText="i" /> : null}
                         </div>
                       </div>
@@ -400,9 +400,9 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
                   {dailyBooking.needTablesAndChairs ? <a href="#">Mesas e cadeiras solicitadas</a> : null}
                 </div>
                 <div className="scheduler-occupied-meta">
-                  <span className={`reservation-status ${isOwnDailyBooking ? "confirmed" : "occupied"}`}>
+                  {/* <span className={`reservation-status ${isOwnDailyBooking ? "confirmed" : "occupied"}`}>
                     {isOwnDailyBooking ? "Confirmado" : "Ocupado"}
-                  </span>
+                  </span> */}
                   {shouldShowDailyInfo ? <Tooltip content={bookingDetailsTooltip(dailyBooking)} iconText="i" /> : null}
                 </div>
               </div>

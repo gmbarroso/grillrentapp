@@ -73,3 +73,7 @@ body {
 a {
   color: inherit;
 }
+
+svg.lucide-trash-2 {
+  color: var(--accent-danger);
+}

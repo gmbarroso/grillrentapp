@@ -141,11 +141,23 @@
   vertical-align: middle;
 }
 
-.table-icon-button {
+.admin-bookings-page .table-icon-button {
   border: none;
   background: transparent;
-  color: #e31d2f;
+  color: var(--accent-danger);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+}
+
+.admin-bookings-page .table-icon-button svg {
+  color: var(--accent-danger);
+}
+
+.admin-bookings-actions-column {
+  text-align: center !important;
 }
 
 .admin-modal-actions {

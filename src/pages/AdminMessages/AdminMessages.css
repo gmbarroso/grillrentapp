@@ -121,15 +121,18 @@
   margin-left: auto;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  border: 1px solid #fecaca;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: none;
   border-radius: 999px;
-  background: #fff1f2;
-  color: #be123c;
-  font-weight: 700;
-  font-size: 0.74rem;
-  padding: 0.18rem 0.52rem;
+  background: transparent;
+  color: var(--accent-danger);
   cursor: pointer;
+}
+
+.admin-message-delete-trigger:hover {
+  background: rgba(239, 68, 68, 0.14);
 }
 
 .category-chip,

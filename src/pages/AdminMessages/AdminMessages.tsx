@@ -194,7 +194,6 @@ export default function AdminMessages() {
                     aria-label={`Excluir mensagem ${message.subject}`}
                   >
                     <Trash2 size={14} />
-                    Excluir
                   </button>
                 </div>
               </button>

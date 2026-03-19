@@ -110,7 +110,7 @@ const AdminBookings = () => {
                 <th>Morador</th>
                 <th>Apt.</th>
                 <th>Status</th>
-                <th>Acoes</th>
+                <th className="admin-bookings-actions-column">Acoes</th>
               </tr>
             </thead>
             <tbody>
@@ -144,7 +144,7 @@ const AdminBookings = () => {
                         </span>
                       ) : null}
                     </td>
-                    <td>
+                    <td className="admin-bookings-actions-column">
                       <button type="button" className="table-icon-button" onClick={() => setDeletingBooking(booking)} aria-label="Excluir reserva">
                         <Trash2 size={14} />
                       </button>

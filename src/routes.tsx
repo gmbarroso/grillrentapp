@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useEffect, useRef } from "react"
 import { Route, Routes, Navigate, useLocation, Outlet } from "react-router-dom"
 import { useAuth } from "./context/AuthContext"
 import {
@@ -36,10 +37,8 @@ const resolveOnboardingRoute = (flags: {
   mustVerifyEmail: boolean
   mustChangePassword: boolean
 }): string => {
-  if (flags.mustProvideEmail) return "/onboarding/email"
-  if (flags.mustVerifyEmail) return "/onboarding/verify-email"
-  if (flags.mustChangePassword) return "/onboarding/change-password"
-  return "/"
+  void flags
+  return "/onboarding/email"
 }
 
 const getWelcomeSeenKey = (userId?: string) => `onboarding_welcome_seen:${userId || "anonymous"}`
@@ -137,10 +136,32 @@ const ProtectedOnboardingLayout: React.FC = () => {
   )
 }
 
+const LogoutRoute: React.FC = () => {
+  const { isAuthenticated, isAuthResolved, logout } = useAuth()
+  const hasTriggeredLogoutRef = useRef(false)
+
+  useEffect(() => {
+    if (!isAuthResolved || !isAuthenticated || hasTriggeredLogoutRef.current) return
+    hasTriggeredLogoutRef.current = true
+    void logout()
+  }, [isAuthResolved, isAuthenticated, logout])
+
+  if (!isAuthResolved) {
+    return <LoadingSpinner />
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <LoadingSpinner />
+}
+
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginScreen />} />
+      <Route path="/logout" element={<LogoutRoute />} />
       <Route path="/forgot-password" element={<ForgotPasswordRequest />} />
       <Route path="/reset-password" element={<ForgotPasswordReset />} />
       <Route path="/signup" element={<SignUp />} />

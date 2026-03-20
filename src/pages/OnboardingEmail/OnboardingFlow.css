@@ -24,6 +24,14 @@
   font-size: 1.35rem;
 }
 
+.onboarding-brand-seu {
+  color: var(--color-navy);
+}
+
+.onboarding-brand-ze {
+  color: var(--color-green);
+}
+
 .onboarding-card p {
   margin: 0;
   color: #4b5563;
@@ -118,6 +126,14 @@
 
 :root[data-theme="dark"] .onboarding-card h1 {
   color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .onboarding-brand-seu {
+  color: #dce8ff;
+}
+
+:root[data-theme="dark"] .onboarding-brand-ze {
+  color: #6fe09f;
 }
 
 :root[data-theme="dark"] .onboarding-card p {

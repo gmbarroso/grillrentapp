@@ -11,10 +11,8 @@ const resolveNextRoute = (flags: {
   mustVerifyEmail: boolean
   mustChangePassword: boolean
 }) => {
-  if (flags.mustProvideEmail) return "/onboarding/email"
-  if (flags.mustVerifyEmail) return "/onboarding/verify-email"
-  if (flags.mustChangePassword) return "/onboarding/change-password"
-  return "/"
+  void flags
+  return "/onboarding/email"
 }
 
 export default function OnboardingWelcome() {
@@ -34,7 +32,9 @@ export default function OnboardingWelcome() {
     <div className="onboarding-page">
       <section className="onboarding-card">
         <span className="onboarding-chip">Bem-vindo</span>
-        <h1>Bem-vindo ao GrillRent</h1>
+        <h1>
+          Bem-vindo ao <span className="onboarding-brand-seu">Seu.</span><span className="onboarding-brand-ze">Zé</span>
+        </h1>
         <p>
           Este é seu primeiro acesso. Antes de continuar, você precisa concluir algumas etapas de onboarding.
         </p>

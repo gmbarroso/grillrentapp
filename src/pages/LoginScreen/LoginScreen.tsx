@@ -25,6 +25,7 @@ export default function LoginScreen() {
   const { t } = useTranslation()
   const { setIsLoading } = useLoading()
   const { showToast } = useToast()
+  const ONBOARDING_WELCOME_PREFIX = "onboarding_welcome_seen:"
 
   useEffect(() => {
     const stateMessage = (location.state as { message?: string } | null)?.message
@@ -51,6 +52,16 @@ export default function LoginScreen() {
 
       const result = await login(normalizedOrganizationSlug, apartment, validBlock, password)
       if (result.success) {
+        if (typeof window !== "undefined") {
+          const keysToRemove: string[] = []
+          for (let index = 0; index < window.sessionStorage.length; index += 1) {
+            const key = window.sessionStorage.key(index)
+            if (key?.startsWith(ONBOARDING_WELCOME_PREFIX)) {
+              keysToRemove.push(key)
+            }
+          }
+          keysToRemove.forEach((key) => window.sessionStorage.removeItem(key))
+        }
         persistOrganizationSlug(normalizedOrganizationSlug)
         navigate("/")
       } else {

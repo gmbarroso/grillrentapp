@@ -30,7 +30,14 @@ function replyEmailLabel(reply: MessageReply): string {
   if (reply.emailDeliveryStatus === "sent") return "E-mail enviado"
   if (reply.emailDeliveryStatus === "failed") return "Falha no e-mail"
   if (reply.emailDeliveryStatus === "pending") return "E-mail pendente"
+  if (reply.emailDeliveryStatus === "skipped") return "E-mail ignorado"
   return "E-mail nao solicitado"
+}
+
+function replyOriginLabel(reply: MessageReply): string {
+  if (reply.originRole === "admin") return "Administracao (app)"
+  if (reply.originChannel === "email_inbound") return "Morador (email)"
+  return "Morador (app)"
 }
 
 export default function AdminMessages() {
@@ -208,7 +215,7 @@ export default function AdminMessages() {
                     {(message.replies || []).map((reply) => (
                       <div key={reply.id} className="admin-message-reply-item">
                         <div className="admin-message-reply-header">
-                          <strong>{reply.authorName}</strong>
+                          <strong>{replyOriginLabel(reply)}</strong>
                           <span>{new Date(reply.createdAt).toLocaleString("pt-BR")}</span>
                           <small>{replyEmailLabel(reply)}</small>
                         </div>

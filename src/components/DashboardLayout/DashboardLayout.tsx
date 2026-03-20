@@ -57,6 +57,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/profile": "Perfil",
       "/change-password": "Change Password",
       "/contact": "Contato",
+      "/my-messages": "Minhas Conversas",
       "/admin/bookeddates": "Gerenciar Reservas",
       "/admin/residents": "Manage Residents",
       "/admin/resources": "Recursos",
@@ -129,6 +130,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: "Avisos", to: "/notices", icon: Bell, hasNew: hasUnread },
     { label: "Perfil", to: "/profile", icon: CircleUserRound },
     { label: "Contato", to: "/contact", icon: Phone },
+    { label: "Minhas conversas", to: "/my-messages", icon: Inbox },
   ]
 
   const adminNav: DashboardSidebarNavItem[] = [

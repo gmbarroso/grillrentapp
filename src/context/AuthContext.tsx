@@ -55,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { setIsLoading } = useLoading()
 
   const authResetInProgressRef = useRef(false)
+  const loginInFlightRef = useRef(false)
 
   const redirectToLogin = useCallback(() => {
     if (typeof window === "undefined") return
@@ -103,6 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     if (!isUserLoading && userError) {
+      if (loginInFlightRef.current) return
       if (window.location.pathname !== "/login") {
         handleUnauthorized()
       }
@@ -140,15 +142,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     password: string,
   ): Promise<{ success: boolean; errorCode?: string; errorMessage?: string }> => {
     try {
+      loginInFlightRef.current = true
+      setIsAuthResolved(false)
+      setIsAuthenticated(false)
       await loginMutate({ organizationSlug, apartment, block, password })
       resetUnauthorizedSignal()
       authResetInProgressRef.current = false
       setToken(COOKIE_SESSION_TOKEN)
+      const profileResponse = await fetchProfile()
+      if (!profileResponse?.user) {
+        throw new Error("Unable to confirm authenticated session")
+      }
       setIsAuthenticated(true)
       setIsAuthResolved(true)
+      loginInFlightRef.current = false
       return { success: true }
     } catch (error) {
       authError("[Auth] Login error:", error)
+      setIsAuthenticated(false)
+      setToken(null)
+      setIsAuthResolved(true)
+      loginInFlightRef.current = false
       const errorCode = typeof error === "object" && error && "code" in error
         ? String((error as { code?: unknown }).code || "")
         : undefined

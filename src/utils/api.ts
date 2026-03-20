@@ -78,13 +78,20 @@ export const logApiResponse = (endpoint: string, status: number, data?: any): vo
   }
 }
 
+const isLikelyNetworkError = (error: unknown): boolean => {
+  if (error instanceof TypeError) return true
+  if (!(error instanceof Error)) return false
+
+  const message = error.message.toLowerCase()
+  return (
+    message.includes("networkerror") ||
+    message.includes("cors") ||
+    message.includes("load failed")
+  )
+}
+
 export const handleApiError = (error: any, endpoint: string): Error => {
-  if (
-    error.message &&
-    (error.message.includes("CORS") ||
-      error.message.includes("NetworkError") ||
-      error.message.includes("Failed to fetch"))
-  ) {
+  if (isLikelyNetworkError(error)) {
     authError(`[API] CORS error when accessing ${stripSensitiveQueryParams(endpoint)}:`, error)
     return new Error(
       `CORS error: Unable to access the API. Please check your network connection and API configuration.`,

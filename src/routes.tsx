@@ -20,7 +20,6 @@ import {
   SignUp,
   Profile,
   Contact,
-  MyMessages,
   Notices,
   MyReservations,
   OnboardingEmail,
@@ -166,7 +165,6 @@ export const AppRoutes = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/my-messages" element={<MyMessages />} />
         <Route path="/admin/bookeddates" element={<AdminBookings />} />
         <Route path="/admin/residents" element={<AdminResidents />} />
         <Route path="/admin/resources" element={<AdminResources />} />

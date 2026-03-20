@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react"
 import { Mail, Phone, MapPin, Clock3, Send } from "lucide-react"
 import { useToast } from "../../context/ToastContext"
 import { useCreateContactMessage } from "../../hooks/message/useMessages"
+import { useOrganizationSettings } from "../../hooks/organization/useOrganizationSettings"
 import { Button } from "../../components"
 import "./Contact.css"
 
@@ -10,6 +11,7 @@ type ContactCategory = "suggestion" | "complaint" | "question"
 const Contact = () => {
   const { showToast } = useToast()
   const { createContactMessage } = useCreateContactMessage()
+  const { organization } = useOrganizationSettings()
   const [subject, setSubject] = useState("")
   const [category, setCategory] = useState<ContactCategory>("suggestion")
   const [message, setMessage] = useState("")
@@ -43,6 +45,11 @@ const Contact = () => {
     }
   }
 
+  const contactEmail = organization?.email || "Nao informado"
+  const contactPhone = organization?.phone || "Em breve"
+  const contactAddress = organization?.address || "Nao informado"
+  const contactBusinessHours = organization?.businessHours || "Nao informado"
+
   return (
     <div className="contact-page-v2">
       <section className="contact-card-v2">
@@ -58,7 +65,7 @@ const Contact = () => {
             </span>
             <div>
               <strong>Email</strong>
-              <a href="mailto:faleconosco.chacara@gmail.com">faleconosco.chacara@gmail.com</a>
+              {organization?.email ? <a href={`mailto:${contactEmail}`}>{contactEmail}</a> : <p>{contactEmail}</p>}
             </div>
           </article>
 
@@ -67,8 +74,8 @@ const Contact = () => {
               <Phone size={15} />
             </span>
             <div>
-              <strong>WhatsApp</strong>
-              <p>Em breve</p>
+              <strong>Telefone</strong>
+              <p>{contactPhone}</p>
             </div>
           </article>
 
@@ -78,7 +85,7 @@ const Contact = () => {
             </span>
             <div>
               <strong>Endereco</strong>
-              <p>Rua Sacopa, 852, Lagoa - Rio de Janeiro - RJ - 22471-180</p>
+              <p>{contactAddress}</p>
             </div>
           </article>
 
@@ -88,7 +95,7 @@ const Contact = () => {
             </span>
             <div>
               <strong>Horario de Atendimento</strong>
-              <p>Segunda a sexta, das 9h as 18h</p>
+              <p>{contactBusinessHours}</p>
             </div>
           </article>
         </div>

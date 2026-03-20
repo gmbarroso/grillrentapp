@@ -25,3 +25,4 @@ export { default as NoticePreviewItem } from "./NoticePreviewItem/NoticePreviewI
 export { default as NoticeCarousel } from "./NoticeCarousel/NoticeCarousel"
 export { default as DashboardHomeSkeleton } from "./DashboardHomeSkeleton/DashboardHomeSkeleton"
 export { default as PaginationControls } from "./PaginationControls/PaginationControls"
+export { default as ImageDropzone } from "./ImageDropzone/ImageDropzone"

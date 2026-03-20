@@ -17,6 +17,7 @@ export interface DashboardSidebarNavItem {
 interface DashboardSidebarProps {
   condominiumName: string
   condominiumSubtitle: string
+  organizationLogoUrl?: string | null
   primaryNav: DashboardSidebarNavItem[]
   adminNav: DashboardSidebarNavItem[]
   userName: string
@@ -31,6 +32,7 @@ interface DashboardSidebarProps {
 export default function DashboardSidebar({
   condominiumName,
   condominiumSubtitle,
+  organizationLogoUrl,
   primaryNav,
   adminNav,
   userName,
@@ -67,7 +69,13 @@ export default function DashboardSidebar({
         aria-hidden={isHiddenOnMobile}
       >
         <div className="dashboard-condominium">
-          <BrandMark compact showTagline={false} />
+          {organizationLogoUrl ? (
+            <div className="dashboard-org-logo" aria-hidden="true">
+              <img src={organizationLogoUrl} alt="" />
+            </div>
+          ) : (
+            <BrandMark compact showTagline={false} />
+          )}
           <div className="dashboard-condominium-text">
             <h2>{condominiumName}</h2>
             <p>{condominiumSubtitle}</p>

@@ -19,6 +19,7 @@ import {
 import { useAuth } from "../../context/AuthContext"
 import { useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import { useMessageUnreadState } from "../../hooks/message/useMessageUnreadState"
+import { useOrganizationSettings } from "../../hooks/organization/useOrganizationSettings"
 import DashboardSidebar, { type DashboardSidebarNavItem } from "../DashboardSidebar/DashboardSidebar"
 import "./DashboardLayout.css"
 
@@ -33,6 +34,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, logout } = useAuth()
   const location = useLocation()
   const { hasUnread } = useNoticeUnreadState()
+  const { organization } = useOrganizationSettings()
   const isAdmin = user?.role === "admin"
   const { hasUnread: hasUnreadMessages } = useMessageUnreadState(isAdmin)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(() => {
@@ -145,8 +147,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       className={`dashboard-layout ${isSidebarCollapsed ? "sidebar-collapsed" : ""} ${isMobileSidebarOpen ? "sidebar-mobile-open" : ""}`.trim()}
     >
       <DashboardSidebar
-        condominiumName="Chacara Sacopa"
-        condominiumSubtitle="Gestão do Condomínio"
+        condominiumName={organization?.name || "Condominio"}
+        condominiumSubtitle=""
+        organizationLogoUrl={organization?.logoUrl || null}
         primaryNav={primaryNav}
         adminNav={isAdmin ? adminNav : []}
         userName={user?.name || "Morador"}

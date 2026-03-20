@@ -1,4 +1,4 @@
-import { Building2, Clock3, ImageUp, Mail, MapPin, Phone, Undo2 } from "lucide-react"
+import { Building2, Clock3, ImageUp, Mail, MapPin, Phone, Undo2, Trash2 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Button } from "../../components"
 import { useToast } from "../../context/ToastContext"
@@ -35,10 +35,9 @@ const AdminSettingsBranding = () => {
           <div className="logo-actions">
             <button type="button" onClick={() => showToast("Upload de imagem sera habilitado em seguida.", "success")}>
               <ImageUp size={14} />
-              Enviar imagem
             </button>
             <button type="button" className="danger" onClick={() => showToast("Logotipo removido.", "success")}>
-              Remover
+              <Trash2 size={14} />
             </button>
             <small>PNG, JPG ou SVG. Recomendado 200x200px.</small>
           </div>

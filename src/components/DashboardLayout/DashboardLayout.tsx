@@ -61,7 +61,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/admin/residents": "Manage Residents",
       "/admin/resources": "Recursos",
       "/admin/notices": "Gerenciar Avisos",
-      "/admin/messages": "Mensagens",
+      // "/admin/messages": "Mensagens",
       "/admin/settings": "Settings",
       "/admin/settings/identity": "Condominium Identity",
       "/admin/settings/whatsapp": "WhatsApp Integration",
@@ -136,7 +136,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { label: "Residents", to: "/admin/residents", icon: Users },
     { label: "Recursos", to: "/admin/resources", icon: Boxes },
     { label: "Avisos", to: "/admin/notices", icon: MessageSquare },
-    { label: "Mensagens", to: "/admin/messages", icon: Inbox, hasNew: hasUnreadMessages },
+    // { label: "Mensagens", to: "/admin/messages", icon: Inbox, hasNew: hasUnreadMessages },
     { label: "Settings", to: "/admin/settings", icon: Cog },
   ]
 

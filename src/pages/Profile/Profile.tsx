@@ -73,7 +73,7 @@ const Profile: React.FC = () => {
         const onboardingRequired = Boolean(response.onboardingRequired ?? response.onboarding?.onboardingRequired)
         const mustVerifyEmail = Boolean(response.mustVerifyEmail ?? response.onboarding?.mustVerifyEmail)
         if (onboardingRequired && mustVerifyEmail) {
-          showToast("Email updated. Verify your new email to continue.", "success")
+          showToast("E-mail atualizado. Verifique o novo e-mail para continuar.", "success")
           navigate("/onboarding/verify-email")
         }
       }
@@ -137,7 +137,7 @@ const Profile: React.FC = () => {
             Atualizar Perfil
           </Button>
           <Button variant="primary" type="button" fullWidth onClick={() => navigate("/change-password")}>
-            Change Password
+            Alterar senha
           </Button>
         </form>
       </section>

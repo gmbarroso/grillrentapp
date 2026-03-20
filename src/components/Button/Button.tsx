@@ -68,7 +68,7 @@ const Button: React.FC<ButtonProps> = ({
       {isLoading ? (
         <span className="button-loading-content">
           <span className="button-loading-spinner" aria-hidden="true" />
-          <span>{loadingText || (typeof children === "string" ? children : "Loading...")}</span>
+          <span>{loadingText || (typeof children === "string" ? children : "Carregando...")}</span>
         </span>
       ) : children}
     </button>

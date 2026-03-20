@@ -25,11 +25,11 @@ export default function OnboardingChangePassword() {
   const changePassword = async (event: FormEvent) => {
     event.preventDefault()
     if (newPassword !== confirmPassword) {
-      showToast("New password confirmation does not match.", "error")
+      showToast("A confirmação da nova senha não confere.", "error")
       return
     }
     if (currentPassword === newPassword) {
-      showToast("New password must be different from temporary password.", "error")
+      showToast("A nova senha deve ser diferente da senha temporária.", "error")
       return
     }
     if (!meetsPasswordPolicy(newPassword)) {
@@ -49,17 +49,17 @@ export default function OnboardingChangePassword() {
       })
 
       if (!response.ok) {
-        const message = await extractApiErrorMessage(response, `Failed to change onboarding password (${response.status})`)
+        const message = await extractApiErrorMessage(response, `Falha ao alterar senha de onboarding (${response.status})`)
         throw new Error(message)
       }
 
       await response.json()
       await refreshProfile()
-      showToast("Password changed successfully.", "success")
+      showToast("Senha alterada com sucesso.", "success")
       navigate("/")
     } catch (error) {
       console.error(handleApiError(error, "/users/onboarding/change-password"))
-      showToast(error instanceof Error ? error.message : "Could not change password.", "error")
+      showToast(error instanceof Error ? error.message : "Não foi possível alterar a senha.", "error")
     } finally {
       setIsSubmitting(false)
     }
@@ -68,18 +68,18 @@ export default function OnboardingChangePassword() {
   return (
     <div className="onboarding-page">
       <section className="onboarding-card">
-        <span className="onboarding-chip">Step 3</span>
-        <h1>Change temporary password</h1>
-        <p>This final step is required before full app access.</p>
+        <span className="onboarding-chip">Passo 3</span>
+        <h1>Trocar senha temporária</h1>
+        <p>Este passo final é obrigatório antes do acesso completo ao app.</p>
         <ul className="onboarding-rules">
           <li>{PASSWORD_POLICY_MESSAGE}</li>
-          <li>New password must be different from the temporary password.</li>
-          <li>Confirmation must match the new password.</li>
+          <li>A nova senha deve ser diferente da senha temporária.</li>
+          <li>A confirmação deve ser igual à nova senha.</li>
         </ul>
 
         <form className="onboarding-form" onSubmit={changePassword}>
           <label htmlFor="onboarding-current-password">
-            Current temporary password
+            Senha temporária atual
             <div className="onboarding-password-wrap">
               <input
                 id="onboarding-current-password"
@@ -95,7 +95,7 @@ export default function OnboardingChangePassword() {
           </label>
 
           <label htmlFor="onboarding-new-password">
-            New password
+            Nova senha
             <div className="onboarding-password-wrap">
               <input
                 id="onboarding-new-password"
@@ -113,7 +113,7 @@ export default function OnboardingChangePassword() {
           </label>
 
           <label htmlFor="onboarding-confirm-password">
-            Confirm new password
+            Confirmar nova senha
             <div className="onboarding-password-wrap">
               <input
                 id="onboarding-confirm-password"
@@ -132,10 +132,10 @@ export default function OnboardingChangePassword() {
 
           <div className="onboarding-actions">
             <Button type="button" variant="secondary" onClick={() => navigate("/onboarding/verify-email")} disabled={isSubmitting}>
-              Back
+              Voltar
             </Button>
-            <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting} loadingText="Updating...">
-              Finish onboarding
+            <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting} loadingText="Atualizando...">
+              Finalizar onboarding
             </Button>
           </div>
         </form>

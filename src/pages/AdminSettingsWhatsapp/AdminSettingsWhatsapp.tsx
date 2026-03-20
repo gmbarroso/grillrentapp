@@ -82,7 +82,7 @@ const AdminSettingsWhatsapp = () => {
       ])
 
       if (!initialSettingsRes.ok || !bindingsRes.ok) {
-        throw new Error("Failed to load WhatsApp settings")
+        throw new Error("Falha ao carregar configurações do WhatsApp")
       }
 
       let settingsJson = (await initialSettingsRes.json()) as WhatsappSettingsView
@@ -101,7 +101,7 @@ const AdminSettingsWhatsapp = () => {
 
         if (bootstrapRes.ok) {
           settingsJson = (await bootstrapRes.json()) as WhatsappSettingsView
-          showToast("Existing Evolution connection was imported into organization settings.", "success")
+          showToast("A conexão Evolution existente foi importada para as configurações da organização.", "success")
         }
       }
 
@@ -119,7 +119,7 @@ const AdminSettingsWhatsapp = () => {
       }
     } catch (error) {
       console.error(error)
-      showToast("Could not load WhatsApp settings.", "error")
+      showToast("Não foi possível carregar as configurações do WhatsApp.", "error")
     } finally {
       setIsLoading(false)
     }
@@ -131,7 +131,7 @@ const AdminSettingsWhatsapp = () => {
 
   const handleSaveSettings = async () => {
     if (!baseUrl.trim() || !instanceName.trim()) {
-      showToast("Base URL and instance name are required.", "error")
+      showToast("URL base e nome da instância são obrigatórios.", "error")
       return
     }
 
@@ -152,17 +152,17 @@ const AdminSettingsWhatsapp = () => {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to save WhatsApp settings")
+        throw new Error("Falha ao salvar configurações do WhatsApp")
       }
 
       const payload = (await response.json()) as WhatsappSettingsView
       applySettingsToForm(payload, noticeGroupJid)
       setApiKey("")
       setIsEditing(false)
-      showToast("WhatsApp settings saved.", "success")
+      showToast("Configurações do WhatsApp salvas.", "success")
     } catch (error) {
       console.error(handleApiError(error, "/whatsapp/settings"))
-      showToast("Could not save WhatsApp settings.", "error")
+      showToast("Não foi possível salvar as configurações do WhatsApp.", "error")
     } finally {
       setIsSaving(false)
     }
@@ -184,20 +184,20 @@ const AdminSettingsWhatsapp = () => {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to test connection")
+        throw new Error("Falha ao testar conexão")
       }
 
       const payload = (await response.json()) as { ok: boolean; statusCode: number | null }
       showToast(
         payload.ok
-          ? "Connection with Evolution API is active."
-          : `Connection failed${payload.statusCode ? ` (status ${payload.statusCode})` : ""}.`,
+          ? "A conexão com a Evolution API está ativa."
+          : `Falha na conexão${payload.statusCode ? ` (status ${payload.statusCode})` : ""}.`,
         payload.ok ? "success" : "error",
       )
       await loadSettings()
     } catch (error) {
       console.error(handleApiError(error, "/whatsapp/settings/test-connection"))
-      showToast("Could not test connection.", "error")
+      showToast("Não foi possível testar a conexão.", "error")
     } finally {
       setIsTesting(false)
     }
@@ -210,17 +210,17 @@ const AdminSettingsWhatsapp = () => {
       const response = await fetchWithAuthHandling(`${API_BASE_URL}/whatsapp/settings/groups`)
       if (!response.ok) {
         const body = await response.text()
-        throw new Error(`Failed to sync groups (status ${response.status})${body ? `: ${body}` : ""}`)
+        throw new Error(`Falha ao sincronizar grupos (status ${response.status})${body ? `: ${body}` : ""}`)
       }
 
       const payload = (await response.json()) as GroupOption[]
       setGroups(payload)
-      showToast(`${payload.length} group(s) synced from Evolution.`, "success")
+      showToast(`${payload.length} grupo(s) sincronizado(s) da Evolution.`, "success")
     } catch (error) {
       const parsedError = handleApiError(error, "/whatsapp/settings/groups")
       console.error(parsedError)
       setGroupsError(parsedError.message)
-      showToast("Could not sync groups. Check integration credentials and instance connectivity.", "error")
+      showToast("Não foi possível sincronizar grupos. Verifique credenciais da integração e conectividade da instância.", "error")
     } finally {
       setIsSyncingGroups(false)
     }
@@ -228,7 +228,7 @@ const AdminSettingsWhatsapp = () => {
 
   const handleSaveNoticeBinding = async () => {
     if (!noticeGroupJid) {
-      showToast("Select a WhatsApp group for notices.", "error")
+      showToast("Selecione um grupo de WhatsApp para avisos.", "error")
       return
     }
 
@@ -248,32 +248,32 @@ const AdminSettingsWhatsapp = () => {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to save group binding")
+        throw new Error("Falha ao salvar vínculo do grupo")
       }
 
-      showToast("Notices group binding saved.", "success")
+      showToast("Vínculo do grupo de avisos salvo.", "success")
       await loadSettings()
     } catch (error) {
       console.error(handleApiError(error, "/whatsapp/settings/bindings/notices"))
-      showToast("Could not save notices group binding.", "error")
+      showToast("Não foi possível salvar o vínculo do grupo de avisos.", "error")
     } finally {
       setIsSaving(false)
     }
   }
 
-  const providerStatusLabel = settings.status === "connected" ? "Connected" : "Disconnected"
+  const providerStatusLabel = settings.status === "connected" ? "Conectado" : "Desconectado"
   const isFormLocked = isLoading || isSaving || !isEditing
 
   return (
     <div className="admin-whatsapp-page">
       <Link to="/admin/settings" className="settings-back-link">
         <Undo2 size={14} />
-        Settings
+        Configurações
       </Link>
 
       <header className="admin-page-heading">
-        <h2>WhatsApp Integration</h2>
-        <p>Each organization can configure its own Evolution instance and map its own groups.</p>
+        <h2>Integração WhatsApp</h2>
+        <p>Cada organização pode configurar sua própria instância Evolution e mapear seus próprios grupos.</p>
       </header>
 
       <section className="whatsapp-card">
@@ -284,7 +284,7 @@ const AdminSettingsWhatsapp = () => {
             </span>
             <div>
               <h3>Evolution API</h3>
-              <p>Organization-scoped credentials and delivery behavior</p>
+              <p>Credenciais por organização e comportamento de entrega</p>
             </div>
           </div>
           <small className={`status-chip ${settings.status === "connected" ? "connected" : "disconnected"}`}>
@@ -308,7 +308,7 @@ const AdminSettingsWhatsapp = () => {
             <input
               value={instanceName}
               onChange={(event) => setInstanceName(event.target.value)}
-              placeholder="condo-instance"
+              placeholder="instancia-condominio"
               disabled={isFormLocked}
             />
           </label>
@@ -318,13 +318,13 @@ const AdminSettingsWhatsapp = () => {
             <input
               value={apiKey}
               onChange={(event) => setApiKey(event.target.value)}
-              placeholder={settings.hasApiKey ? settings.apiKeyMasked || "API key saved" : "Paste API key"}
+              placeholder={settings.hasApiKey ? settings.apiKeyMasked || "Chave de API salva" : "Cole a chave de API"}
               disabled={isFormLocked}
             />
           </label>
 
           <label>
-            <span>WhatsApp Number (optional)</span>
+            <span>Número do WhatsApp (opcional)</span>
             <input
               value={whatsappNumber}
               onChange={(event) => setWhatsappNumber(event.target.value)}
@@ -336,14 +336,14 @@ const AdminSettingsWhatsapp = () => {
 
         <div className="toggle-row">
           <div>
-            <strong>Automatic Notices Delivery</strong>
-            <p>New notices are sent automatically to the mapped group</p>
+            <strong>Envio Automático de Avisos</strong>
+            <p>Novos avisos são enviados automaticamente para o grupo mapeado</p>
           </div>
           <button
             type="button"
             className={`switch ${autoSendNotices ? "on" : ""}`.trim()}
             onClick={() => setAutoSendNotices((prev) => !prev)}
-            aria-label="Toggle automatic notices delivery"
+            aria-label="Alternar envio automático de avisos"
             disabled={isFormLocked}
           >
             <span></span>
@@ -353,11 +353,11 @@ const AdminSettingsWhatsapp = () => {
         <footer>
           <Button variant="secondary" onClick={() => setIsEditing(true)} disabled={isLoading || isSaving || isEditing}>
             <Edit3 size={14} />
-            Edit
+            Editar
           </Button>
           <Button variant="secondary" onClick={handleTestConnection} disabled={isLoading || isTesting || isSaving}>
             {isTesting ? <Loader2 size={14} className="icon-spin" /> : <Cable size={14} />}
-            Test Connection
+            Testar conexão
           </Button>
           <Button
             variant="secondary"
@@ -369,11 +369,11 @@ const AdminSettingsWhatsapp = () => {
             disabled={isLoading || isSaving || !isEditing}
           >
             <X size={14} />
-            Cancel
+            Cancelar
           </Button>
           <Button variant="primary" onClick={handleSaveSettings} disabled={isLoading || isTesting || isSaving || !isEditing}>
             {isSaving ? <Loader2 size={14} className="icon-spin" /> : <Save size={14} />}
-            Save Settings
+            Salvar configurações
           </Button>
         </footer>
       </section>
@@ -382,24 +382,24 @@ const AdminSettingsWhatsapp = () => {
         <header className="status-head">
           <h3>
             <Bot size={15} />
-            Groups and Feature Mapping
+            Grupos e Mapeamento de Funcionalidades
           </h3>
         </header>
 
         <div className="group-binding-row">
           <Button variant="secondary" onClick={handleSyncGroups} disabled={isLoading || isSyncingGroups || isSaving}>
             {isSyncingGroups ? <Loader2 size={14} className="icon-spin" /> : <RefreshCcw size={14} />}
-            Sync Groups
+            Sincronizar grupos
           </Button>
 
           <label>
-            <span>Group for notices</span>
+            <span>Grupo para avisos</span>
             <select
               value={noticeGroupJid}
               onChange={(event) => setNoticeGroupJid(event.target.value)}
               disabled={isLoading || isSaving}
             >
-              <option value="">Select a group</option>
+              <option value="">Selecione um grupo</option>
               {groups.map((group) => (
                 <option key={group.groupJid} value={group.groupJid}>
                   {group.groupName}
@@ -409,26 +409,26 @@ const AdminSettingsWhatsapp = () => {
           </label>
 
           <Button variant="primary" onClick={handleSaveNoticeBinding} disabled={isLoading || isSaving || !noticeGroupJid}>
-            Save Group
+            Salvar grupo
           </Button>
         </div>
         {groupsError ? (
           <div className="group-sync-error">
-            <strong>Could not sync groups.</strong>
+            <strong>Não foi possível sincronizar grupos.</strong>
             <p>{groupsError}</p>
-            <p>Check Evolution API URL, API key, and if the instance is online.</p>
+            <p>Verifique URL da Evolution API, chave de API e se a instância está online.</p>
           </div>
         ) : null}
 
         {settings.noticeGroupJid ? (
           <p className="bound-group-hint">
-            Current mapping: <strong>{settings.noticeGroupName || settings.noticeGroupJid}</strong>
+            Mapeamento atual: <strong>{settings.noticeGroupName || settings.noticeGroupJid}</strong>
           </p>
         ) : null}
 
         {activeNoticeGroup ? (
           <p className="bound-group-hint">
-            Selected group: <strong>{activeNoticeGroup.groupName}</strong>
+            Grupo selecionado: <strong>{activeNoticeGroup.groupName}</strong>
           </p>
         ) : null}
       </section>
@@ -437,7 +437,7 @@ const AdminSettingsWhatsapp = () => {
         <header className="status-head">
           <h3>
             <Bot size={15} />
-            Integration Status
+            Status da Integração
           </h3>
         </header>
 
@@ -445,7 +445,7 @@ const AdminSettingsWhatsapp = () => {
           <article>
             <div>
               <strong>Evolution API</strong>
-              <p>Provider connectivity</p>
+              <p>Conectividade do provedor</p>
             </div>
             <span className={`status-indicator ${settings.status === "connected" ? "ok" : "off"}`}>
               <Power size={12} /> {providerStatusLabel}
@@ -453,11 +453,11 @@ const AdminSettingsWhatsapp = () => {
           </article>
           <article>
             <div>
-              <strong>Notices Group</strong>
-              <p>Destination group for organization notices</p>
+              <strong>Grupo de Avisos</strong>
+              <p>Grupo de destino para avisos da organização</p>
             </div>
             <span className={`status-indicator ${settings.noticeGroupJid ? "ok" : "off"}`}>
-              <Power size={12} /> {settings.noticeGroupJid ? "Mapped" : "Not mapped"}
+              <Power size={12} /> {settings.noticeGroupJid ? "Mapeado" : "Não mapeado"}
             </span>
           </article>
           <article>

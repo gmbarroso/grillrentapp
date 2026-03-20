@@ -216,23 +216,23 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   return (
     <div className="custom-calendar">
       <div className="calendar-header">
-        <button className="month-nav-button" onClick={goToPreviousMonth} aria-label="Previous month">
+        <button className="month-nav-button" onClick={goToPreviousMonth} aria-label="Mês anterior">
           <ChevronLeft size={20} />
         </button>
         <div className="current-month">{formatMonthName(currentMonth)}</div>
-        <button className="month-nav-button" onClick={goToNextMonth} aria-label="Next month">
+        <button className="month-nav-button" onClick={goToNextMonth} aria-label="Próximo mês">
           <ChevronRight size={20} />
         </button>
       </div>
 
       <div className="calendar-weekdays">
-        <div className="weekday">Sun</div>
-        <div className="weekday">Mon</div>
-        <div className="weekday">Tue</div>
-        <div className="weekday">Wed</div>
-        <div className="weekday">Thu</div>
-        <div className="weekday">Fri</div>
-        <div className="weekday">Sat</div>
+        <div className="weekday">Dom</div>
+        <div className="weekday">Seg</div>
+        <div className="weekday">Ter</div>
+        <div className="weekday">Qua</div>
+        <div className="weekday">Qui</div>
+        <div className="weekday">Sex</div>
+        <div className="weekday">Sáb</div>
       </div>
 
       <div className="calendar-grid">{renderCalendarDays()}</div>

@@ -11,7 +11,7 @@ type Step = 1 | 2 | 3 | 4
 
 const DEFAULT_APARTMENT = "000"
 const DEFAULT_BLOCK = "1"
-const PASSWORD_POLICY_HINT = "Use 8+ chars with 1 uppercase, 1 number, and 1 special character."
+const PASSWORD_POLICY_HINT = "Use 8+ caracteres com 1 letra maiúscula, 1 número e 1 caractere especial."
 
 const SignUp = () => {
   const navigate = useNavigate()

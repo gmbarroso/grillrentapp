@@ -18,7 +18,7 @@ export default function ForgotPasswordRequest() {
     event.preventDefault()
     const normalizedOrganizationSlug = normalizeOrganizationSlug(organizationSlug)
     if (!normalizedOrganizationSlug) {
-      showToast("Invalid condominium code.", "error")
+      showToast("Código do condomínio inválido.", "error")
       return
     }
     try {
@@ -26,7 +26,7 @@ export default function ForgotPasswordRequest() {
         organizationSlug: normalizedOrganizationSlug,
         email: email.trim().toLowerCase(),
       })
-      showToast("If the account exists, reset instructions were sent.", "success")
+      showToast("Se a conta existir, as instruções de redefinição foram enviadas.", "success")
       navigate("/reset-password", {
         state: {
           organizationSlug: normalizedOrganizationSlug,
@@ -34,7 +34,7 @@ export default function ForgotPasswordRequest() {
         },
       })
     } catch {
-      showToast("Could not start password reset.", "error")
+      showToast("Não foi possível iniciar a redefinição de senha.", "error")
     }
   }
 
@@ -45,10 +45,10 @@ export default function ForgotPasswordRequest() {
           <BrandMark />
         </div>
 
-        <AuthCard title="Forgot password" subtitle="Request a reset token by email">
+        <AuthCard title="Esqueci minha senha" subtitle="Solicite um token de redefinição por e-mail">
           <form className="forgot-password-form" onSubmit={submit}>
             <div className="forgot-password-field">
-              <label htmlFor="organizationSlug">Condominium code</label>
+              <label htmlFor="organizationSlug">Código do condomínio</label>
               <input
                 id="organizationSlug"
                 type="text"
@@ -70,10 +70,10 @@ export default function ForgotPasswordRequest() {
             </div>
 
             <button className="forgot-password-submit" type="submit" disabled={isLoading}>
-              Request reset
+              Solicitar redefinição
             </button>
             <button className="forgot-password-secondary" type="button" onClick={() => navigate("/login")}>
-              Back to login
+              Voltar ao login
             </button>
           </form>
         </AuthCard>

@@ -47,8 +47,8 @@ const AdminSettings = () => {
   return (
     <div className="admin-settings-page">
       <header className="admin-page-heading">
-        <h2>Settings</h2>
-        <p>Manage condominium identity and integrations</p>
+        <h2>Configurações</h2>
+        <p>Gerencie a identidade do condomínio e as integrações</p>
       </header>
 
       <section className="admin-settings-grid">
@@ -58,10 +58,10 @@ const AdminSettings = () => {
               <Building2 size={15} />
             </span>
           </div>
-          <h3>Identity</h3>
-          <p>Name, logo, address and contact details</p>
+          <h3>Identidade</h3>
+          <p>Nome, logotipo, endereço e dados de contato</p>
           <Link to="/admin/settings/identity" className="settings-link">
-            Configure <ChevronRight size={14} />
+            Configurar <ChevronRight size={14} />
           </Link>
         </article>
 
@@ -71,13 +71,13 @@ const AdminSettings = () => {
               <MessageSquareText size={15} />
             </span>
             <small className={`status-chip ${whatsappConnected ? "connected" : "disconnected"}`}>
-              {whatsappConnected ? "Connected" : "Disconnected"}
+              {whatsappConnected ? "Conectado" : "Desconectado"}
             </small>
           </div>
-          <h3>WhatsApp Integration</h3>
-          <p>Connect Evolution API and map your organization groups</p>
+          <h3>Integração WhatsApp</h3>
+          <p>Conecte a Evolution API e mapeie os grupos da sua organização</p>
           <Link to="/admin/settings/whatsapp" className="settings-link">
-            Configure <ChevronRight size={14} />
+            Configurar <ChevronRight size={14} />
           </Link>
         </article>
 
@@ -91,13 +91,13 @@ const AdminSettings = () => {
                 contactEmailStatus === "active" ? "connected" : contactEmailStatus === "invalid" ? "disconnected" : "soon"
               }`}
             >
-              {contactEmailStatus === "active" ? "Email active" : contactEmailStatus === "invalid" ? "Needs fixes" : "In-app only"}
+              {contactEmailStatus === "active" ? "E-mail ativo" : contactEmailStatus === "invalid" ? "Requer ajustes" : "Apenas no app"}
             </small>
           </div>
-          <h3>Contact Email Delivery</h3>
-          <p>Per-organization rules for in-app only or in-app + email</p>
+          <h3>Entrega de E-mail de Contato</h3>
+          <p>Regras por organização para apenas no app ou app + e-mail</p>
           <Link to="/admin/settings/contact-email" className="settings-link">
-            Configure <ChevronRight size={14} />
+            Configurar <ChevronRight size={14} />
           </Link>
         </article>
 

@@ -84,14 +84,14 @@ const AdminSettingsContactEmail = () => {
       setIsLoading(true)
       const response = await fetchWithAuthHandling(`${API_BASE_URL}/messages/settings/contact-email`)
       if (!response.ok) {
-        throw new Error(`Failed to load settings (${response.status})`)
+        throw new Error(`Falha ao carregar configurações (${response.status})`)
       }
 
       const payload = (await response.json()) as ContactEmailSettingsView
       applySettingsToForm(payload)
     } catch (error) {
       console.error(handleApiError(error, "/messages/settings/contact-email"))
-      showToast("Could not load contact email settings.", "error")
+      showToast("Não foi possível carregar as configurações de e-mail de contato.", "error")
     } finally {
       setIsLoading(false)
     }
@@ -133,33 +133,33 @@ const AdminSettingsContactEmail = () => {
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to save settings (${response.status})`)
+        throw new Error(`Falha ao salvar configurações (${response.status})`)
       }
 
       const payload = (await response.json()) as ContactEmailSettingsView
       applySettingsToForm(payload)
-      showToast("Contact email settings saved.", "success")
+      showToast("Configurações de e-mail de contato salvas.", "success")
     } catch (error) {
       console.error(handleApiError(error, "/messages/settings/contact-email"))
-      showToast("Could not save contact email settings.", "error")
+      showToast("Não foi possível salvar as configurações de e-mail de contato.", "error")
     } finally {
       setIsSaving(false)
     }
   }
 
   const statusLabel =
-    settings.deliveryMode === "in_app_only" ? "In-app only" : settings.canSendEmail ? "Email active" : "Needs fixes"
+    settings.deliveryMode === "in_app_only" ? "Apenas no app" : settings.canSendEmail ? "E-mail ativo" : "Requer ajustes"
 
   return (
     <div className="admin-contact-email-page">
       <Link to="/admin/settings" className="settings-back-link">
         <Undo2 size={14} />
-        Settings
+        Configurações
       </Link>
 
       <header className="admin-page-heading">
-        <h2>Contact Email Delivery</h2>
-        <p>Set how contact messages are delivered for this organization.</p>
+        <h2>Entrega de E-mail de Contato</h2>
+        <p>Defina como as mensagens de contato serão entregues para esta organização.</p>
       </header>
 
       <section className="contact-email-card">
@@ -169,8 +169,8 @@ const AdminSettingsContactEmail = () => {
               <Mail size={15} />
             </span>
             <div>
-              <h3>Delivery Settings</h3>
-              <p>Always stores in-app messages. Email is optional.</p>
+              <h3>Configurações de Entrega</h3>
+              <p>Sempre armazena mensagens no app. E-mail é opcional.</p>
             </div>
           </div>
           <small className={`status-chip ${settings.canSendEmail ? "connected" : "disconnected"}`}>{statusLabel}</small>
@@ -178,15 +178,15 @@ const AdminSettingsContactEmail = () => {
 
         <div className="form-grid">
           <label>
-            <span>Delivery Mode</span>
+            <span>Modo de Entrega</span>
             <select value={deliveryMode} onChange={(event) => setDeliveryMode(event.target.value as ContactEmailDeliveryMode)}>
-              <option value="in_app_only">In-app only</option>
-              <option value="in_app_and_email">In-app and email</option>
+              <option value="in_app_only">Apenas no app</option>
+              <option value="in_app_and_email">No app e por e-mail</option>
             </select>
           </label>
 
           <label className="full">
-            <span>Recipient Emails (comma or line separated)</span>
+            <span>E-mails de Destino (separados por vírgula ou linha)</span>
             <textarea
               rows={4}
               value={recipientEmailsText}
@@ -197,17 +197,17 @@ const AdminSettingsContactEmail = () => {
           </label>
 
           <label>
-            <span>From Name (optional)</span>
+            <span>Nome do Remetente (opcional)</span>
             <input
               value={fromName}
               onChange={(event) => setFromName(event.target.value)}
-              placeholder="Condominium Team"
+              placeholder="Equipe do Condomínio"
               disabled={deliveryMode === "in_app_only"}
             />
           </label>
 
           <label>
-            <span>From Email (optional)</span>
+            <span>E-mail do Remetente (opcional)</span>
             <input
               value={fromEmail}
               onChange={(event) => setFromEmail(event.target.value)}
@@ -217,19 +217,19 @@ const AdminSettingsContactEmail = () => {
           </label>
 
           <label>
-            <span>Reply-to Mode</span>
+            <span>Modo de Reply-To</span>
             <select
               value={replyToMode}
               onChange={(event) => setReplyToMode(event.target.value as ContactEmailReplyToMode)}
               disabled={deliveryMode === "in_app_only"}
             >
-              <option value="resident_email">Resident email</option>
-              <option value="custom">Custom reply-to</option>
+              <option value="resident_email">E-mail do morador</option>
+              <option value="custom">Reply-To personalizado</option>
             </select>
           </label>
 
           <label>
-            <span>Custom Reply-to</span>
+            <span>Reply-To Personalizado</span>
             <input
               value={customReplyTo}
               onChange={(event) => setCustomReplyTo(event.target.value)}
@@ -265,8 +265,8 @@ const AdminSettingsContactEmail = () => {
               onChange={(event) => setSmtpSecure(event.target.value)}
               disabled={deliveryMode === "in_app_only"}
             >
-              <option value="true">True (SSL/TLS)</option>
-              <option value="false">False (STARTTLS/plain)</option>
+              <option value="true">Verdadeiro (SSL/TLS)</option>
+              <option value="false">Falso (STARTTLS/plano)</option>
             </select>
           </label>
 
@@ -291,12 +291,12 @@ const AdminSettingsContactEmail = () => {
           </label>
 
           <label>
-            <span>SMTP App Password {settings.hasSmtpPassword ? "(saved)" : "(required)"}</span>
+            <span>Senha de App SMTP {settings.hasSmtpPassword ? "(salva)" : "(obrigatória)"}</span>
             <input
               type="password"
               value={smtpAppPassword}
               onChange={(event) => setSmtpAppPassword(event.target.value)}
-              placeholder={settings.hasSmtpPassword ? "Leave blank to keep current password" : "Enter app password"}
+              placeholder={settings.hasSmtpPassword ? "Deixe em branco para manter a senha atual" : "Informe a senha de app"}
               disabled={deliveryMode === "in_app_only"}
             />
           </label>
@@ -304,7 +304,7 @@ const AdminSettingsContactEmail = () => {
 
         {settings.validationErrors.length > 0 ? (
           <div className="validation-box">
-            <strong>Email delivery validation:</strong>
+            <strong>Validação da entrega por e-mail:</strong>
             <ul>
               {settings.validationErrors.map((error) => (
                 <li key={error}>{error}</li>
@@ -315,23 +315,23 @@ const AdminSettingsContactEmail = () => {
 
         <footer>
           <Button variant="secondary" onClick={() => applySettingsToForm(settings)} disabled={isLoading || isSaving}>
-            Reset
+            Redefinir
           </Button>
           <Button variant="primary" onClick={handleSave} disabled={isLoading || isSaving}>
             {isSaving ? <Loader2 size={14} className="icon-spin" /> : <Save size={14} />}
-            Save Settings
+            Salvar configurações
           </Button>
         </footer>
       </section>
 
       <section className="smtp-guidance-card">
-        <h3>SMTP setup guidance</h3>
+        <h3>Guia de configuração SMTP</h3>
         <ul>
-          <li>Recipient Emails are admin inboxes only. Residents are never auto-added.</li>
-          <li>Default mode is In-app only. Keep this mode until your organization SMTP is configured.</li>
-          <li>For In-app and email, configure SMTP host, port, security, user, and from address at the organization level.</li>
-          <li>SMTP app password is write-only and encrypted at rest. It is never returned in plaintext.</li>
-          <li>There is no global SMTP fallback when your organization enables email delivery.</li>
+          <li>Os e-mails de destino devem ser apenas caixas de entrada de administradores. Moradores não são adicionados automaticamente.</li>
+          <li>O modo padrão é Apenas no app. Mantenha esse modo até configurar o SMTP da organização.</li>
+          <li>No modo No app e por e-mail, configure host SMTP, porta, segurança, usuário e remetente no nível da organização.</li>
+          <li>A senha de app SMTP é somente escrita e criptografada em repouso. Nunca é retornada em texto puro.</li>
+          <li>Não existe fallback SMTP global quando a organização habilita entrega por e-mail.</li>
         </ul>
       </section>
     </div>

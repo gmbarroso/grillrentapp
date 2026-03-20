@@ -20,7 +20,7 @@ export default function OnboardingEmail() {
   const submitEmail = async (event: FormEvent) => {
     event.preventDefault()
     if (!isValidEmailFormat) {
-      showToast("Enter a valid email before continuing.", "error")
+      showToast("Informe um e-mail válido antes de continuar.", "error")
       return
     }
     try {
@@ -32,16 +32,16 @@ export default function OnboardingEmail() {
       })
 
       if (!response.ok) {
-        const message = await extractApiErrorMessage(response, `Failed to submit onboarding email (${response.status})`)
+        const message = await extractApiErrorMessage(response, `Falha ao enviar e-mail de onboarding (${response.status})`)
         throw new Error(message)
       }
 
       await refreshProfile()
-      showToast("Email saved. Verify to continue onboarding.", "success")
+      showToast("E-mail salvo. Verifique para continuar o onboarding.", "success")
       navigate("/onboarding/verify-email")
     } catch (error) {
       console.error(handleApiError(error, "/users/onboarding/email"))
-      showToast(error instanceof Error ? error.message : "Could not save onboarding email.", "error")
+      showToast(error instanceof Error ? error.message : "Não foi possível salvar o e-mail de onboarding.", "error")
     } finally {
       setIsSubmitting(false)
     }
@@ -50,9 +50,9 @@ export default function OnboardingEmail() {
   return (
     <div className="onboarding-page">
       <section className="onboarding-card">
-        <span className="onboarding-chip">Step 1</span>
-        <h1>Add your email</h1>
-        <p>You need a verified email to unlock full app access.</p>
+        <span className="onboarding-chip">Passo 1</span>
+        <h1>Adicione seu e-mail</h1>
+        <p>Você precisa de um e-mail verificado para liberar o acesso completo ao app.</p>
 
         <form className="onboarding-form" onSubmit={submitEmail}>
           <label htmlFor="onboarding-email">
@@ -74,9 +74,9 @@ export default function OnboardingEmail() {
               type="submit"
               disabled={isSubmitting || !isValidEmailFormat}
               isLoading={isSubmitting}
-              loadingText="Saving..."
+              loadingText="Salvando..."
             >
-              Continue
+              Continuar
             </Button>
           </div>
         </form>

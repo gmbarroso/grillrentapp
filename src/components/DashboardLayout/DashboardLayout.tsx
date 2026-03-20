@@ -55,20 +55,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       "/mybookeddates": "Minhas reservas",
       "/notices": "Avisos",
       "/profile": "Perfil",
-      "/change-password": "Change Password",
+      "/change-password": "Alterar senha",
       "/contact": "Contato",
       "/admin/bookeddates": "Gerenciar Reservas",
-      "/admin/residents": "Manage Residents",
+      "/admin/residents": "Gerenciar Moradores",
       "/admin/resources": "Recursos",
       "/admin/notices": "Gerenciar Avisos",
       // "/admin/messages": "Mensagens",
-      "/admin/settings": "Settings",
-      "/admin/settings/identity": "Condominium Identity",
-      "/admin/settings/whatsapp": "WhatsApp Integration",
-      "/admin/settings/contact-email": "Contact Email Delivery",
+      "/admin/settings": "Configurações",
+      "/admin/settings/identity": "Identidade do Condomínio",
+      "/admin/settings/whatsapp": "Integração WhatsApp",
+      "/admin/settings/contact-email": "Entrega de E-mail de Contato",
     }
 
-    return labels[location.pathname] ?? "Dashboard"
+    return labels[location.pathname] ?? "Painel"
   }, [location.pathname])
 
   const topbarDateLabel = useMemo(
@@ -133,11 +133,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const adminNav: DashboardSidebarNavItem[] = [
     { label: "Reservas", to: "/admin/bookeddates", icon: CalendarDays },
-    { label: "Residents", to: "/admin/residents", icon: Users },
+    { label: "Moradores", to: "/admin/residents", icon: Users },
     { label: "Recursos", to: "/admin/resources", icon: Boxes },
     { label: "Avisos", to: "/admin/notices", icon: MessageSquare },
     // { label: "Mensagens", to: "/admin/messages", icon: Inbox, hasNew: hasUnreadMessages },
-    { label: "Settings", to: "/admin/settings", icon: Cog },
+    { label: "Configurações", to: "/admin/settings", icon: Cog },
   ]
 
   return (
@@ -146,7 +146,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     >
       <DashboardSidebar
         condominiumName="Chacara Sacopa"
-        condominiumSubtitle="Gestao do Condominio"
+        condominiumSubtitle="Gestão do Condomínio"
         primaryNav={primaryNav}
         adminNav={isAdmin ? adminNav : []}
         userName={user?.name || "Morador"}

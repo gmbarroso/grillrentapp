@@ -21,11 +21,11 @@ export default function ChangePassword() {
   const submit = async (event: FormEvent) => {
     event.preventDefault()
     if (newPassword !== confirmPassword) {
-      showToast("New password confirmation does not match.", "error")
+      showToast("A confirmação da nova senha não confere.", "error")
       return
     }
     if (currentPassword === newPassword) {
-      showToast("New password must be different from current password.", "error")
+      showToast("A nova senha deve ser diferente da senha atual.", "error")
       return
     }
     if (!meetsPasswordPolicy(newPassword)) {
@@ -35,27 +35,27 @@ export default function ChangePassword() {
 
     try {
       await changePassword({ currentPassword, newPassword })
-      showToast("Password updated successfully.", "success")
+      showToast("Senha atualizada com sucesso.", "success")
       navigate("/profile")
     } catch (error) {
-      showToast(error instanceof Error ? error.message : "Could not change password.", "error")
+      showToast(error instanceof Error ? error.message : "Não foi possível alterar a senha.", "error")
     }
   }
 
   return (
     <div className="change-password-page">
       <section className="change-password-card">
-        <h2>Change Password</h2>
-        <p>Update your account password. Your current password is required.</p>
+        <h2>Alterar senha</h2>
+        <p>Atualize a senha da sua conta. Sua senha atual é obrigatória.</p>
         <ul className="change-password-rules">
           <li>{PASSWORD_POLICY_MESSAGE}</li>
-          <li>New password must be different from your current password.</li>
-          <li>Confirmation must match the new password.</li>
+          <li>A nova senha deve ser diferente da senha atual.</li>
+          <li>A confirmação deve ser igual à nova senha.</li>
         </ul>
 
         <form className="change-password-form" onSubmit={submit}>
           <label htmlFor="current-password">
-            Current password
+            Senha atual
             <div className="change-password-input-wrap">
               <input
                 id="current-password"
@@ -72,7 +72,7 @@ export default function ChangePassword() {
           </label>
 
           <label htmlFor="new-password">
-            New password
+            Nova senha
             <div className="change-password-input-wrap">
               <input
                 id="new-password"
@@ -90,7 +90,7 @@ export default function ChangePassword() {
           </label>
 
           <label htmlFor="confirm-password">
-            Confirm new password
+            Confirmar nova senha
             <div className="change-password-input-wrap">
               <input
                 id="confirm-password"
@@ -109,10 +109,10 @@ export default function ChangePassword() {
 
           <div className="change-password-actions">
             <Button type="button" variant="secondary" onClick={() => navigate("/profile")} disabled={isLoading}>
-              Cancel
+              Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading} isLoading={isLoading} loadingText="Saving...">
-              Save password
+            <Button type="submit" disabled={isLoading} isLoading={isLoading} loadingText="Salvando...">
+              Salvar senha
             </Button>
           </div>
         </form>

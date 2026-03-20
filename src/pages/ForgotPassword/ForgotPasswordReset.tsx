@@ -29,11 +29,11 @@ export default function ForgotPasswordReset() {
     event.preventDefault()
     const normalizedOrganizationSlug = normalizeOrganizationSlug(organizationSlug)
     if (!normalizedOrganizationSlug) {
-      showToast("Invalid condominium code.", "error")
+      showToast("Código do condomínio inválido.", "error")
       return
     }
     if (newPassword !== confirmPassword) {
-      showToast("Passwords do not match.", "error")
+      showToast("As senhas não conferem.", "error")
       return
     }
     if (!meetsPasswordPolicy(newPassword)) {
@@ -46,10 +46,10 @@ export default function ForgotPasswordReset() {
         token: token.trim(),
         newPassword,
       })
-      showToast("Password reset successfully. Please sign in.", "success")
+      showToast("Senha redefinida com sucesso. Faça login para continuar.", "success")
       navigate("/login")
     } catch {
-      showToast("Invalid or expired token.", "error")
+      showToast("Token inválido ou expirado.", "error")
     }
   }
 
@@ -60,10 +60,10 @@ export default function ForgotPasswordReset() {
           <BrandMark />
         </div>
 
-        <AuthCard title="Reset password" subtitle="Enter the reset token and your new password">
+        <AuthCard title="Redefinir senha" subtitle="Informe o token de redefinição e sua nova senha">
           <form className="forgot-password-form" onSubmit={submit}>
             <div className="forgot-password-field">
-              <label htmlFor="organizationSlug">Condominium code</label>
+              <label htmlFor="organizationSlug">Código do condomínio</label>
               <input
                 id="organizationSlug"
                 type="text"
@@ -74,7 +74,7 @@ export default function ForgotPasswordReset() {
             </div>
 
             <div className="forgot-password-field">
-              <label htmlFor="reset-token">Reset token</label>
+              <label htmlFor="reset-token">Token de redefinição</label>
               <input
                 id="reset-token"
                 type="text"
@@ -82,11 +82,11 @@ export default function ForgotPasswordReset() {
                 onChange={(event) => setToken(event.target.value)}
                 required
               />
-              {hasPreviewToken ? <small>Dev token was auto-filled for local testing.</small> : null}
+              {hasPreviewToken ? <small>Token de desenvolvimento preenchido automaticamente para teste local.</small> : null}
             </div>
 
             <div className="forgot-password-field">
-              <label htmlFor="new-password">New password</label>
+              <label htmlFor="new-password">Nova senha</label>
               <small className="forgot-password-rule">{PASSWORD_POLICY_MESSAGE}</small>
               <div className="forgot-password-input-wrap">
                 <input
@@ -105,8 +105,8 @@ export default function ForgotPasswordReset() {
             </div>
 
             <div className="forgot-password-field">
-              <label htmlFor="confirm-password">Confirm new password</label>
-              <small className="forgot-password-rule">Must match the new password.</small>
+              <label htmlFor="confirm-password">Confirmar nova senha</label>
+              <small className="forgot-password-rule">Deve ser igual à nova senha.</small>
               <div className="forgot-password-input-wrap">
                 <input
                   id="confirm-password"
@@ -124,10 +124,10 @@ export default function ForgotPasswordReset() {
             </div>
 
             <button className="forgot-password-submit" type="submit" disabled={isLoading}>
-              Reset password
+              Redefinir senha
             </button>
             <button className="forgot-password-secondary" type="button" onClick={() => navigate("/login")}>
-              Back to login
+              Voltar ao login
             </button>
           </form>
         </AuthCard>

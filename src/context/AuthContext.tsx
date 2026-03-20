@@ -151,7 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(COOKIE_SESSION_TOKEN)
       const profileResponse = await fetchProfile()
       if (!profileResponse?.user) {
-        throw new Error("Unable to confirm authenticated session")
+        throw new Error("Não foi possível confirmar a sessão autenticada")
       }
       setIsAuthenticated(true)
       setIsAuthResolved(true)
@@ -169,7 +169,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return {
         success: false,
         errorCode,
-        errorMessage: error instanceof Error ? error.message : "Login failed",
+        errorMessage: error instanceof Error ? error.message : "Falha no login",
       }
     }
   }

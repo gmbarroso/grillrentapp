@@ -28,8 +28,8 @@ const SettingsBar: React.FC = () => {
           <button onClick={() => changeLanguage("pt")} aria-label="Português">
             <span className="fi fi-br" title="Português"></span>
           </button>
-          <button onClick={() => changeLanguage("en")} aria-label="English">
-            <span className="fi fi-us" title="English"></span>
+          <button onClick={() => changeLanguage("en")} aria-label="Inglês">
+            <span className="fi fi-us" title="Inglês"></span>
           </button>
           <button onClick={() => changeLanguage("es")} aria-label="Español">
             <span className="fi fi-es" title="Español"></span>

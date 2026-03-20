@@ -33,19 +33,19 @@ export default function OnboardingWelcome() {
   return (
     <div className="onboarding-page">
       <section className="onboarding-card">
-        <span className="onboarding-chip">Welcome</span>
-        <h1>Welcome to GrillRent</h1>
+        <span className="onboarding-chip">Bem-vindo</span>
+        <h1>Bem-vindo ao GrillRent</h1>
         <p>
-          This is your first access. Before continuing, you need to complete a few onboarding steps.
+          Este é seu primeiro acesso. Antes de continuar, você precisa concluir algumas etapas de onboarding.
         </p>
         <ul className="onboarding-rules">
-          <li>First, confirm your contact email and verify it.</li>
-          <li>Then you will set your personal password to replace the temporary one.</li>
+          <li>Primeiro, confirme seu e-mail de contato e faça a verificação.</li>
+          <li>Depois, defina sua senha pessoal para substituir a temporária.</li>
         </ul>
 
         <div className="onboarding-actions">
-          <Button type="button" onClick={handleContinue} isLoading={isSubmitting} loadingText="Continuing...">
-            Confirm and continue
+          <Button type="button" onClick={handleContinue} isLoading={isSubmitting} loadingText="Continuando...">
+            Confirmar e continuar
           </Button>
         </div>
       </section>

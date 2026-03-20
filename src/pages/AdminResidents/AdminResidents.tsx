@@ -20,7 +20,7 @@ interface ResidentRow {
   apartmentLabel: string
   apartment: string
   block: number
-  role: "Admin" | "Resident"
+  role: "Administrador" | "Morador"
 }
 
 const getInitials = (fullName: string) => {
@@ -62,10 +62,10 @@ const AdminResidents = () => {
         initials: getInitials(user.name),
         name: user.name,
         email: user.email || "",
-        apartmentLabel: `Apt ${user.apartment} Bl. ${user.block}`,
+        apartmentLabel: `Apto ${user.apartment} Bl. ${user.block}`,
         apartment: user.apartment,
         block: user.block,
-        role: user.role === "admin" ? "Admin" : "Resident",
+        role: user.role === "admin" ? "Administrador" : "Morador",
       }))
       .sort((a, b) => a.name.localeCompare(b.name))
   }, [users])
@@ -141,30 +141,30 @@ const AdminResidents = () => {
     }
 
     if (!payload.name || !payload.apartment) {
-      showToast("Please fill in name and apartment.", "error")
+      showToast("Preencha nome e apartamento.", "error")
       return
     }
 
     if (![1, 2].includes(payload.block || 0)) {
-      showToast("Block must be 1 or 2.", "error")
+      showToast("O bloco deve ser 1 ou 2.", "error")
       return
     }
 
     try {
       await updateUser(editingResident.id, payload)
       await refreshUsers()
-      showToast("Resident updated successfully.", "success")
+      showToast("Morador atualizado com sucesso.", "success")
       closeEditModal()
     } catch (error) {
       console.error("Error updating resident:", error)
-      showToast("Could not update resident.", "error")
+      showToast("Não foi possível atualizar o morador.", "error")
     }
   }
 
   const handleDeleteResident = async () => {
     if (!deletingResident) return
     if (currentUser?.id === deletingResident.id) {
-      showToast("You cannot remove your own account from this page.", "error")
+      showToast("Você não pode remover sua própria conta por esta página.", "error")
       setDeletingResident(null)
       return
     }
@@ -172,11 +172,11 @@ const AdminResidents = () => {
     try {
       await deleteUser(deletingResident.id)
       await refreshUsers()
-      showToast("Resident removed successfully.", "success")
+      showToast("Morador removido com sucesso.", "success")
       setDeletingResident(null)
     } catch (error) {
       console.error("Error deleting resident:", error)
-      showToast("Could not remove resident.", "error")
+      showToast("Não foi possível remover o morador.", "error")
     }
   }
 
@@ -187,22 +187,22 @@ const AdminResidents = () => {
     const normalizedOrganizationSlug = createOrganizationSlug.trim().toLowerCase()
 
     if (!normalizedOrganizationSlug || !normalizedName || !normalizedApartment || !createPassword) {
-      showToast("Please fill in condominium code, name, apartment, and temporary password.", "error")
+      showToast("Preencha código do condomínio, nome, apartamento e senha temporária.", "error")
       return
     }
 
     if (![1, 2].includes(createBlock)) {
-      showToast("Block must be 1 or 2.", "error")
+      showToast("O bloco deve ser 1 ou 2.", "error")
       return
     }
 
     if (!meetsPasswordPolicy(createPassword)) {
-      showToast(`Temporary password is invalid. ${PASSWORD_POLICY_MESSAGE}`, "error")
+      showToast(`A senha temporária é inválida. ${PASSWORD_POLICY_MESSAGE}`, "error")
       return
     }
 
     if (normalizedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      showToast("Invalid email format.", "error")
+      showToast("Formato de e-mail inválido.", "error")
       return
     }
 
@@ -217,11 +217,11 @@ const AdminResidents = () => {
         role: "resident",
       })
       await refreshUsers()
-      showToast("Resident created successfully. Share temporary password for onboarding.", "success")
+      showToast("Morador criado com sucesso. Compartilhe a senha temporária para o onboarding.", "success")
       closeCreateModal()
     } catch (error) {
       console.error("Error creating resident:", error)
-      showToast("Could not create resident.", "error")
+      showToast("Não foi possível criar o morador.", "error")
     }
   }
 
@@ -231,13 +231,13 @@ const AdminResidents = () => {
     <div className="admin-residents-page">
       <header className="admin-page-heading with-action">
         <div>
-          <h2>Residents</h2>
-          <p>{rows.length} residents registered</p>
+          <h2>Moradores</h2>
+          <p>{rows.length} moradores cadastrados</p>
         </div>
 
         <Button variant="primary" onClick={openCreateModal}>
           <UserRoundPlus size={14} />
-          New Resident
+          Novo morador
         </Button>
       </header>
 
@@ -246,7 +246,7 @@ const AdminResidents = () => {
           <Search size={15} />
           <input
             type="text"
-            placeholder="Search by name, email, or apartment..."
+            placeholder="Buscar por nome, e-mail ou apartamento..."
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -255,18 +255,18 @@ const AdminResidents = () => {
 
       <section className="admin-table-card">
         <header>
-          <h3>{filteredRows.length} residents found</h3>
+          <h3>{filteredRows.length} moradores encontrados</h3>
         </header>
 
         <div className="admin-table-scroll">
           <table>
             <thead>
               <tr>
-                <th>Resident</th>
-                <th>Email</th>
-                <th>Apartment</th>
-                <th>Role</th>
-                <th>Actions</th>
+                <th>Morador</th>
+                <th>E-mail</th>
+                <th>Apartamento</th>
+                <th>Perfil</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -281,14 +281,14 @@ const AdminResidents = () => {
                   <td>{row.email || "-"}</td>
                   <td>{row.apartmentLabel}</td>
                   <td>
-                    <span className={`role-pill ${row.role === "Admin" ? "admin" : "resident"}`}>{row.role}</span>
+                    <span className={`role-pill ${row.role === "Administrador" ? "admin" : "resident"}`}>{row.role}</span>
                   </td>
                   <td>
                     <div className="resident-actions">
-                      <button type="button" className="table-icon-button" aria-label="Edit resident" onClick={() => openEditModal(row)}>
+                      <button type="button" className="table-icon-button" aria-label="Editar morador" onClick={() => openEditModal(row)}>
                         <Pencil size={14} />
                       </button>
-                      <button type="button" className="table-icon-button danger" aria-label="Delete resident" onClick={() => setDeletingResident(row)}>
+                      <button type="button" className="table-icon-button danger" aria-label="Excluir morador" onClick={() => setDeletingResident(row)}>
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -297,7 +297,7 @@ const AdminResidents = () => {
               ))}
               {paginatedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={5}>No residents found.</td>
+                  <td colSpan={5}>Nenhum morador encontrado.</td>
                 </tr>
               ) : null}
             </tbody>
@@ -320,11 +320,11 @@ const AdminResidents = () => {
 
       <Modal isOpen={isCreateModalOpen} onClose={closeCreateModal}>
         <div className="resident-modal">
-          <h3>New resident</h3>
-          <p>Create a resident with a temporary password for onboarding.</p>
+          <h3>Novo morador</h3>
+          <p>Crie um morador com senha temporária para onboarding.</p>
 
           <label>
-            Condominium code
+            Código do condomínio
             <input
               type="text"
               value={createOrganizationSlug}
@@ -334,23 +334,23 @@ const AdminResidents = () => {
           </label>
 
           <label>
-            Name
+            Nome
             <input type="text" value={createName} onChange={(event) => setCreateName(event.target.value)} maxLength={50} />
           </label>
 
           <label>
-            Email (optional)
+            E-mail (opcional)
             <input type="email" value={createEmail} onChange={(event) => setCreateEmail(event.target.value)} maxLength={100} />
           </label>
 
           <div className="resident-modal-grid">
             <label>
-              Apartment
+              Apartamento
               <input type="text" value={createApartment} onChange={(event) => setCreateApartment(event.target.value)} maxLength={20} />
             </label>
 
             <label>
-              Block
+              Bloco
               <select value={createBlock} onChange={(event) => setCreateBlock(Number(event.target.value))}>
                 <option value={1}>1</option>
                 <option value={2}>2</option>
@@ -359,9 +359,9 @@ const AdminResidents = () => {
           </div>
 
           <label>
-            Temporary password
+            Senha temporária
             <small>
-              {PASSWORD_POLICY_MESSAGE} The resident must change this on first login.
+              {PASSWORD_POLICY_MESSAGE} O morador deverá trocar essa senha no primeiro login.
             </small>
             <div className="resident-password-wrap">
               <input
@@ -379,16 +379,16 @@ const AdminResidents = () => {
 
           <div className="resident-modal-actions">
             <Button variant="secondary" onClick={closeCreateModal}>
-              Cancel
+              Cancelar
             </Button>
             <Button
               variant="primary"
               onClick={handleCreateResident}
               disabled={isRegisteringResident}
               isLoading={isRegisteringResident}
-              loadingText="Creating..."
+              loadingText="Criando..."
             >
-              Create
+              Criar
             </Button>
           </div>
         </div>
@@ -396,26 +396,26 @@ const AdminResidents = () => {
 
       <Modal isOpen={Boolean(editingResident)} onClose={closeEditModal}>
         <div className="resident-modal">
-          <h3>Edit resident</h3>
+          <h3>Editar morador</h3>
 
           <label>
-            Name
+            Nome
             <input type="text" value={editName} onChange={(event) => setEditName(event.target.value)} maxLength={50} />
           </label>
 
           <label>
-            Email
+            E-mail
             <input type="email" value={editEmail} onChange={(event) => setEditEmail(event.target.value)} maxLength={100} />
           </label>
 
           <div className="resident-modal-grid">
             <label>
-              Apartment
+              Apartamento
               <input type="text" value={editApartment} onChange={(event) => setEditApartment(event.target.value)} maxLength={20} />
             </label>
 
             <label>
-              Block
+              Bloco
               <select value={editBlock} onChange={(event) => setEditBlock(Number(event.target.value))}>
                 <option value={1}>1</option>
                 <option value={2}>2</option>
@@ -425,16 +425,16 @@ const AdminResidents = () => {
 
           <div className="resident-modal-actions">
             <Button variant="secondary" onClick={closeEditModal}>
-              Cancel
+              Cancelar
             </Button>
             <Button
               variant="primary"
               onClick={handleUpdateResident}
               disabled={isUpdatingUser}
               isLoading={isUpdatingUser}
-              loadingText="Saving..."
+              loadingText="Salvando..."
             >
-              Save
+              Salvar
             </Button>
           </div>
         </div>
@@ -442,24 +442,24 @@ const AdminResidents = () => {
 
       <Modal isOpen={Boolean(deletingResident)} onClose={() => setDeletingResident(null)}>
         <div className="resident-modal resident-delete-modal">
-          <h3>Remove resident</h3>
+          <h3>Remover morador</h3>
           <p>
-            Are you sure you want to remove{" "}
+            Tem certeza que deseja remover{" "}
             <strong>{deletingResident?.name}</strong>?
           </p>
 
           <div className="resident-modal-actions">
             <Button variant="secondary" onClick={() => setDeletingResident(null)}>
-              Cancel
+              Cancelar
             </Button>
             <Button
               variant="danger"
               onClick={handleDeleteResident}
               disabled={isDeletingUser}
               isLoading={isDeletingUser}
-              loadingText="Removing..."
+              loadingText="Removendo..."
             >
-              Remove
+              Remover
             </Button>
           </div>
         </div>

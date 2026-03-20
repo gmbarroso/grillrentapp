@@ -33,7 +33,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, wide = false }
       }}
     >
       <div className={`modal-content ${wide ? "wide" : ""}`} onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Close">
+        <button className="modal-close" onClick={onClose} aria-label="Fechar">
           <span aria-hidden="true">&times;</span>
         </button>
         {children}
@@ -43,4 +43,3 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, wide = false }
 }
 
 export default Modal
-

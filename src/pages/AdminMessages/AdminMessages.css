@@ -68,6 +68,19 @@
   gap: 0.8rem;
 }
 
+.admin-messages-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.admin-messages-skeleton-meta {
+  margin-top: 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
 .admin-message-card {
   position: relative;
   border: 1px solid var(--border-default);

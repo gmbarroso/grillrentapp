@@ -79,12 +79,7 @@
   background-color: var(--color-primary-light);
 }
 
-.loading-indicator {
-  padding: 0.5rem;
-  border: 1px solid var(--color-secondary);
-  border-radius: 4px;
-  background-color: var(--color-card-background);
-  color: var(--color-text);
-  text-align: center;
-  font-style: italic;
+.loading-indicator-skeleton {
+  display: grid;
+  gap: 0.35rem;
 }

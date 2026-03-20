@@ -1,7 +1,7 @@
-import { Bot, Cable, Edit3, Loader2, MessageCircleMore, Power, RefreshCcw, Save, Undo2, X } from "lucide-react"
+import { Bot, Cable, Edit3, MessageCircleMore, Power, RefreshCcw, Save, Undo2, X } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useEffect, useMemo, useState } from "react"
-import { Button } from "../../components"
+import { Button, SettingsFormPageSkeleton } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
 import "./AdminSettingsWhatsapp.css"
@@ -264,6 +264,10 @@ const AdminSettingsWhatsapp = () => {
   const providerStatusLabel = settings.status === "connected" ? "Conectado" : "Desconectado"
   const isFormLocked = isLoading || isSaving || !isEditing
 
+  if (isLoading) {
+    return <SettingsFormPageSkeleton />
+  }
+
   return (
     <div className="admin-whatsapp-page">
       <Link to="/admin/settings" className="settings-back-link">
@@ -355,8 +359,14 @@ const AdminSettingsWhatsapp = () => {
             <Edit3 size={14} />
             Editar
           </Button>
-          <Button variant="secondary" onClick={handleTestConnection} disabled={isLoading || isTesting || isSaving}>
-            {isTesting ? <Loader2 size={14} className="icon-spin" /> : <Cable size={14} />}
+          <Button
+            variant="secondary"
+            onClick={handleTestConnection}
+            disabled={isLoading || isSaving}
+            isLoading={isTesting}
+            loadingText="Testando..."
+          >
+            <Cable size={14} />
             Testar conexão
           </Button>
           <Button
@@ -371,8 +381,14 @@ const AdminSettingsWhatsapp = () => {
             <X size={14} />
             Cancelar
           </Button>
-          <Button variant="primary" onClick={handleSaveSettings} disabled={isLoading || isTesting || isSaving || !isEditing}>
-            {isSaving ? <Loader2 size={14} className="icon-spin" /> : <Save size={14} />}
+          <Button
+            variant="primary"
+            onClick={handleSaveSettings}
+            disabled={isLoading || isTesting || !isEditing}
+            isLoading={isSaving}
+            loadingText="Salvando configurações..."
+          >
+            <Save size={14} />
             Salvar configurações
           </Button>
         </footer>
@@ -387,8 +403,14 @@ const AdminSettingsWhatsapp = () => {
         </header>
 
         <div className="group-binding-row">
-          <Button variant="secondary" onClick={handleSyncGroups} disabled={isLoading || isSyncingGroups || isSaving}>
-            {isSyncingGroups ? <Loader2 size={14} className="icon-spin" /> : <RefreshCcw size={14} />}
+          <Button
+            variant="secondary"
+            onClick={handleSyncGroups}
+            disabled={isLoading || isSaving}
+            isLoading={isSyncingGroups}
+            loadingText="Sincronizando..."
+          >
+            <RefreshCcw size={14} />
             Sincronizar grupos
           </Button>
 

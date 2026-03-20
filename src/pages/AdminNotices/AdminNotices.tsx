@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { Plus } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import NoticeForm from "../../components/NoticeForm/NoticeForm"
-import { Button, LoadingSpinner, Modal, NoticeBoard } from "../../components"
+import { Button, Modal, NoticeBoard, NoticePageSkeleton } from "../../components"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
 import { useMarkNoticesAsSeen, useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import { useAuth } from "../../context/AuthContext"
@@ -87,7 +87,7 @@ const AdminNotices = () => {
       </Modal>
 
       {isLoading ? (
-        <LoadingSpinner />
+        <NoticePageSkeleton withAction />
       ) : (
         <NoticeBoard
           notices={sortedNotices}

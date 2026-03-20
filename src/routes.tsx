@@ -66,11 +66,7 @@ const ProtectedDashboardLayout: React.FC = () => {
       return <DashboardHomeSkeleton />
     }
 
-    return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <LoadingSpinner />
-      </div>
-    )
+    return <LoadingSpinner />
   }
 
   if (!isAuthenticated) {
@@ -109,11 +105,7 @@ const ProtectedOnboardingLayout: React.FC = () => {
       return <DashboardHomeSkeleton />
     }
 
-    return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <LoadingSpinner />
-      </div>
-    )
+    return <LoadingSpinner />
   }
 
   if (!isAuthenticated) {

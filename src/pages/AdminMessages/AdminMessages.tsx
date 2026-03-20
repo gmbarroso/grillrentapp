@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import { ChevronDown, ChevronUp, Mail, MessageCircleWarning, SendHorizontal, Lightbulb, CircleHelp, Trash2 } from "lucide-react"
-import { Button, Modal, PaginationControls } from "../../components"
+import { Button, Modal, PaginationControls, Skeleton } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { useAdminMessages } from "../../hooks/message/useMessages"
 import type { ContactMessageCategory, Message, MessageReply } from "../../types/Message"
@@ -163,7 +163,20 @@ export default function AdminMessages() {
       </nav>
 
       <section className="admin-messages-list">
-        {isLoading ? <p className="admin-messages-empty">Carregando mensagens...</p> : null}
+        {isLoading ? (
+          <div className="admin-messages-skeleton-list" aria-label="Carregando mensagens">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <article key={`admin-message-skeleton-${index}`} className="admin-message-card">
+                <Skeleton width="48%" height={18} />
+                <div className="admin-messages-skeleton-meta">
+                  <Skeleton width="26%" height={13} borderRadius={999} />
+                  <Skeleton width="20%" height={13} borderRadius={999} />
+                  <Skeleton width="18%" height={13} borderRadius={999} />
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : null}
         {!isLoading && messages.length === 0 ? <p className="admin-messages-empty">Nenhuma mensagem encontrada.</p> : null}
 
         {messages.map((message) => {
@@ -250,10 +263,11 @@ export default function AdminMessages() {
                     <Button
                       variant="primary"
                       onClick={() => handleSubmitReply(message)}
-                      disabled={submittingMessageId === message.id}
+                      isLoading={submittingMessageId === message.id}
+                      loadingText="Enviando resposta..."
                     >
                       <SendHorizontal size={14} />
-                      {submittingMessageId === message.id ? "Enviando..." : "Enviar Resposta"}
+                      Enviar Resposta
                     </Button>
                   </div>
                 </div>

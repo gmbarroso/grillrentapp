@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react"
 import { Eye, EyeOff, Pencil, Search, Trash2, UserRoundPlus } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import { Button, LoadingSpinner, Modal, PaginationControls } from "../../components"
+import { AdminTablePageSkeleton, Button, Modal, PaginationControls } from "../../components"
 import { useAllUsers } from "../../hooks/user/useAllUsers"
 import { useUpdateUser } from "../../hooks/user/useUpdateUser"
 import { useDeleteUser } from "../../hooks/user/useDeleteUser"
@@ -225,7 +225,7 @@ const AdminResidents = () => {
     }
   }
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <AdminTablePageSkeleton />
 
   return (
     <div className="admin-residents-page">

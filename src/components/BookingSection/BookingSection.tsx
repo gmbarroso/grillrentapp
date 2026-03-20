@@ -14,7 +14,7 @@ import { useAuth } from "../../context/AuthContext"
 import type { Resource } from "../../types/Resource"
 import type { Booking, BookingSectionProps } from "../../types/Booking"
 import { formatBookingDateKey, formatBookingHourSlot, formatBookingTimeInterval, BOOKING_DISPLAY_TIMEZONE } from "../../utils/booking-datetime"
-import { LoadingSpinner, Modal, Calendar, Tooltip, Button } from "../"
+import { Modal, Calendar, Tooltip, Button, SchedulerSlotsSkeleton } from "../"
 import "./BookingSection.css"
 
 interface PendingBookingData {
@@ -302,7 +302,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
 
           {isLoadingTimes ? (
             <div className="scheduler-loading">
-              <LoadingSpinner inline />
+              <SchedulerSlotsSkeleton />
             </div>
           ) : selectedOption === "hourly" ? (
             <div className="scheduler-slot-list">

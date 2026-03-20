@@ -36,7 +36,7 @@ function AppContent() {
         <AppRoutes />
       </main>
       {!hideGlobalChrome && <Footer />}
-      {isLoading && !isDashboardRoute && <LoadingSpinner />}
+      {isLoading && !isDashboardRoute && <LoadingSpinner overlay />}
     </div>
   )
 }

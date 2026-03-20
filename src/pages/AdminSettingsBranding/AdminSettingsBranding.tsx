@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Building2, Clock3, Mail, MapPin, Phone, Undo2 } from "lucide-react"
 import { Link } from "react-router-dom"
-import { Button, ImageDropzone } from "../../components"
+import { Button, ImageDropzone, SettingsFormPageSkeleton } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { useOrganizationSettings } from "../../hooks/organization/useOrganizationSettings"
 import "./AdminSettingsBranding.css"
@@ -66,6 +66,10 @@ const AdminSettingsBranding = () => {
     } finally {
       setIsSaving(false)
     }
+  }
+
+  if (isLoading) {
+    return <SettingsFormPageSkeleton />
   }
 
   return (

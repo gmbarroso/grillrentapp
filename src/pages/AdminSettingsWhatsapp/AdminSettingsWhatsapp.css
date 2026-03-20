@@ -324,19 +324,6 @@
   border-color: #2f6b4f;
 }
 
-.icon-spin {
-  animation: spin 0.9s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @media (max-width: 760px) {
   .whatsapp-card footer {
     flex-direction: column;

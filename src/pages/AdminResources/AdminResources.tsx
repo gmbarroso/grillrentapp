@@ -1,6 +1,6 @@
 import { CalendarDays, Plus } from "lucide-react"
 import { useMemo, useState } from "react"
-import { Button, LoadingSpinner, Modal } from "../../components"
+import { AdminCardsPageSkeleton, Button, Modal } from "../../components"
 import { useAllResources } from "../../hooks/resource/useAllResources"
 import { useCreateResource } from "../../hooks/resource/useCreateResource"
 import { useAuth } from "../../context/AuthContext"
@@ -66,7 +66,7 @@ const AdminResources = () => {
     }
   }
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <AdminCardsPageSkeleton />
 
   return (
     <div className="admin-resources-page">

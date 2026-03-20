@@ -3,8 +3,7 @@
 import { useEffect, useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
-import { NoticeBoard } from "../../components"
-import { LoadingSpinner } from "../../components"
+import { NoticeBoard, NoticePageSkeleton } from "../../components"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
 import { isNoticeUnread, useMarkNoticesAsSeen, useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import { useToast } from "../../context/ToastContext"
@@ -108,7 +107,7 @@ const Notices = () => {
       </header>
 
       {isLoading ? (
-        <LoadingSpinner />
+        <NoticePageSkeleton />
       ) : (
         <NoticeBoard
           notices={notices}

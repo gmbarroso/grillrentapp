@@ -18,21 +18,33 @@
   gap: 0.45rem;
 }
 
-.button-loading-spinner {
-  width: 0.9rem;
-  height: 0.9rem;
+.button-loading-placeholder {
+  width: 1.1rem;
+  height: 0.8rem;
   border-radius: 999px;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  animation: button-spin 0.7s linear infinite;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 20%,
+    var(--skeleton-highlight) 45%,
+    var(--skeleton-base) 70%
+  );
+  background-size: 300% 100%;
+  animation: button-loading-shimmer 1.2s ease-in-out infinite;
 }
 
-@keyframes button-spin {
-  from {
-    transform: rotate(0deg);
+@keyframes button-loading-shimmer {
+  0% {
+    background-position: 100% 50%;
   }
-  to {
-    transform: rotate(360deg);
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button-loading-placeholder {
+    animation: none;
   }
 }
 

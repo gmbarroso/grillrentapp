@@ -1,7 +1,7 @@
-import { Loader2, Mail, Save, Undo2 } from "lucide-react"
+import { Mail, Save, Undo2 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useEffect, useMemo, useState } from "react"
-import { Button } from "../../components"
+import { Button, SettingsFormPageSkeleton } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
 import "./AdminSettingsContactEmail.css"
@@ -149,6 +149,10 @@ const AdminSettingsContactEmail = () => {
 
   const statusLabel =
     settings.deliveryMode === "in_app_only" ? "Apenas no app" : settings.canSendEmail ? "E-mail ativo" : "Requer ajustes"
+
+  if (isLoading) {
+    return <SettingsFormPageSkeleton />
+  }
 
   return (
     <div className="admin-contact-email-page">
@@ -317,8 +321,14 @@ const AdminSettingsContactEmail = () => {
           <Button variant="secondary" onClick={() => applySettingsToForm(settings)} disabled={isLoading || isSaving}>
             Redefinir
           </Button>
-          <Button variant="primary" onClick={handleSave} disabled={isLoading || isSaving}>
-            {isSaving ? <Loader2 size={14} className="icon-spin" /> : <Save size={14} />}
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            isLoading={isSaving}
+            loadingText="Salvando configurações..."
+            disabled={isLoading}
+          >
+            <Save size={14} />
             Salvar configurações
           </Button>
         </footer>

@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useTranslation } from "react-i18next"
+import Skeleton from "../Skeleton/Skeleton"
 import { BOOKING_DISPLAY_TIMEZONE } from "../../utils/booking-datetime"
 import "./TimeSlotSelector.css"
 
@@ -86,7 +87,10 @@ const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
     <div className="time-slot-selector">
       <label>{t("SelectTime")}</label>
       {isLoading ? (
-        <div className="loading-indicator">{t("Loading")}</div>
+        <div className="loading-indicator-skeleton" aria-label={t("Loading")}>
+          <Skeleton width="100%" height={38} borderRadius={4} />
+          <Skeleton width="55%" height={12} borderRadius={999} />
+        </div>
       ) : (
         <select value={selectedTime || ""} onChange={handleTimeSlotChange} className="time-select">
           <option value="">{t("SelectTimeOption")}</option>

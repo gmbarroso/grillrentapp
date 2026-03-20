@@ -9,7 +9,7 @@ import { useAuth } from "../../context/AuthContext"
 import { useUserProfile } from "../../hooks/user/useUserProfile"
 import { useUpdateProfile } from "../../hooks/user/useUpdateProfile"
 import { useLoading } from "../../context/LoadingContext"
-import { LoadingSpinner, Button } from "../../components"
+import { ProfilePageSkeleton, Button } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import "./Profile.css"
 
@@ -87,7 +87,7 @@ const Profile: React.FC = () => {
     setName(value)
   }
 
-  if (isUserLoading) return <LoadingSpinner />
+  if (isUserLoading) return <ProfilePageSkeleton />
   if (userError) return <div>{t("Profile.Error")}</div>
   if (!userResponse?.user) return <div>{t("Profile.UserNotFound")}</div>
 

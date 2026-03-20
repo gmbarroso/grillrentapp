@@ -2,7 +2,7 @@ import { useMemo, useState } from "react"
 import { Filter, Search, Trash2 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import { Button, LoadingSpinner, Modal, PaginationControls, Tooltip } from "../../components"
+import { AdminTablePageSkeleton, Button, Modal, PaginationControls, Tooltip } from "../../components"
 import { useAdminBookedDates } from "../../hooks/booking/useAdminBookedDates"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
 import type { Booking } from "../../types/Booking"
@@ -56,7 +56,7 @@ const AdminBookings = () => {
     setDeletingBooking(null)
   }
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <AdminTablePageSkeleton />
 
   return (
     <div className="admin-bookings-page">

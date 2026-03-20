@@ -11,7 +11,10 @@ import { useUpdateProfile } from "../../hooks/user/useUpdateProfile"
 import { useLoading } from "../../context/LoadingContext"
 import { ProfilePageSkeleton, Button } from "../../components"
 import { useToast } from "../../context/ToastContext"
+import { extractApiErrorMessage, fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
 import "./Profile.css"
+
+const API_BASE_URL = getApiBaseUrl()
 
 const Profile: React.FC = () => {
   const { token } = useAuth()
@@ -22,6 +25,7 @@ const Profile: React.FC = () => {
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+  const [isResettingTour, setIsResettingTour] = useState(false)
 
   const { t } = useTranslation()
   const { setIsLoading } = useLoading()
@@ -87,6 +91,29 @@ const Profile: React.FC = () => {
     setName(value)
   }
 
+  const handleRepeatTour = async () => {
+    try {
+      setIsResettingTour(true)
+      const response = await fetchWithAuthHandling(`${API_BASE_URL}/users/tour/reset`, {
+        method: "POST",
+      })
+
+      if (!response.ok) {
+        const message = await extractApiErrorMessage(response, `Falha ao resetar tour (${response.status})`)
+        throw new Error(message)
+      }
+
+      await fetchProfile()
+      showToast("Tour resetado. Vamos te guiar novamente no painel.", "success")
+      navigate("/?startTour=1")
+    } catch (error) {
+      console.error(handleApiError(error, "/users/tour/reset"))
+      showToast(error instanceof Error ? error.message : "Nao foi possivel resetar o tour agora.", "error")
+    } finally {
+      setIsResettingTour(false)
+    }
+  }
+
   if (isUserLoading) return <ProfilePageSkeleton />
   if (userError) return <div>{t("Profile.Error")}</div>
   if (!userResponse?.user) return <div>{t("Profile.UserNotFound")}</div>
@@ -138,6 +165,16 @@ const Profile: React.FC = () => {
           </Button>
           <Button variant="primary" type="button" fullWidth onClick={() => navigate("/change-password")}>
             Alterar senha
+          </Button>
+          <Button
+            variant="secondary"
+            type="button"
+            fullWidth
+            onClick={handleRepeatTour}
+            isLoading={isResettingTour}
+            loadingText="Resetando..."
+          >
+            Repetir tour de boas-vindas
           </Button>
         </form>
       </section>

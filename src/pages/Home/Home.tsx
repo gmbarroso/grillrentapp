@@ -1,11 +1,13 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Bell, CalendarDays } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import {
+  Button,
   DashboardHomeSkeleton,
+  Modal,
   MyNextBookedDates,
   NoticeCarousel,
   QuickActionCard,
@@ -14,13 +16,35 @@ import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
 import { isNoticeUnread, useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import { useToast } from "../../context/ToastContext"
+import { extractApiErrorMessage, fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
 import { compareBookingStartAsc, isBookingForCurrentUser, isUpcomingBooking } from "../../utils/booking-visibility"
 import "./Home.css"
 
+const API_BASE_URL = getApiBaseUrl()
+const CURRENT_FIRST_ACCESS_TOUR_VERSION = 1
+const FIRST_ACCESS_TOUR_STEPS = [
+  {
+    title: "Bem-vindo ao painel",
+    description: "Aqui voce acompanha suas informacoes principais e acessa as acoes rapidas.",
+  },
+  {
+    title: "Nova reserva",
+    description: "Use Minhas reservas para escolher recurso, data e horario disponiveis.",
+  },
+  {
+    title: "Avisos e comunicacao",
+    description: "Veja avisos recentes no dashboard e acesse Contato para falar com a administracao.",
+  },
+]
+
 const Home = () => {
-  const { user, token } = useAuth()
+  const { user, token, onboarding, tour, refreshProfile } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const { showToast } = useToast()
+  const [isTourOpen, setIsTourOpen] = useState(false)
+  const [tourStepIndex, setTourStepIndex] = useState(0)
+  const [isPersistingTour, setIsPersistingTour] = useState(false)
 
   const {
     bookings,
@@ -41,6 +65,22 @@ const Home = () => {
       showToast("Erro ao carregar os avisos. Por favor, tente novamente.", "error")
     }
   }, [noticesError, showToast])
+
+  useEffect(() => {
+    const isOnboardingDone = !onboarding.onboardingRequired
+    if (!isOnboardingDone) return
+
+    const hasCompletedTour = (tour.firstAccessTourVersionCompleted ?? 0) >= CURRENT_FIRST_ACCESS_TOUR_VERSION
+    const forceStartTour = new URLSearchParams(location.search).get("startTour") === "1"
+    if (!forceStartTour && hasCompletedTour) return
+
+    setTourStepIndex(0)
+    setIsTourOpen(true)
+
+    if (forceStartTour) {
+      navigate("/", { replace: true })
+    }
+  }, [location.search, navigate, onboarding.onboardingRequired, tour.firstAccessTourVersionCompleted])
 
   const upcomingBookings = useMemo(() => {
     const now = new Date()
@@ -77,6 +117,43 @@ const Home = () => {
   }).format(new Date())
 
   const isLoadingDashboard = isLoadingBookings || isLoadingNotices
+  const isLastTourStep = tourStepIndex === FIRST_ACCESS_TOUR_STEPS.length - 1
+  const currentTourStep = FIRST_ACCESS_TOUR_STEPS[tourStepIndex]
+
+  const persistTourCompletion = async () => {
+    if (isPersistingTour) return
+    try {
+      setIsPersistingTour(true)
+      const response = await fetchWithAuthHandling(`${API_BASE_URL}/users/tour/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ version: CURRENT_FIRST_ACCESS_TOUR_VERSION }),
+      })
+      if (!response.ok) {
+        const message = await extractApiErrorMessage(response, `Falha ao concluir tour (${response.status})`)
+        throw new Error(message)
+      }
+      await refreshProfile()
+    } catch (error) {
+      console.error(handleApiError(error, "/users/tour/complete"))
+      showToast(error instanceof Error ? error.message : "Nao foi possivel concluir o tour agora.", "error")
+    } finally {
+      setIsPersistingTour(false)
+      setIsTourOpen(false)
+    }
+  }
+
+  const handleAdvanceTour = () => {
+    if (isLastTourStep) {
+      void persistTourCompletion()
+      return
+    }
+    setTourStepIndex((prev) => prev + 1)
+  }
+
+  const handleBackTour = () => {
+    setTourStepIndex((prev) => Math.max(prev - 1, 0))
+  }
 
   return (
     isLoadingDashboard ? (
@@ -123,6 +200,34 @@ const Home = () => {
             )}
           </div>
         </section>
+
+        <Modal isOpen={isTourOpen} onClose={() => void persistTourCompletion()}>
+          <div className="first-access-tour">
+            <span className="first-access-tour-chip">
+              Tour {tourStepIndex + 1}/{FIRST_ACCESS_TOUR_STEPS.length}
+            </span>
+            <h2>{currentTourStep.title}</h2>
+            <p>{currentTourStep.description}</p>
+            <div className="first-access-tour-actions">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleBackTour}
+                disabled={tourStepIndex === 0 || isPersistingTour}
+              >
+                Voltar
+              </Button>
+              <Button
+                type="button"
+                onClick={handleAdvanceTour}
+                isLoading={isPersistingTour}
+                loadingText="Salvando..."
+              >
+                {isLastTourStep ? "Concluir tour" : "Proximo"}
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </div>
     )
   )

@@ -16,13 +16,14 @@ import {
 } from "../utils/auth-storage"
 import { clearStoredCsrfToken } from "../utils/csrf"
 import { authDebug, authError } from "../utils/auth-logger"
-import type { OnboardingFlags, User } from "../types"
+import type { OnboardingFlags, TourState, User } from "../types"
 
 interface AuthContextType {
   isAuthenticated: boolean
   isAuthResolved: boolean
   user: User | null
   onboarding: OnboardingFlags
+  tour: TourState
   token: string | null
   login: (
     organizationSlug: string,
@@ -42,6 +43,9 @@ const defaultOnboardingState: OnboardingFlags = {
   mustVerifyEmail: false,
   mustChangePassword: false,
   onboardingRequired: false,
+}
+const defaultTourState: TourState = {
+  firstAccessTourVersionCompleted: null,
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -210,6 +214,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             mustChangePassword: Boolean(userResponse?.mustChangePassword ?? userResponse?.onboarding?.mustChangePassword),
             onboardingRequired: Boolean(userResponse?.onboardingRequired ?? userResponse?.onboarding?.onboardingRequired),
           },
+      tour: userError
+        ? defaultTourState
+        : {
+            firstAccessTourVersionCompleted: userResponse?.tour?.firstAccessTourVersionCompleted ?? null,
+          },
       token,
       login,
       logout,
@@ -223,6 +232,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       userResponse?.mustChangePassword,
       userResponse?.mustProvideEmail,
       userResponse?.mustVerifyEmail,
+      userResponse?.tour?.firstAccessTourVersionCompleted,
       userResponse?.onboarding?.mustChangePassword,
       userResponse?.onboarding?.mustProvideEmail,
       userResponse?.onboarding?.mustVerifyEmail,

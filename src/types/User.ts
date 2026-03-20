@@ -14,10 +14,15 @@ export interface OnboardingFlags {
   onboardingRequired: boolean
 }
 
+export interface TourState {
+  firstAccessTourVersionCompleted: number | null
+}
+
 export interface UserResponse {
   message: string
   user: User
   onboarding?: OnboardingFlags
+  tour?: TourState
   mustProvideEmail?: boolean
   mustVerifyEmail?: boolean
   mustChangePassword?: boolean

@@ -56,7 +56,7 @@ export default function OnboardingChangePassword() {
       await response.json()
       await refreshProfile()
       showToast("Senha alterada com sucesso.", "success")
-      navigate("/")
+      navigate("/?startTour=1")
     } catch (error) {
       console.error(handleApiError(error, "/users/onboarding/change-password"))
       showToast(error instanceof Error ? error.message : "Não foi possível alterar a senha.", "error")

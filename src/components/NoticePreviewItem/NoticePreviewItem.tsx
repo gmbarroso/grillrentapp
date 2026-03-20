@@ -1,4 +1,4 @@
-import type { Notice } from "../../types/Notice"
+import type { Notice } from "../../types"
 import "./NoticePreviewItem.css"
 
 interface NoticePreviewItemProps {

@@ -16,7 +16,7 @@ import {
 } from "../utils/auth-storage"
 import { clearStoredCsrfToken } from "../utils/csrf"
 import { authDebug, authError } from "../utils/auth-logger"
-import type { OnboardingFlags, User } from "../types/User"
+import type { OnboardingFlags, User } from "../types"
 
 interface AuthContextType {
   isAuthenticated: boolean

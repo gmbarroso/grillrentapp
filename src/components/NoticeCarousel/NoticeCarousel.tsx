@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import type { Notice } from "../../types/Notice"
+import type { Notice } from "../../types"
 import "./NoticeCarousel.css"
 
 interface NoticeCarouselProps {

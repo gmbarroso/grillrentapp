@@ -9,7 +9,7 @@ import { useDeleteUser } from "../../hooks/user/useDeleteUser"
 import { useRegisterUser } from "../../hooks/user/useRegisterUser"
 import { readStoredOrganizationSlug } from "../../utils/organization-session"
 import { meetsPasswordPolicy, PASSWORD_POLICY_MESSAGE } from "../../utils/passwordPolicy"
-import type { User } from "../../types/User"
+import type { User } from "../../types"
 import "./AdminResidents.css"
 
 interface ResidentRow {

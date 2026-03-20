@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
-import type { Booking } from "../../types/Booking"
+import type { Booking } from "../../types"
 import { getApiBaseUrl, handleApiError, logApiRequest, logApiResponse } from "../../utils/api"
 import { formatBookingDateKey } from "../../utils/booking-datetime"
 

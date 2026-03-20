@@ -6,7 +6,7 @@ import { Bell } from "lucide-react"
 import { useUpdateNotice } from "../../hooks/notice/useUpdateNotice"
 import { useToast } from "../../context/ToastContext"
 import { Button } from "../"
-import type { Notice } from "../../types/Notice"
+import type { Notice } from "../../types"
 import "./NoticeForm.css"
 import { useLoading } from "../../context/LoadingContext"
 

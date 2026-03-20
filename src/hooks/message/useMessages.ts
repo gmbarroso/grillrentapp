@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react"
 import { mutate as mutateSWRCache } from "swr"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
-import type { ContactMessageCategory, ContactMessageStatus, Message, MessageReply } from "../../types/Message"
+import type { ContactMessageCategory, ContactMessageStatus, Message, MessageReply } from "../../types"
 import { getApiBaseUrl, handleApiError, logApiRequest, logApiResponse } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()

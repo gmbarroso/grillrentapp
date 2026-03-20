@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react"
 import { mutate as mutateSWRCache } from "swr"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
-import type { CreateNoticeDto, Notice } from "../../types/Notice"
+import type { CreateNoticeDto, Notice } from "../../types"
 
 const API_BASE_URL = getApiBaseUrl()
 const UNREAD_COUNT_ENDPOINT = `${API_BASE_URL}/notices/unread-count`

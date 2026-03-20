@@ -5,7 +5,7 @@ import { useToast } from "../../context/ToastContext"
 import { AdminTablePageSkeleton, Button, Modal, PaginationControls, Tooltip } from "../../components"
 import { useAdminBookedDates } from "../../hooks/booking/useAdminBookedDates"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
-import type { Booking } from "../../types/Booking"
+import type { Booking } from "../../types"
 import { formatBookingDate, formatBookingTimeInterval, parseBookingDateTime } from "../../utils/booking-datetime"
 import "./AdminBookings.css"
 

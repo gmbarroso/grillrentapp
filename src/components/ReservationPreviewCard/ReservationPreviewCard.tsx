@@ -1,6 +1,6 @@
 import { Calendar, Clock3, MapPin, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import type { Booking } from "../../types/Booking"
+import type { Booking } from "../../types"
 import Tooltip from "../Tooltip/Tooltip"
 import "./ReservationPreviewCard.css"
 

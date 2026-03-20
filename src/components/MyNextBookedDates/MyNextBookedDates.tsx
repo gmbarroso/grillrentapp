@@ -1,5 +1,5 @@
 import ReservationPreviewCard from "../ReservationPreviewCard/ReservationPreviewCard"
-import type { Booking } from "../../types/Booking"
+import type { Booking } from "../../types"
 import "./MyNextBookedDates.css"
 
 interface MyNextBookedDatesProps {

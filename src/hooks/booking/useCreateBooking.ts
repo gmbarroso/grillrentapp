@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import type { Booking } from "../../types/Booking"
+import type { Booking } from "../../types"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 interface BookingResponse {

@@ -5,7 +5,7 @@ import { useAllResources } from "../../hooks/resource/useAllResources"
 import { useCreateResource } from "../../hooks/resource/useCreateResource"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import type { Resource } from "../../types/Resource"
+import type { Resource } from "../../types"
 import "./AdminResources.css"
 
 const DESCRIPTION_MAX_LENGTH = 160

@@ -10,7 +10,7 @@ import { useToast } from "../../context/ToastContext"
 import { Trash2, Edit, Bell, MessageCircle } from "lucide-react"
 import EditNoticeForm from "../NoticeForm/EditNoticeForm"
 import "./NoticeBoard.css"
-import type { Notice } from "../../types/Notice"
+import type { Notice } from "../../types"
 import { useLoading } from "../../context/LoadingContext"
 
 interface NoticeBoardProps {

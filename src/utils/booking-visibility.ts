@@ -1,5 +1,5 @@
-import type { Booking } from "../types/Booking"
-import type { User } from "../types/User"
+import type { Booking } from "../types"
+import type { User } from "../types"
 import { parseBookingDateTime } from "./booking-datetime"
 
 const DIGITS_REGEX = /\d+/g

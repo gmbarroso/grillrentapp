@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from "react"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
-import type { Notice } from "../../types/Notice"
+import type { Notice } from "../../types"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()

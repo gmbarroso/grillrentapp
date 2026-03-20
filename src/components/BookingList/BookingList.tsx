@@ -10,7 +10,7 @@ import { useToast } from "../../context/ToastContext"
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import { formatBookingDate, formatBookingTimeInterval } from "../../utils/booking-datetime"
 import "./BookingList.css"
-import type { Booking, BookingListProps } from "../../types/Booking"
+import type { Booking, BookingListProps } from "../../types"
 
 const BookingList: React.FC<BookingListProps> = ({
   bookings,

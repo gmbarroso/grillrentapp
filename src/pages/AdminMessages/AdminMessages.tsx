@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, Mail, MessageCircleWarning, SendHorizontal, Lig
 import { Button, Modal, PaginationControls, Skeleton } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { useAdminMessages } from "../../hooks/message/useMessages"
-import type { ContactMessageCategory, Message, MessageReply } from "../../types/Message"
+import type { ContactMessageCategory, Message, MessageReply } from "../../types"
 import "./AdminMessages.css"
 
 const categoryOptions: Array<{ value: ContactMessageCategory | "all"; label: string }> = [

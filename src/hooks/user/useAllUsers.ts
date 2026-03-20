@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
-import type { User } from "../../types/User"
+import type { User } from "../../types"
 import { getApiBaseUrl, handleApiError, logApiRequest, logApiResponse } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()

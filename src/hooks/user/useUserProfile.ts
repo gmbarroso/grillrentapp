@@ -1,5 +1,5 @@
 import { useFetch } from "../useFetch"
-import type { UserResponse } from "../../types/User"
+import type { UserResponse } from "../../types"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()

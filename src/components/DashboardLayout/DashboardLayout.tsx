@@ -147,7 +147,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       className={`dashboard-layout ${isSidebarCollapsed ? "sidebar-collapsed" : ""} ${isMobileSidebarOpen ? "sidebar-mobile-open" : ""}`.trim()}
     >
       <DashboardSidebar
-        condominiumName={organization?.name || "Condominio"}
+        condominiumName={organization?.name || ""}
         condominiumSubtitle=""
         organizationLogoUrl={organization?.logoUrl || null}
         primaryNav={primaryNav}

@@ -48,6 +48,10 @@
   border-bottom: 1px solid var(--border-soft);
 }
 
+.dashboard-condominium.no-name {
+  justify-content: center;
+}
+
 .dashboard-org-logo {
   width: 44px;
   height: 44px;

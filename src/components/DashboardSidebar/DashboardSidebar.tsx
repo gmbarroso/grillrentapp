@@ -46,6 +46,9 @@ export default function DashboardSidebar({
   const location = useLocation()
   const { themeMode, setThemeMode } = useTheme()
   const isHiddenOnMobile = isMobileViewport && !isMobileOpen
+  const hasCondominiumName = condominiumName.trim().length > 0
+  const hasCondominiumSubtitle = condominiumSubtitle.trim().length > 0
+  const showCondominiumText = hasCondominiumName || hasCondominiumSubtitle
 
   const themeOptions = [
     { mode: "light" as const, label: "Tema claro", icon: Sun },
@@ -68,7 +71,7 @@ export default function DashboardSidebar({
         className={`dashboard-sidebar ${isCollapsed ? "collapsed" : ""} ${isMobileOpen ? "mobile-open" : ""}`.trim()}
         aria-hidden={isHiddenOnMobile}
       >
-        <div className="dashboard-condominium">
+        <div className={`dashboard-condominium ${!showCondominiumText ? "no-name" : ""}`.trim()}>
           {organizationLogoUrl ? (
             <div className="dashboard-org-logo" aria-hidden="true">
               <img src={organizationLogoUrl} alt="" />
@@ -76,10 +79,12 @@ export default function DashboardSidebar({
           ) : (
             <BrandMark compact showTagline={false} />
           )}
-          <div className="dashboard-condominium-text">
-            <h2>{condominiumName}</h2>
-            <p>{condominiumSubtitle}</p>
-          </div>
+          {showCondominiumText && (
+            <div className="dashboard-condominium-text">
+              {hasCondominiumName && <h2>{condominiumName}</h2>}
+              {hasCondominiumSubtitle && <p>{condominiumSubtitle}</p>}
+            </div>
+          )}
         </div>
 
         <div className="dashboard-sidebar-scroll">

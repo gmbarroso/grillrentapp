@@ -44,11 +44,6 @@ const AdminSettingsBranding = () => {
   }, [loadedForm])
 
   const handleSave = async () => {
-    if (!form.name.trim()) {
-      showToast("Informe o nome do condominio para salvar.", "error")
-      return
-    }
-
     setIsSaving(true)
     try {
       await updateOrganization({

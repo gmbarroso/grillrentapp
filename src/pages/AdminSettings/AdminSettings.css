@@ -51,7 +51,7 @@
 
 .settings-icon.blue {
   background: #eaf2ff;
-  color: #1e5fbf;
+  color: var(--accent-primary);
 }
 
 .settings-icon.green {

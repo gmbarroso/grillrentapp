@@ -61,7 +61,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const metaThemeColor = document.querySelector('meta[name="theme-color"]')
     if (metaThemeColor) {
-      metaThemeColor.setAttribute("content", resolvedTheme === "dark" ? "#152038" : "#ffffff")
+      const tokenColor = getComputedStyle(root).getPropertyValue("--surface-elevated").trim()
+      if (tokenColor) {
+        metaThemeColor.setAttribute("content", tokenColor)
+      }
     }
   }, [resolvedTheme])
 

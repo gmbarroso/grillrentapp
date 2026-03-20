@@ -13,6 +13,7 @@
   --accent-success: #16824b;
   --accent-warning: #f59e0b;
   --accent-danger: #ef4444;
+  --text-on-accent: #ffffff;
   --shadow-soft: 0 8px 24px rgba(13, 56, 142, 0.08);
 
   --sidebar-width-expanded: 236px;
@@ -36,6 +37,7 @@
   --accent-success: #5fde93;
   --accent-warning: #f4c35b;
   --accent-danger: #fb7185;
+  --text-on-accent: #ffffff;
   --shadow-soft: 0 10px 26px rgba(0, 0, 0, 0.36);
 }
 

@@ -161,7 +161,7 @@
 }
 
 .switch.on {
-  background: #1e5fbf;
+  background: var(--accent-primary);
 }
 
 .switch.on span {

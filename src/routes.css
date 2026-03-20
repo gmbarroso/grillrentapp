@@ -26,6 +26,14 @@
   background: rgba(244, 246, 251, 0.18);
 }
 
+:root[data-theme="dark"] .onboarding-shell-dashboard {
+  opacity: 0.86;
+}
+
+:root[data-theme="dark"] .onboarding-shell-overlay::before {
+  background: rgba(7, 14, 28, 0.38);
+}
+
 .onboarding-shell-modal {
   position: relative;
   z-index: 1;

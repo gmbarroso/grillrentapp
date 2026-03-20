@@ -109,7 +109,7 @@
   left: 2px;
   top: 2px;
   border-radius: 50%;
-  background-color: #ffffff;
+  background-color: var(--surface-elevated);
   transition: 0.2s;
 }
 

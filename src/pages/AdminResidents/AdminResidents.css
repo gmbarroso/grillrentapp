@@ -102,7 +102,7 @@
 }
 
 .role-pill.admin {
-  color: #1e5fbf;
+  color: var(--accent-primary);
   border-color: #9dc2ef;
   background: #f1f7ff;
 }

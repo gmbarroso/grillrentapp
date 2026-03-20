@@ -65,3 +65,19 @@
 .brand-mark-compact .brand-tagline {
   display: none;
 }
+
+:root[data-theme="dark"] .brand-wordmark-seu {
+  color: #dce8ff;
+}
+
+:root[data-theme="dark"] .brand-wordmark-ze {
+  color: #6fe09f;
+}
+
+:root[data-theme="dark"] .brand-tagline {
+  color: #c5d4ef;
+}
+
+:root[data-theme="dark"] .brand-tagline-line {
+  background: #6fe09f;
+}

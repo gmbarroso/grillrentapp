@@ -11,7 +11,7 @@
   width: 100%;
   border: 1px solid #d5e3f7;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   box-shadow: 0 12px 30px rgba(13, 42, 72, 0.08);
   padding: 1.2rem;
   display: flex;
@@ -57,6 +57,18 @@
   border-radius: 8px;
   padding: 0.6rem 0.7rem;
   font-size: 0.95rem;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
+.onboarding-form input:focus {
+  outline: 2px solid var(--accent-primary-strong);
+  border-color: #7ea8f2;
+}
+
+.onboarding-form input:invalid {
+  border-color: #d4deed;
+  box-shadow: none;
 }
 
 .onboarding-password-wrap {
@@ -96,4 +108,59 @@
   font-weight: 700;
   background: #e8f2ff;
   color: #1b4f8a;
+}
+
+:root[data-theme="dark"] .onboarding-card {
+  border-color: var(--border-default);
+  background: var(--surface-elevated);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="dark"] .onboarding-card h1 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .onboarding-card p {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .onboarding-rules {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .onboarding-form label {
+  color: #d9e4fb;
+}
+
+:root[data-theme="dark"] .onboarding-form input {
+  border-color: #3a527b;
+  background: #182641;
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .onboarding-form input::placeholder {
+  color: #9cb0d4;
+}
+
+:root[data-theme="dark"] .onboarding-form input:focus {
+  outline: 2px solid #5a83c5;
+  border-color: #5a83c5;
+}
+
+:root[data-theme="dark"] .onboarding-form input:invalid {
+  border-color: #3a527b;
+}
+
+:root[data-theme="dark"] .onboarding-password-wrap {
+  border-color: #3a527b;
+  background: #182641;
+}
+
+:root[data-theme="dark"] .onboarding-password-toggle {
+  color: #afc2e6;
+}
+
+:root[data-theme="dark"] .onboarding-chip {
+  background: #20365f;
+  color: #c8dcff;
 }

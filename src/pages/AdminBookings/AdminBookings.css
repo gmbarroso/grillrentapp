@@ -112,7 +112,7 @@
 }
 
 .resource-dot.hourly {
-  background: #1e5fbf;
+  background: var(--accent-primary);
 }
 
 .resource-dot.daily {

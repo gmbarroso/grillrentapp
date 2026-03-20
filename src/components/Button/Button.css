@@ -169,7 +169,7 @@
 }
 
 .dark .button-danger {
-  background-color: #ef4444;
+  background-color: var(--accent-danger);
   color: white;
 }
 

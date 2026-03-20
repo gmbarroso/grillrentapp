@@ -14,15 +14,21 @@ export default function OnboardingEmail() {
   const { refreshProfile } = useAuth()
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const normalizedEmail = email.trim()
+  const isValidEmailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
 
   const submitEmail = async (event: FormEvent) => {
     event.preventDefault()
+    if (!isValidEmailFormat) {
+      showToast("Enter a valid email before continuing.", "error")
+      return
+    }
     try {
       setIsSubmitting(true)
       const response = await fetchWithAuthHandling(`${API_BASE_URL}/users/onboarding/email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: normalizedEmail }),
       })
 
       if (!response.ok) {
@@ -53,7 +59,9 @@ export default function OnboardingEmail() {
             Email
             <input
               id="onboarding-email"
-              type="email"
+              type="text"
+              inputMode="email"
+              autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="resident@condo.com"
@@ -62,7 +70,12 @@ export default function OnboardingEmail() {
           </label>
 
           <div className="onboarding-actions">
-            <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting} loadingText="Saving...">
+            <Button
+              type="submit"
+              disabled={isSubmitting || !isValidEmailFormat}
+              isLoading={isSubmitting}
+              loadingText="Saving..."
+            >
               Continue
             </Button>
           </div>

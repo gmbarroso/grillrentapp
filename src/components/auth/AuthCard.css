@@ -3,7 +3,7 @@
   padding: 1.4rem;
   border-radius: 14px;
   border: 1px solid #ccd7ea;
-  background: #ffffff;
+  background: var(--surface-elevated);
   box-shadow: 0 8px 20px rgba(11, 40, 101, 0.08);
 }
 
@@ -27,4 +27,18 @@
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
+}
+
+:root[data-theme="dark"] .auth-card {
+  border-color: var(--border-default);
+  background: var(--surface-elevated);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="dark"] .auth-card-header h2 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .auth-card-header p {
+  color: var(--text-secondary);
 }

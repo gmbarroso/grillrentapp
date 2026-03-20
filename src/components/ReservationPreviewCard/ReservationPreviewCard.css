@@ -39,7 +39,7 @@
 
 .reservation-status.confirmed {
   background: #e9f8ef;
-  color: #16824b;
+  color: var(--accent-success);
 }
 
 .reservation-status.pending {

@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.25rem;
-  background: #f4f6fb;
+  background: var(--surface-base);
   overflow: hidden;
 }
 
@@ -125,7 +125,7 @@
   border-radius: 8px;
   border: none;
   background: var(--color-blue);
-  color: #ffffff;
+  color: var(--text-on-accent);
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -155,7 +155,7 @@
   height: 40px;
   border-radius: 8px;
   border: 1px solid #ccd7ea;
-  background: #ffffff;
+  background: var(--surface-elevated);
   color: #161e2f;
   font-size: 0.98rem;
   font-weight: 700;
@@ -176,6 +176,76 @@
   margin: 0.15rem 0 0;
   color: #6d7788;
   font-size: 0.9rem;
+}
+
+:root[data-theme="dark"] .login-page {
+  background: radial-gradient(1000px 520px at 84% -12%, #20365f 0%, var(--surface-base) 58%);
+}
+
+:root[data-theme="dark"] .login-page-decoration {
+  background: #213454;
+  opacity: 0.8;
+}
+
+:root[data-theme="dark"] .login-field label {
+  color: #d9e4fb;
+}
+
+:root[data-theme="dark"] .login-input {
+  border-color: #3a527b;
+  background: #182641;
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .login-input::placeholder {
+  color: #9cb0d4;
+}
+
+:root[data-theme="dark"] .login-input:focus {
+  outline: 2px solid #5a83c5;
+  border-color: #5a83c5;
+}
+
+:root[data-theme="dark"] .login-link-button {
+  color: var(--accent-primary-strong);
+}
+
+:root[data-theme="dark"] .login-password-toggle {
+  color: #afc2e6;
+}
+
+:root[data-theme="dark"] .login-submit {
+  background: #4e79bc;
+  color: #f6f9ff;
+}
+
+:root[data-theme="dark"] .login-submit:hover {
+  background: #7ba2e0;
+}
+
+:root[data-theme="dark"] .login-divider {
+  color: #9cb0d4;
+}
+
+:root[data-theme="dark"] .login-divider::before,
+:root[data-theme="dark"] .login-divider::after {
+  background: #35517f;
+}
+
+:root[data-theme="dark"] .login-secondary {
+  border-color: #3a527b;
+  background: #182641;
+  color: #dde8ff;
+}
+
+:root[data-theme="dark"] .login-demo-box {
+  border-color: #35517f;
+  background: #15233d;
+  color: #b9cae7;
+}
+
+:root[data-theme="dark"] .login-caption {
+  color: #a5b5d1;
 }
 
 @media (max-width: 520px) {

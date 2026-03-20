@@ -13,7 +13,7 @@
 .dashboard-home-skeleton-card {
   border: 1px solid #d5dfed;
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--surface-elevated);
   padding: 1rem;
   display: flex;
   flex-direction: column;

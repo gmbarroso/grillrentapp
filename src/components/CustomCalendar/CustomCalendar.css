@@ -99,7 +99,7 @@
   left: 50%;
   bottom: calc(100% + 6px);
   transform: translateX(-50%);
-  background: #1e5fbf;
+  background: var(--accent-primary);
   color: #fff;
   font-size: 0.74rem;
   line-height: 1.25;

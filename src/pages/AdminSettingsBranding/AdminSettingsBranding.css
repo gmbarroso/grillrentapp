@@ -59,7 +59,7 @@
 
 .settings-icon.blue {
   background: #eaf2ff;
-  color: #1e5fbf;
+  color: var(--accent-primary);
 }
 
 .logo-row {
@@ -79,7 +79,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #1e5fbf;
+  color: var(--accent-primary);
   font-weight: 700;
   background: var(--surface-muted);
 }

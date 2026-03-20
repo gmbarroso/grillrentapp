@@ -35,7 +35,7 @@
 
 .calendar-widget .calendar-day.selected {
   background-color: var(--color-blue);
-  color: #ffffff;
+  color: var(--text-on-accent);
 }
 
 .calendar-widget .calendar-legend {

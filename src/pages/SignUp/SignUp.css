@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.25rem;
-  background: #f4f6fb;
+  background: var(--surface-base);
   overflow: hidden;
 }
 
@@ -43,7 +43,7 @@
   height: 82px;
   border-radius: 14px;
   border: 1px solid #d7deea;
-  background: #ffffff;
+  background: var(--surface-elevated);
   display: grid;
   place-items: center;
   box-shadow: 0 10px 22px rgba(13, 56, 142, 0.09);
@@ -91,7 +91,7 @@
   width: min(100%, 430px);
   border-radius: 14px;
   border: 1px solid #d7deea;
-  background: #ffffff;
+  background: var(--surface-elevated);
   box-shadow: 0 8px 20px rgba(11, 40, 101, 0.08);
   padding: 1.2rem;
   display: flex;
@@ -200,7 +200,7 @@
 .signup-primary {
   border: none;
   background: #0f4a88;
-  color: #ffffff;
+  color: var(--text-on-accent);
 }
 
 .signup-primary:hover:not(:disabled) {
@@ -214,7 +214,7 @@
 
 .signup-secondary {
   border: 1px solid #ccd7ea;
-  background: #ffffff;
+  background: var(--surface-elevated);
   color: #1f2b40;
 }
 

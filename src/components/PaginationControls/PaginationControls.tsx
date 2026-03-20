@@ -23,21 +23,29 @@ export default function PaginationControls({
   className = "",
 }: PaginationControlsProps) {
   const rootClass = `pagination-controls ${compact ? "compact" : ""} ${className}`.trim()
+  const normalizedCurrentPage = Number(currentPage)
+  const safeCurrentPage = Number.isFinite(normalizedCurrentPage) && normalizedCurrentPage > 0
+    ? Math.floor(normalizedCurrentPage)
+    : 1
+  const normalizedLastPage = Number(lastPage)
+  const safeLastPage = Number.isFinite(normalizedLastPage) && normalizedLastPage > 0
+    ? Math.floor(normalizedLastPage)
+    : 1
 
   return (
     <div className={rootClass}>
-      <Button variant="secondary" onClick={() => onChangePage(currentPage - 1)} disabled={currentPage <= 1}>
+      <Button variant="secondary" onClick={() => onChangePage(safeCurrentPage - 1)} disabled={safeCurrentPage <= 1}>
         Anterior
       </Button>
 
       <span className="pagination-page-info">
-        Pagina {currentPage} de {Math.max(1, lastPage)}
+        Pagina {safeCurrentPage} de {Math.max(1, safeLastPage)}
       </span>
 
       <Button
         variant="secondary"
-        onClick={() => onChangePage(currentPage + 1)}
-        disabled={currentPage >= Math.max(1, lastPage)}
+        onClick={() => onChangePage(safeCurrentPage + 1)}
+        disabled={safeCurrentPage >= Math.max(1, safeLastPage)}
       >
         Proxima
       </Button>

@@ -13,8 +13,8 @@ const ADMIN_BOOKED_DATES_ENDPOINT = `${API_BASE_URL}/bookeddates`
 interface BookedDatesResponse {
   data: Booking[]
   total: number
-  page: number
-  lastPage: number
+  page: number | string
+  lastPage: number | string
 }
 
 interface UseAdminBookedDatesOptions {
@@ -73,12 +73,22 @@ export function useAdminBookedDates(options?: UseAdminBookedDatesOptions) {
   )
 
   const { data, isLoading, isError, mutate } = useFetch<BookedDatesResponse>(url, { fetcher })
+  const resolvedPage = useMemo(() => {
+    const rawPage = data?.page ?? page
+    const numericPage = Number(rawPage)
+    return Number.isFinite(numericPage) && numericPage > 0 ? numericPage : 1
+  }, [data?.page, page])
+  const resolvedLastPage = useMemo(() => {
+    const numericLastPage = Number(data?.lastPage)
+    if (!Number.isFinite(numericLastPage) || numericLastPage < 1) return 1
+    return Math.floor(numericLastPage)
+  }, [data?.lastPage])
 
   return {
     bookings: data?.data || [],
     total: data?.total || 0,
-    page: data?.page || page,
-    lastPage: data?.lastPage || 1,
+    page: resolvedPage,
+    lastPage: resolvedLastPage,
     limit,
     sort,
     order,

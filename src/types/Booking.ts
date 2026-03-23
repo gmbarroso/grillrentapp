@@ -3,6 +3,7 @@ export interface Booking {
   userId: string
   resourceType: "daily" | "hourly"
   resourceId: string
+  resourceName: string
   startTime: string
   endTime: string
   userApartment: string
@@ -15,6 +16,7 @@ export interface BookingListInterface {
   id: string
   resourceId: string
   resourceType: "daily" | "hourly"
+  resourceName: string
   startTime: string
   endTime: string
   userId: string
@@ -40,4 +42,28 @@ export interface BookingListProps {
   onChangeLimit: (limit: number) => void
   onChangeSort: (sort: string) => void
   onChangeOrder: (order: "ASC" | "DESC") => void
+}
+
+export interface BatchBookingSlotInput {
+  startTime: string
+  endTime: string
+}
+
+export interface BatchBookingSkippedItem {
+  startTime: string
+  endTime: string
+  reason: string
+}
+
+export interface BatchBookingSummary {
+  requested: number
+  created: number
+  skipped: number
+}
+
+export interface BatchBookingResponse {
+  message: string
+  summary: BatchBookingSummary
+  created: Booking[]
+  skipped: BatchBookingSkippedItem[]
 }

@@ -123,7 +123,7 @@
 }
 
 .dark .dialog-actions .delete-button {
-  background-color: #ef4444;
+  background-color: var(--accent-danger);
 }
 
 .dark .dialog-actions .delete-button:hover {
@@ -138,4 +138,3 @@
 .dark .dialog-actions .cancel-button:hover {
   background-color: #40916c;
 }
-

@@ -5,12 +5,12 @@ import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
-import { Modal, LoadingSpinner, Tooltip, Button } from "../"
+import { Modal, Tooltip, Button, Skeleton } from "../"
 import { useToast } from "../../context/ToastContext"
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react"
 import { formatBookingDate, formatBookingTimeInterval } from "../../utils/booking-datetime"
 import "./BookingList.css"
-import type { Booking, BookingListProps } from "../../types/Booking"
+import type { Booking, BookingListProps } from "../../types"
 
 const BookingList: React.FC<BookingListProps> = ({
   bookings,
@@ -188,7 +188,7 @@ const BookingList: React.FC<BookingListProps> = ({
         <div className="modal-actions">
           {isLoading ? (
             <div className="loading-container">
-              <LoadingSpinner />
+              <Skeleton width="100%" height={38} borderRadius={8} />
             </div>
           ) : (
             <>

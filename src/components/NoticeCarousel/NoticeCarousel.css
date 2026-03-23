@@ -1,0 +1,110 @@
+.notice-carousel-card {
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--surface-elevated);
+  padding: 0.85rem;
+}
+
+.notice-carousel-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.notice-carousel-title-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.notice-carousel-header h4 {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--text-primary);
+}
+
+.notice-carousel-novo-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid #f6bf8c;
+  background: #fff2e6;
+  color: #9a4f0a;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.notice-carousel-header time {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.notice-carousel-subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.notice-carousel-content {
+  margin: 0.4rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.notice-carousel-footer {
+  margin-top: 0.72rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+}
+
+.notice-carousel-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.notice-carousel-actions button {
+  border: 1px solid var(--border-default);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  width: 28px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.notice-carousel-actions button:hover {
+  border-color: var(--border-default);
+  background: var(--surface-subtle);
+}
+
+.notice-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.notice-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  background: var(--border-default);
+  cursor: pointer;
+  padding: 0;
+}
+
+.notice-carousel-dot.active {
+  background: var(--color-blue);
+}

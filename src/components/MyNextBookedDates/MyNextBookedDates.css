@@ -1,0 +1,56 @@
+.next-booked-dates {
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+  padding: 1rem;
+}
+
+.next-booked-dates-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.next-booked-dates-title {
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--text-primary);
+}
+
+.next-booked-dates-action {
+  border: none;
+  background: transparent;
+  color: var(--color-blue);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.next-booked-dates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+}
+
+.next-booked-dates-grid.count-1 {
+  grid-template-columns: minmax(220px, 340px);
+}
+
+.next-booked-dates-grid.count-2 {
+  grid-template-columns: repeat(2, minmax(220px, 320px));
+}
+
+.next-booked-dates-empty {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 0.35rem 0.1rem;
+}
+
+@media (max-width: 900px) {
+  .next-booked-dates-grid.count-2 {
+    grid-template-columns: 1fr;
+  }
+}

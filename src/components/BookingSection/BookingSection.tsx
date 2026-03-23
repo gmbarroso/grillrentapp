@@ -2,244 +2,581 @@
 
 import type React from "react"
 import { useState, useEffect, useCallback, useMemo } from "react"
+import { CalendarDays, Clock3, RefreshCw, Trash2, X } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useAllResources } from "../../hooks/resource/useAllResources"
 import { useCreateBooking } from "../../hooks/booking/useCreateBooking"
+import { useCreateBatchBooking } from "../../hooks/booking/useCreateBatchBooking"
+import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
 import { useReservedTimes } from "../../hooks/booking/useReservedTimes"
+import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { useToast } from "../../context/ToastContext"
 import { useAuth } from "../../context/AuthContext"
-import type { Resource } from "../../types/Resource"
-import type { BookingSectionProps } from "../../types/Booking"
-import { LoadingSpinner, Modal, CustomCalendar, TimeSlotSelector, Tooltip, Button } from "../"
+import type { Resource } from "../../types"
+import type { BatchBookingResponse, Booking, BookingSectionProps } from "../../types"
+import { formatBookingDateKey, formatBookingHourSlot, BOOKING_DISPLAY_TIMEZONE } from "../../utils/booking-datetime"
+import { Modal, Drawer, Calendar, Tooltip, Button, SchedulerSlotsSkeleton } from "../"
 import "./BookingSection.css"
 
-const BookingSection: React.FC<BookingSectionProps> = ({
-  token,
-  onBookingCreated,
-}) => {
+interface PendingBookingData {
+  resourceId: string
+  startTime: string
+  endTime: string
+  needTablesAndChairs: boolean
+  bookedOnBehalf?: string
+}
+
+interface PendingHourlyBookingSelection {
+  slot: string
+  startHour: number
+  endHour: number
+}
+
+const timeSlots = Array.from({ length: 15 }, (_, i) => {
+  const hour = i + 7
+  return {
+    value: `${hour.toString().padStart(2, "0")}:00`,
+    label: `${hour.toString().padStart(2, "0")}:00h - ${(hour + 1).toString().padStart(2, "0")}:00h`,
+  }
+})
+
+const formatPtDateTitle = (date: Date) => {
+  const text = new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(date)
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+const sameDateKey = (iso: string, key: string) => formatBookingDateKey(new Date(iso)) === key
+
+const isSameUnit = (booking: Booking, apartment?: string, block?: number) =>
+  booking.userApartment === apartment && Number(booking.userBlock) === Number(block)
+
+const dayFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: BOOKING_DISPLAY_TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+})
+
+const SAO_PAULO_UTC_OFFSET_HOURS = 3
+
+const toSaoPauloUtcInstant = (date: Date, hour: number, minute: number = 0) =>
+  new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), hour + SAO_PAULO_UTC_OFFSET_HOURS, minute, 0, 0))
+
+const bookingOwnerLabel = (booking: Booking) => `apt. ${booking.userApartment} bl. ${booking.userBlock}`
+
+const bookingDetailsTooltip = (booking: Booking) => {
+  const lines = [`Reservado pelo ${bookingOwnerLabel(booking)}`]
+  if (booking.bookedOnBehalf?.trim()) {
+    lines.push(`Reserva em nome de ${booking.bookedOnBehalf}`)
+  }
+  return lines.join(" • ")
+}
+
+const formatPanelDateLabel = (date: Date) => {
+  const text = new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+  }).format(date)
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+const formatPanelResultDate = (dateIso: string) => {
+  const date = new Date(dateIso)
+  return new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "short",
+  }).format(date)
+}
+
+const formatPanelTimeRange = (startIso: string, endIso: string) => {
+  const format = (value: string) =>
+    new Intl.DateTimeFormat("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: BOOKING_DISPLAY_TIMEZONE,
+    }).format(new Date(value))
+  return `${format(startIso)} — ${format(endIso)}h`
+}
+
+const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated }) => {
   const { t } = useTranslation()
   const { showToast } = useToast()
   const { user } = useAuth()
-  const [selectedOption, setSelectedOption] = useState<"daily" | "hourly" | null>(null)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [selectedTime, setSelectedTime] = useState<string | null>(null)
-  const {
-    reservedTimes: unavailableTimes,
-    reservedDays,
-    isLoading: isLoadingTimes,
-    error: timesError,
-  } = useReservedTimes(selectedOption as "hourly" | "daily" | undefined, selectedDate || undefined)
+
+  const [selectedOption, setSelectedOption] = useState<"daily" | "hourly">("hourly")
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [needTablesAndChairs, setNeedTablesAndChairs] = useState(false)
   const [isAgreementModalOpen, setIsAgreementModalOpen] = useState(false)
-  const [calendarKey, setCalendarKey] = useState<string>(`${selectedOption}-${Date.now()}`)
-  const [isFetchingAfterDateSelect, setIsFetchingAfterDateSelect] = useState(false)
-  const [bookedOnBehalf, setBookedOnBehalf] = useState<string>("")
+  const [bookedOnBehalf, setBookedOnBehalf] = useState("")
+  const [pendingBookingData, setPendingBookingData] = useState<PendingBookingData | null>(null)
+  const [isConfirmBookingPanelOpen, setIsConfirmBookingPanelOpen] = useState(false)
+  const [isRecurringEnabled, setIsRecurringEnabled] = useState(false)
+  const [pendingHourlySelection, setPendingHourlySelection] = useState<PendingHourlyBookingSelection | null>(null)
+  const [recurringSelectedDates, setRecurringSelectedDates] = useState<Date[]>([])
+  const [batchBookingResult, setBatchBookingResult] = useState<BatchBookingResponse | null>(null)
+  const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null)
+
+  const {
+    reservedTimes: unavailableTimes,
+    reservedTimeDetails,
+    reservedDays,
+    reservedDayDetails,
+    isLoading: isLoadingTimes,
+    error: timesError,
+  } = useReservedTimes(selectedOption, selectedDate)
 
   const { data: resources, isLoading: isResourcesLoading, error: resourcesError } = useAllResources(token)
   const { createBooking, isLoading: isCreatingBooking } = useCreateBooking(token)
+  const { createBatchBooking, isLoading: isCreatingBatchBooking } = useCreateBatchBooking(token)
+  const { deleteBooking, isLoading: isDeletingBooking } = useDeleteBooking(token)
+  const { bookings, refreshBookings } = useAllBookings({ initialLimit: 1000 })
+
+  const selectedDateKey = useMemo(() => formatBookingDateKey(selectedDate), [selectedDate])
 
   const selectedResource = useMemo(() => {
-    return selectedOption ? resources?.find((r: Resource) => r.type === selectedOption) : null
-  }, [selectedOption, resources])
+    return resources?.find((resource: Resource) => resource.type === selectedOption) ?? null
+  }, [resources, selectedOption])
+  const hourlyResource = useMemo(() => resources?.find((resource: Resource) => resource.type === "hourly") ?? null, [resources])
+  const dailyResource = useMemo(() => resources?.find((resource: Resource) => resource.type === "daily") ?? null, [resources])
 
-  useEffect(() => {
-    if (selectedOption) {
-      setCalendarKey(`${selectedOption}-${Date.now()}`)
-    }
-  }, [selectedOption])
+  const resourceBookings = useMemo(() => {
+    const now = new Date()
+    return bookings
+      .filter((booking) => booking.resourceType === selectedOption)
+      .filter((booking) => new Date(booking.endTime).getTime() > now.getTime())
+  }, [bookings, selectedOption])
 
-  useEffect(() => {
-    if (!isLoadingTimes && isFetchingAfterDateSelect) {
-      setIsFetchingAfterDateSelect(false)
-    }
-  }, [isLoadingTimes, isFetchingAfterDateSelect])
-
-  const handleOptionSelect = useCallback(
-    (option: "daily" | "hourly") => {
-      if (option === selectedOption) return
-
-      setSelectedOption(option)
-      setSelectedDate(null)
-      setSelectedTime(null)
-      setNeedTablesAndChairs(false)
-    },
-    [selectedOption],
+  const dayBookings = useMemo(
+    () =>
+      resourceBookings
+        .filter((booking) => sameDateKey(booking.startTime, selectedDateKey))
+        .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()),
+    [resourceBookings, selectedDateKey],
   )
 
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date)
-    setSelectedTime(null)
+  const hourlyBookingByHour = useMemo(() => {
+    const map = new Map<string, Booking>()
+    dayBookings.forEach((booking) => {
+      map.set(formatBookingHourSlot(booking.startTime), booking)
+    })
+    return map
+  }, [dayBookings])
 
-    if (selectedOption === "daily") {
-      setIsFetchingAfterDateSelect(true)
+  const dailyBooking = selectedOption === "daily" ? dayBookings[0] ?? null : null
+  const isDailyBookingClosedForSelectedDate = useMemo(() => {
+    if (selectedOption !== "daily") return false
+
+    const now = new Date()
+    const selectedDayKey = selectedDateKey
+    const todayKey = dayFormatter.format(now)
+    return selectedDayKey === todayKey
+  }, [selectedDateKey, selectedOption])
+
+  const canDeleteBooking = useCallback(
+    (booking: Booking) => {
+      if (!user) return false
+      return booking.userId === user.id || isSameUnit(booking, user.apartment, user.block) || user.role === "admin"
+    },
+    [user],
+  )
+
+  const isPastSlotForSelectedDate = (slot: string) => {
+    if (selectedOption !== "hourly") return false
+
+    const now = new Date()
+    const dayFormatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: BOOKING_DISPLAY_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    const selectedDayKey = dayFormatter.format(selectedDate)
+    const todayKey = dayFormatter.format(now)
+    if (selectedDayKey !== todayKey) return false
+
+    const [slotHourText] = slot.split(":")
+    const slotHour = Number.parseInt(slotHourText, 10)
+    const nowHour = Number.parseInt(
+      new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        hour12: false,
+        timeZone: BOOKING_DISPLAY_TIMEZONE,
+      }).format(now),
+      10,
+    )
+    return slotHour <= nowHour
+  }
+
+  useEffect(() => {
+    if (resourcesError) {
+      showToast(t("ErrorLoadingResources"), "error")
+    }
+  }, [resourcesError, showToast, t])
+
+  useEffect(() => {
+    if (timesError && !(selectedOption === "hourly" && !selectedDate)) {
+      showToast(t("ErrorFetchingSlots"), "error")
+    }
+  }, [timesError, selectedDate, selectedOption, showToast, t])
+
+  const buildBookingPayload = (slot?: string | null): PendingBookingData | null => {
+    if (!selectedResource) return null
+
+    const now = new Date()
+    const todayInSaoPauloKey = dayFormatter.format(now)
+    const isSelectedDateTodayInSaoPaulo = selectedDateKey === todayInSaoPauloKey
+    let startTime: Date
+    let endTime: Date
+
+    if (selectedOption === "hourly") {
+      if (!slot) return null
+      const [hourText] = slot.split(":")
+      const hour = Number.parseInt(hourText, 10)
+      startTime = toSaoPauloUtcInstant(selectedDate, hour)
+      endTime = toSaoPauloUtcInstant(selectedDate, hour + 1)
+    } else {
+      startTime = toSaoPauloUtcInstant(selectedDate, 7)
+      endTime = toSaoPauloUtcInstant(selectedDate, 22)
+    }
+
+    if (selectedOption === "daily" && isSelectedDateTodayInSaoPaulo) {
+      showToast(t("ErrorBookingClosedForToday"), "error")
+      return null
+    }
+
+    return {
+      resourceId: selectedResource.id,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      needTablesAndChairs: selectedOption === "daily" ? needTablesAndChairs : false,
+      ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
     }
   }
 
-  const handleTimeSelect = (time: string) => {
-    setSelectedTime(time)
+  const openConfirmBookingModal = (slot?: string | null) => {
+    const payload = buildBookingPayload(slot)
+    if (!payload) return
+
+    if (selectedOption === "hourly" && slot) {
+      const [hourText] = slot.split(":")
+      const hour = Number.parseInt(hourText, 10)
+      setPendingHourlySelection({
+        slot,
+        startHour: hour,
+        endHour: hour + 1,
+      })
+      setRecurringSelectedDates([new Date(selectedDate)])
+      setIsRecurringEnabled(false)
+      setBatchBookingResult(null)
+    } else {
+      setPendingHourlySelection(null)
+      setRecurringSelectedDates([])
+      setIsRecurringEnabled(false)
+      setBatchBookingResult(null)
+    }
+
+    setPendingBookingData(payload)
+    setIsConfirmBookingPanelOpen(true)
   }
 
-  const handleTablesAndChairsChange = () => {
-    setIsAgreementModalOpen(true)
-  }
+  const handleConfirmBooking = async () => {
+    if (!pendingBookingData) return
 
-  const handleAgreementConfirm = () => {
-    setNeedTablesAndChairs(true)
-    setIsAgreementModalOpen(false)
-  }
+    try {
+      if (selectedOption === "hourly" && isRecurringEnabled && pendingHourlySelection) {
+        const uniqueDateKeys = new Set<string>()
+        const batchSlots = recurringSelectedDates
+          .map((date) => {
+            const key = formatBookingDateKey(date)
+            if (uniqueDateKeys.has(key)) return null
+            uniqueDateKeys.add(key)
+            const startTime = toSaoPauloUtcInstant(date, pendingHourlySelection.startHour)
+            const endTime = toSaoPauloUtcInstant(date, pendingHourlySelection.endHour)
+            return {
+              startTime: startTime.toISOString(),
+              endTime: endTime.toISOString(),
+            }
+          })
+          .filter((slot): slot is { startTime: string; endTime: string } => Boolean(slot))
+          .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
 
-  const handleAgreementCancel = () => {
-    setNeedTablesAndChairs(false)
-    setIsAgreementModalOpen(false)
-  }
-
-  const handleConfirmDate = async () => {
-    if (selectedResource && selectedDate) {
-      const now = new Date()
-      const startTime = new Date(selectedDate)
-      const endTime = new Date(selectedDate)
-
-      if (selectedOption === "hourly" && selectedTime) {
-        const [hours] = selectedTime.split(":")
-        startTime.setHours(Number.parseInt(hours, 10), 0, 0, 0)
-        endTime.setHours(startTime.getHours() + 1, 0, 0, 0)
-      } else {
-        startTime.setHours(7, 0, 0, 0)
-        endTime.setHours(22, 0, 0, 0)
-      }
-
-      if (startTime.toDateString() === now.toDateString() && selectedOption === "daily") {
-        const currentHour = now.getHours()
-        if (currentHour >= 7 && currentHour < 22) {
-          startTime.setHours(currentHour + 1, 0, 0, 0)
-        } else if (currentHour >= 22) {
-          showToast(t("ErrorBookingClosedForToday"), "error")
+        if (batchSlots.length === 0) {
+          showToast("Selecione ao menos uma data para confirmar", "error")
           return
         }
+
+        const result = await createBatchBooking({
+          resourceId: pendingBookingData.resourceId,
+          slots: batchSlots,
+          needTablesAndChairs: false,
+          ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
+        })
+
+        setBatchBookingResult(result)
+        await refreshBookings()
+        await onBookingCreated()
+        if (result.summary.created > 0) {
+          showToast(
+            result.summary.skipped > 0
+              ? `${result.summary.created} reservas confirmadas. ${result.summary.skipped} não foram criadas.`
+              : `${result.summary.created} reservas confirmadas.`,
+            "success",
+          )
+        } else {
+          showToast("Nenhuma data foi reservada.", "error")
+        }
+        setBookedOnBehalf("")
+        return
       }
 
-      try {
-        const bookingData = {
-          resourceId: selectedResource.id,
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
-          needTablesAndChairs: selectedOption === "daily" ? needTablesAndChairs : false,
-          ...(bookedOnBehalf ? { bookedOnBehalf } : {}),
-        }
-        await createBooking(bookingData)
-        onBookingCreated()
-        showToast(t("BookingCreatedSuccess"), "success")
-        setSelectedDate(null)
-        setSelectedTime(null)
-        setNeedTablesAndChairs(false)
-        setSelectedOption(null)
-        setBookedOnBehalf("")
-      } catch (error) {
-        console.error("Error creating booking:", error)
-        showToast(t("ErrorCreatingBooking"), "error")
-      }
+      await createBooking(pendingBookingData)
+      await refreshBookings()
+      await onBookingCreated()
+      showToast(t("BookingCreatedSuccess"), "success")
+      setNeedTablesAndChairs(false)
+      setBookedOnBehalf("")
+      setIsConfirmBookingPanelOpen(false)
+      setPendingBookingData(null)
+      setPendingHourlySelection(null)
+      setRecurringSelectedDates([])
+      setBatchBookingResult(null)
+    } catch (error) {
+      console.error("Error creating booking:", error)
+      const message = error instanceof Error && error.message ? error.message : t("ErrorCreatingBooking")
+      showToast(message, "error")
     }
   }
 
-  const handleRulesForEachResource = (option: "daily" | "hourly") => {
-    const title = t(`Card.${option === "hourly" ? "TennisTitle" : "GrillTitle"}`)
-    const content = t(`Card.${option === "hourly" ? "TennisContent" : "GrillContent"}`, {
+  const handleDeleteCurrentBooking = async () => {
+    if (!bookingToDelete) return
+    const result = await deleteBooking(bookingToDelete.id)
+    if (result.success) {
+      await refreshBookings()
+      await onBookingCreated()
+      showToast(t("BookingList.DeleteSuccess"), "success")
+    } else {
+      showToast(t("BookingList.DeleteError"), "error")
+    }
+    setBookingToDelete(null)
+  }
+
+  const closeConfirmBookingPanel = useCallback(() => {
+    setIsConfirmBookingPanelOpen(false)
+    setPendingBookingData(null)
+    setPendingHourlySelection(null)
+    setRecurringSelectedDates([])
+    setIsRecurringEnabled(false)
+    setBatchBookingResult(null)
+  }, [])
+
+  const toggleRecurringDate = useCallback((date: Date) => {
+    const dateKey = formatBookingDateKey(date)
+    setRecurringSelectedDates((prev) => {
+      const exists = prev.some((item) => formatBookingDateKey(item) === dateKey)
+      if (exists) {
+        if (prev.length === 1) return prev
+        return prev.filter((item) => formatBookingDateKey(item) !== dateKey)
+      }
+      return [...prev, new Date(date)]
+    })
+  }, [])
+
+  const removeRecurringDate = useCallback((dateKey: string) => {
+    setRecurringSelectedDates((prev) => {
+      if (prev.length === 1) return prev
+      return prev.filter((item) => formatBookingDateKey(item) !== dateKey)
+    })
+  }, [])
+
+  const recurringDatesSorted = useMemo(
+    () =>
+      [...recurringSelectedDates].sort((a, b) => a.getTime() - b.getTime()),
+    [recurringSelectedDates],
+  )
+
+  const rules = useMemo(() => {
+    const content = t(`Card.${selectedOption === "hourly" ? "TennisContent" : "GrillContent"}`, {
       returnObjects: true,
     }) as string[]
+    return content
+  }, [selectedOption, t])
 
-    return (
-      <div>
-        <h3 className="card-title">{title}</h3>
-        <ul className="card-content">
-          {content.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-
-  const canConfirmBooking = () => {
-    if (selectedOption === "hourly") {
-      return selectedDate && selectedTime
+  const recurringButtonLabel = useMemo(() => {
+    if (!(selectedOption === "hourly" && isRecurringEnabled)) {
+      return "Confirmar reserva"
     }
-    return selectedDate
-  }
-
-  if (resourcesError) {
-    showToast(t("ErrorLoadingResources"), "error")
-  }
-
-  if (timesError && !(selectedOption === "hourly" && !selectedDate)) {
-    showToast(t("ErrorFetchingSlots"), "error")
-  }
+    return `Confirmar ${recurringDatesSorted.length} reservas`
+  }, [isRecurringEnabled, recurringDatesSorted.length, selectedOption])
 
   return (
-    <section className="booking-section">
-      <h2>{t("ChooseRent")}</h2>
-      <div className="options">
-        {isResourcesLoading ? (
-          <div className="options-loading">
-            <LoadingSpinner inline />
-          </div>
-        ) : resources ? (
-          resources.map((resource: Resource) => (
-            <Button
-              key={resource.id}
-              variant="secondary"
-              className={selectedOption === resource.type ? "selected" : ""}
-              onClick={() => handleOptionSelect(resource.type)}
-            >
-              {t(`Resource.${resource.type}`)}
-            </Button>
-          ))
-        ) : null}
+    <section className="booking-section booking-scheduler">
+      <div className="scheduler-tabs">
+        <Button
+          variant="secondary"
+          className={selectedOption === "hourly" ? "selected" : ""}
+          onClick={() => setSelectedOption("hourly")}
+        >
+          {hourlyResource?.name ?? ""}
+        </Button>
+        <Button
+          variant="secondary"
+          className={selectedOption === "daily" ? "selected" : ""}
+          onClick={() => setSelectedOption("daily")}
+        >
+          {dailyResource?.name ?? ""}
+        </Button>
       </div>
-      {selectedOption && (
-        <div className="calendar-section">
-          <div className="calendar-container">
-            {selectedOption === "daily" && (isLoadingTimes || isFetchingAfterDateSelect) ? (
-              <div className="calendar-loading">
-                <LoadingSpinner inline />
-              </div>
-            ) : (
-              <CustomCalendar
-                key={calendarKey}
-                reservedDays={selectedOption === "daily" ? reservedDays : []}
-                onDateSelect={handleDateSelect}
-                resourceType={selectedOption}
-                selectedDate={selectedDate}
-              />
-            )}
+
+      <div className="scheduler-content">
+        <div className="scheduler-main">
+          <div className="scheduler-day-title">
+            <CalendarDays size={16} />
+            <strong>{formatPtDateTitle(selectedDate)}</strong>
           </div>
 
-          {selectedDate && selectedOption === "daily" && !isLoadingTimes && !isFetchingAfterDateSelect && (
-            <div className="tables-chairs-option">
+          {isLoadingTimes ? (
+            <div className="scheduler-loading">
+              <SchedulerSlotsSkeleton />
+            </div>
+          ) : selectedOption === "hourly" ? (
+            <div className="scheduler-slot-list">
+              {timeSlots.map((slot) => {
+                const booking = hourlyBookingByHour.get(slot.value)
+                const reservedSlotInfo = reservedTimeDetails[slot.value]
+                const isPast = isPastSlotForSelectedDate(slot.value)
+                const isBooked = Boolean(booking) || unavailableTimes.includes(slot.value)
+                const isBlocked = isPast || isBooked
+                const canDelete = booking ? canDeleteBooking(booking) : false
+                const isOwnBooking = booking
+                  ? booking.userId === user?.id || isSameUnit(booking, user?.apartment, user?.block)
+                  : reservedSlotInfo
+                    ? reservedSlotInfo.userId === user?.id ||
+                      (String(reservedSlotInfo.userApartment ?? "") === String(user?.apartment ?? "") &&
+                        Number(reservedSlotInfo.userBlock) === Number(user?.block))
+                  : false
+                const reservedOnBehalf = reservedSlotInfo?.bookedOnBehalf?.trim()
+                const tooltipContent = booking
+                  ? bookingDetailsTooltip(booking)
+                  : reservedSlotInfo?.userApartment && reservedSlotInfo?.userBlock
+                    ? `Reservado pelo apt. ${reservedSlotInfo.userApartment} bl. ${reservedSlotInfo.userBlock}`
+                    : null
+                const shouldShowBookingInfo = Boolean(tooltipContent) && (!isOwnBooking || Boolean(booking?.bookedOnBehalf?.trim() || reservedOnBehalf))
+
+                return (
+                  <div key={slot.value} className={`scheduler-slot-row ${isBlocked ? "blocked" : ""}`.trim()}>
+                    <div className="scheduler-slot-time">
+                      <Clock3 size={15} />
+                      <span>{slot.label}</span>
+                    </div>
+
+                    {booking ? (
+                      <div className="scheduler-slot-actions">
+                        <div className="scheduler-occupied-meta">
+                          {/* <span className={`reservation-status ${isOwnBooking ? "confirmed" : "occupied"}`}>
+                            {isOwnBooking ? "Confirmado" : "Ocupado"}
+                          </span> */}
+                          {shouldShowBookingInfo ? <Tooltip content={bookingDetailsTooltip(booking)} iconText="i" /> : null}
+                        </div>
+                        {canDelete ? (
+                          <button
+                            type="button"
+                            onClick={() => setBookingToDelete(booking)}
+                            className="scheduler-delete-icon-button"
+                            disabled={isDeletingBooking}
+                            aria-label="Cancelar reserva"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        ) : null}
+                      </div>
+                    ) : isBooked ? (
+                      <div className="scheduler-slot-actions">
+                        <div className="scheduler-occupied-meta">
+                          {/* <span className={`reservation-status ${isOwnBooking ? "confirmed" : "occupied"}`}>
+                            {isOwnBooking ? "Confirmado" : "Ocupado"}
+                          </span> */}
+                          {shouldShowBookingInfo && tooltipContent ? <Tooltip content={tooltipContent} iconText="i" /> : null}
+                        </div>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={isBlocked}
+                        onClick={() => {
+                          openConfirmBookingModal(slot.value)
+                        }}
+                        className="scheduler-reserve-button"
+                      >
+                        Reservar
+                      </Button>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ) : dailyBooking ? (
+            <div className="scheduler-grill-booking">
+              {(() => {
+                const isOwnDailyBooking = dailyBooking.userId === user?.id || isSameUnit(dailyBooking, user?.apartment, user?.block)
+                const shouldShowDailyInfo = !isOwnDailyBooking || Boolean(dailyBooking.bookedOnBehalf?.trim())
+                return (
+              <div className="scheduler-grill-row">
+                <div>
+                  <strong>Reservado - Dia inteiro</strong>
+                  <p>
+                    Morador: {dailyBooking.userId === user?.id || isSameUnit(dailyBooking, user?.apartment, user?.block)
+                      ? user?.name || "Morador"
+                      : `Apt ${dailyBooking.userApartment} Bl. ${dailyBooking.userBlock}`}
+                  </p>
+                  <p>Apt {dailyBooking.userApartment} Bl. {dailyBooking.userBlock}</p>
+                  {dailyBooking.needTablesAndChairs ? <a href="#">Mesas e cadeiras solicitadas</a> : null}
+                </div>
+                <div className="scheduler-occupied-meta">
+                  {/* <span className={`reservation-status ${isOwnDailyBooking ? "confirmed" : "occupied"}`}>
+                    {isOwnDailyBooking ? "Confirmado" : "Ocupado"}
+                  </span> */}
+                  {shouldShowDailyInfo ? <Tooltip content={bookingDetailsTooltip(dailyBooking)} iconText="i" /> : null}
+                </div>
+              </div>
+                )
+              })()}
+              <Button variant="secondary" size="sm" disabled={true} className="scheduler-reserve-button">
+                Reservado
+              </Button>
+            </div>
+          ) : (
+            <div className="scheduler-grill-empty">
+              <p className={isDailyBookingClosedForSelectedDate ? "scheduler-grill-warning" : ""}>
+                {isDailyBookingClosedForSelectedDate ? "Já não é mais possível reservar para hoje" : "Disponível para reserva"}
+              </p>
+              <Button variant="primary" disabled={isDailyBookingClosedForSelectedDate} onClick={() => openConfirmBookingModal(null)}>
+                Reservar
+              </Button>
               <label className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={needTablesAndChairs}
-                  onChange={handleTablesAndChairsChange}
+                  disabled={isDailyBookingClosedForSelectedDate}
+                  onChange={() => {
+                    if (isDailyBookingClosedForSelectedDate) return
+                    setIsAgreementModalOpen(true)
+                  }}
                   className="checkbox-input"
                 />
                 <span className="checkbox-text">{t("NeedTablesAndChairs")}</span>
               </label>
-              <p>{t("GrillRentWarning")}</p>
             </div>
           )}
 
-          {selectedDate && selectedOption === "hourly" && (
-            <TimeSlotSelector
-              selectedTime={selectedTime}
-              onTimeSelect={handleTimeSelect}
-              resourceType={selectedOption}
-              selectedDate={selectedDate}
-              unavailableSlots={unavailableTimes}
-              isLoading={isLoadingTimes}
-            />
-          )}
-
-          {selectedDate && user?.role === "admin" && (
+          {user?.role === "admin" ? (
             <div className="admin-booking-field">
               <label htmlFor="bookedOnBehalf" className="admin-booking-label">
                 {t("BookOnBehalf")}
@@ -255,26 +592,36 @@ const BookingSection: React.FC<BookingSectionProps> = ({
                 placeholder={t("BookOnBehalfPlaceholder")}
               />
             </div>
-          )}
-
-          {selectedDate && canConfirmBooking() && (
-            <Button
-              variant="primary"
-              onClick={handleConfirmDate}
-              disabled={isCreatingBooking}
-              className="confirm-date-button"
-            >
-              {t("ConfirmDate")}
-            </Button>
-          )}
-
-          {isCreatingBooking && <LoadingSpinner />}
+          ) : null}
         </div>
-      )}
-      {selectedOption && handleRulesForEachResource(selectedResource.type)}
 
-      {/* I will separate all the Modals in this format in its own components in the future */}
-      <Modal isOpen={isAgreementModalOpen} onClose={handleAgreementCancel} wide={true}>
+        <aside className="scheduler-side">
+          <div className="scheduler-side-card">
+            <Calendar
+              reservedDays={selectedOption === "daily" ? reservedDays : []}
+              reservedDayDetails={selectedOption === "daily" ? reservedDayDetails : {}}
+              onDateSelect={setSelectedDate}
+              resourceType={selectedOption}
+              selectedDate={selectedDate}
+            />
+          </div>
+          <div className="scheduler-side-card scheduler-resource-card">
+            <h4>{selectedResource?.name ?? ""}</h4>
+            <p>{selectedResource?.description ?? ""}</p>
+          </div>
+        </aside>
+      </div>
+
+      <section className="scheduler-rules">
+        <h3>Regras de Uso - {selectedResource?.name ?? ""}</h3>
+        <ul className="card-content">
+          {rules.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      </section>
+
+      <Modal isOpen={isAgreementModalOpen} onClose={() => setIsAgreementModalOpen(false)} wide={true}>
         <div className="agreement-modal">
           <h2 className="agreement-title">{t("TablesAndChairsAgreement.Title")}</h2>
           <p className="agreement-content">
@@ -290,60 +637,206 @@ const BookingSection: React.FC<BookingSectionProps> = ({
             </div>
           ))}
 
-          <div className="agreement-date">
-            {t("TablesAndChairsAgreement.DatePrefix")} {formatDateInPortuguese()}
-          </div>
-
-          <div className="agreement-signatures">
-            <div className="agreement-signature">
-              <div className="agreement-signature-line"></div>
-              <div className="agreement-signature-name">{user?.name || ""}</div>
-              <div className="agreement-signature-title">{t("TablesAndChairsAgreement.SignatureUser")}</div>
-            </div>
-
-            <div className="agreement-signature">
-              <div className="agreement-signature-line"></div>
-              <div className="agreement-signature-name">{t("TablesAndChairsAgreement.SignatureAdmin")}</div>
-              <div className="agreement-signature-title">{t("TablesAndChairsAgreement.SignatureAdminTitle")}</div>
-            </div>
-          </div>
-
           <div className="agreement-actions">
-            <Button variant="primary" onClick={handleAgreementConfirm} className="confirm-button">
+            <Button
+              variant="primary"
+              onClick={() => {
+                setNeedTablesAndChairs(true)
+                setIsAgreementModalOpen(false)
+              }}
+              className="confirm-button"
+            >
               {t("TablesAndChairsAgreement.Confirm")}
             </Button>
-            <Button variant="danger" onClick={handleAgreementCancel} className="cancel-button">
+            <Button
+              variant="danger"
+              onClick={() => {
+                setNeedTablesAndChairs(false)
+                setIsAgreementModalOpen(false)
+              }}
+              className="cancel-button"
+            >
               {t("TablesAndChairsAgreement.Cancel")}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Drawer isOpen={isConfirmBookingPanelOpen} onClose={closeConfirmBookingPanel} closeButton={false}>
+        <div className="booking-confirm-panel">
+          <div className="booking-confirm-panel-header">
+            <h2>{batchBookingResult ? "Reserva confirmada" : "Confirmar reserva"}</h2>
+            <button type="button" className="booking-confirm-panel-close" onClick={closeConfirmBookingPanel} aria-label="Fechar">
+              <X size={18} />
+            </button>
+          </div>
+
+          {!batchBookingResult ? (
+            <>
+              <div className="booking-confirm-panel-subtitle">
+                {selectedResource?.name ?? ""}{" "}
+                {pendingBookingData
+                  ? `- ${formatPanelTimeRange(pendingBookingData.startTime, pendingBookingData.endTime)}`
+                  : ""}
+              </div>
+
+              <div className="booking-confirm-base-card">
+                <div>
+                  <strong>
+                    {pendingBookingData ? formatPanelDateLabel(new Date(pendingBookingData.startTime)) : ""}
+                  </strong>
+                  <div className="booking-confirm-base-time">
+                    {pendingBookingData ? formatPanelTimeRange(pendingBookingData.startTime, pendingBookingData.endTime) : ""}
+                  </div>
+                </div>
+                <span className="booking-confirm-chip-available">Disponível</span>
+              </div>
+
+              {selectedOption === "hourly" && pendingHourlySelection ? (
+                <>
+                  <div className="booking-recurring-toggle-row">
+                    <div className="booking-recurring-toggle-label">
+                      <RefreshCw size={14} />
+                      <div>
+                        <strong>Reserva recorrente</strong>
+                        <small>Selecione múltiplas datas com o mesmo horário</small>
+                      </div>
+                    </div>
+                    <label className="booking-switch">
+                      <input
+                        type="checkbox"
+                        checked={isRecurringEnabled}
+                        onChange={(event) => {
+                          const nextValue = event.target.checked
+                          setIsRecurringEnabled(nextValue)
+                          if (!nextValue) {
+                            setRecurringSelectedDates([new Date(selectedDate)])
+                          } else if (recurringSelectedDates.length === 0) {
+                            setRecurringSelectedDates([new Date(selectedDate)])
+                          }
+                        }}
+                      />
+                      <span className="booking-switch-slider"></span>
+                    </label>
+                  </div>
+
+                  {isRecurringEnabled ? (
+                    <div className="booking-recurring-section">
+                      <h4>Selecione as datas</h4>
+                      <p>Datas com conflito serão ignoradas no momento da confirmação.</p>
+
+                      <div className="booking-recurring-calendar-wrapper">
+                        <Calendar
+                          reservedDays={[]}
+                          reservedDayDetails={{}}
+                          onDateSelect={() => undefined}
+                          selectedDate={selectedDate}
+                          resourceType="hourly"
+                          allowMultipleSelection={true}
+                          selectedDates={recurringDatesSorted}
+                          onDateToggle={toggleRecurringDate}
+                          allowReservedSelection={true}
+                        />
+                      </div>
+
+                      <div className="booking-recurring-selected-block">
+                        <h5>Datas selecionadas ({recurringDatesSorted.length})</h5>
+                        <div className="booking-recurring-selected-list">
+                          {recurringDatesSorted.map((date) => {
+                            const dateKey = formatBookingDateKey(date)
+                            return (
+                              <div key={dateKey} className="booking-recurring-selected-item">
+                                <span>
+                                  {formatPanelDateLabel(date)} {String(pendingHourlySelection.startHour).padStart(2, "0")}:00-{String(pendingHourlySelection.endHour).padStart(2, "0")}:00h
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeRecurringDate(dateKey)}
+                                  disabled={recurringDatesSorted.length === 1}
+                                  aria-label={`Remover data ${dateKey}`}
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </>
+              ) : null}
+
+              <div className="booking-confirm-panel-actions">
+                <Button
+                  variant="primary"
+                  fullWidth={true}
+                  onClick={handleConfirmBooking}
+                  disabled={isCreatingBooking || isCreatingBatchBooking}
+                  isLoading={isCreatingBooking || isCreatingBatchBooking}
+                >
+                  {recurringButtonLabel}
+                </Button>
+                <Button variant="link" fullWidth={true} onClick={closeConfirmBookingPanel}>
+                  Cancelar
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="booking-confirm-result">
+              <div className="booking-confirm-result-summary">
+                <h3>{batchBookingResult.summary.created} reservas realizadas!</h3>
+                <p>
+                  {batchBookingResult.summary.skipped > 0
+                    ? `${batchBookingResult.summary.skipped} datas não foram criadas por conflito.`
+                    : "Todas as datas foram reservadas com sucesso."}
+                </p>
+              </div>
+
+              <div className="booking-confirm-result-list">
+                {batchBookingResult.created.map((item) => (
+                  <div key={item.id} className="booking-confirm-result-item success">
+                    <span>{formatPanelResultDate(item.startTime)}</span>
+                    <span>{formatPanelTimeRange(item.startTime, item.endTime)}</span>
+                  </div>
+                ))}
+                {batchBookingResult.skipped.map((item) => (
+                  <div key={`${item.startTime}-${item.endTime}`} className="booking-confirm-result-item skipped">
+                    <div>
+                      <span>{formatPanelResultDate(item.startTime)}</span>
+                      <small>{item.reason}</small>
+                    </div>
+                    <span>{formatPanelTimeRange(item.startTime, item.endTime)}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="booking-confirm-panel-actions">
+                <Button variant="primary" fullWidth={true} onClick={closeConfirmBookingPanel}>
+                  Fechar
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </Drawer>
+
+      <Modal isOpen={Boolean(bookingToDelete)} onClose={() => setBookingToDelete(null)}>
+        <div className="confirm-booking-modal">
+          <h2>Cancelar reserva</h2>
+          <p>Deseja realmente cancelar esta reserva?</p>
+          <div className="confirm-booking-actions">
+            <Button variant="secondary" onClick={() => setBookingToDelete(null)}>
+              Voltar
+            </Button>
+            <Button variant="danger" onClick={handleDeleteCurrentBooking} disabled={isDeletingBooking}>
+              Cancelar reserva
             </Button>
           </div>
         </div>
       </Modal>
     </section>
   )
-}
-
-// I will isolate this in a separate function to avoid cluttering the main component
-const formatDateInPortuguese = () => {
-  const now = new Date()
-  const day = now.getDate()
-  const monthNames = [
-    "janeiro",
-    "fevereiro",
-    "março",
-    "abril",
-    "maio",
-    "junho",
-    "julho",
-    "agosto",
-    "setembro",
-    "outubro",
-    "novembro",
-    "dezembro",
-  ]
-  const month = monthNames[now.getMonth()]
-  const year = now.getFullYear()
-
-  return `${day} de ${month} de ${year}`
 }
 
 export default BookingSection

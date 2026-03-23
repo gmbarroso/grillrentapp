@@ -16,12 +16,14 @@ import {
 } from "../utils/auth-storage"
 import { clearStoredCsrfToken } from "../utils/csrf"
 import { authDebug, authError } from "../utils/auth-logger"
-import type { User } from "../types/User"
+import type { OnboardingFlags, TourState, User } from "../types"
 
 interface AuthContextType {
   isAuthenticated: boolean
   isAuthResolved: boolean
   user: User | null
+  onboarding: OnboardingFlags
+  tour: TourState
   token: string | null
   login: (
     organizationSlug: string,
@@ -31,22 +33,33 @@ interface AuthContextType {
   ) => Promise<{ success: boolean; errorCode?: string; errorMessage?: string }>
   logout: () => Promise<void>
   deleteUser: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const COOKIE_SESSION_TOKEN = "cookie-session"
+const defaultOnboardingState: OnboardingFlags = {
+  mustProvideEmail: false,
+  mustVerifyEmail: false,
+  mustChangePassword: false,
+  onboardingRequired: false,
+}
+const defaultTourState: TourState = {
+  firstAccessTourVersionCompleted: null,
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isAuthResolved, setIsAuthResolved] = useState(false)
   const [token, setToken] = useState<string | null>(COOKIE_SESSION_TOKEN)
 
-  const { data: userResponse, error: userError, isLoading: isUserLoading } = useUserProfile(token)
+  const { data: userResponse, error: userError, isLoading: isUserLoading, fetchProfile } = useUserProfile(token)
   const { login: loginMutate, isLoading: isLoginLoading } = useLoginUser()
   const { logout: logoutMutate, isLoading: isLogoutLoading } = useLogoutUser()
   const { setIsLoading } = useLoading()
 
   const authResetInProgressRef = useRef(false)
+  const loginInFlightRef = useRef(false)
 
   const redirectToLogin = useCallback(() => {
     if (typeof window === "undefined") return
@@ -95,6 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     if (!isUserLoading && userError) {
+      if (loginInFlightRef.current) return
       if (window.location.pathname !== "/login") {
         handleUnauthorized()
       }
@@ -132,22 +146,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     password: string,
   ): Promise<{ success: boolean; errorCode?: string; errorMessage?: string }> => {
     try {
+      loginInFlightRef.current = true
+      setIsAuthResolved(false)
+      setIsAuthenticated(false)
       await loginMutate({ organizationSlug, apartment, block, password })
       resetUnauthorizedSignal()
       authResetInProgressRef.current = false
       setToken(COOKIE_SESSION_TOKEN)
+      const profileResponse = await fetchProfile()
+      if (!profileResponse?.user) {
+        throw new Error("Não foi possível confirmar a sessão autenticada")
+      }
       setIsAuthenticated(true)
       setIsAuthResolved(true)
+      loginInFlightRef.current = false
       return { success: true }
     } catch (error) {
       authError("[Auth] Login error:", error)
+      setIsAuthenticated(false)
+      setToken(null)
+      setIsAuthResolved(true)
+      loginInFlightRef.current = false
       const errorCode = typeof error === "object" && error && "code" in error
         ? String((error as { code?: unknown }).code || "")
         : undefined
       return {
         success: false,
         errorCode,
-        errorMessage: error instanceof Error ? error.message : "Login failed",
+        errorMessage: error instanceof Error ? error.message : "Falha no login",
       }
     }
   }
@@ -170,17 +196,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return
   }, [])
 
+  const refreshProfile = useCallback(async () => {
+    if (!token) return
+    await fetchProfile()
+  }, [fetchProfile, token])
+
   const contextValue = useMemo(
     () => ({
       isAuthenticated,
       isAuthResolved,
       user: userError ? null : (userResponse?.user ?? null),
+      onboarding: userError
+        ? defaultOnboardingState
+        : {
+            mustProvideEmail: Boolean(userResponse?.mustProvideEmail ?? userResponse?.onboarding?.mustProvideEmail),
+            mustVerifyEmail: Boolean(userResponse?.mustVerifyEmail ?? userResponse?.onboarding?.mustVerifyEmail),
+            mustChangePassword: Boolean(userResponse?.mustChangePassword ?? userResponse?.onboarding?.mustChangePassword),
+            onboardingRequired: Boolean(userResponse?.onboardingRequired ?? userResponse?.onboarding?.onboardingRequired),
+          },
+      tour: userError
+        ? defaultTourState
+        : {
+            firstAccessTourVersionCompleted: userResponse?.tour?.firstAccessTourVersionCompleted ?? null,
+          },
       token,
       login,
       logout,
       deleteUser: handleDeleteUser,
+      refreshProfile,
     }),
-    [isAuthenticated, isAuthResolved, userError, userResponse?.user, token, logout, handleDeleteUser],
+    [
+      isAuthenticated,
+      isAuthResolved,
+      userError,
+      userResponse?.mustChangePassword,
+      userResponse?.mustProvideEmail,
+      userResponse?.mustVerifyEmail,
+      userResponse?.tour?.firstAccessTourVersionCompleted,
+      userResponse?.onboarding?.mustChangePassword,
+      userResponse?.onboarding?.mustProvideEmail,
+      userResponse?.onboarding?.mustVerifyEmail,
+      userResponse?.onboarding?.onboardingRequired,
+      userResponse?.onboardingRequired,
+      userResponse?.user,
+      token,
+      logout,
+      handleDeleteUser,
+      refreshProfile,
+    ],
   )
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

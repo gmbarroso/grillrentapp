@@ -1,37 +1,39 @@
-"use client"
-
-import { useEffect, useCallback } from "react"
+import { useEffect, useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
-import { NoticeBoard } from "../../components"
-import NoticeForm from "../../components/NoticeForm/NoticeForm"
-import { LoadingSpinner } from "../../components"
+import { NoticeBoard, NoticePageSkeleton } from "../../components"
 import { useAllNotices } from "../../hooks/notice/useAllNotices"
+import { isNoticeUnread, useMarkNoticesAsSeen, useNoticeUnreadState } from "../../hooks/notice/useNoticeReadTracking"
 import { useToast } from "../../context/ToastContext"
+import { authError, sanitizeForLog } from "../../utils/auth-logger"
 import "./Notices.css"
 
+const UNREAD_ANIMATION_FADE_MS = 2000
+
 const Notices = () => {
-  const { user, token } = useAuth()
+  const { token } = useAuth()
   const { t } = useTranslation()
   const { showToast } = useToast()
-  const isAdmin = user?.role === "admin"
+  const hasMarkedSeenRef = useRef(false)
+  const hasInitializedUnreadAnimationRef = useRef(false)
+  const [unreadNoticeIdsForAnimation, setUnreadNoticeIdsForAnimation] = useState<Set<string>>(new Set())
+  const [shouldFadeUnreadBadges, setShouldFadeUnreadBadges] = useState(false)
 
   const {
     notices,
-    total,
     currentPage,
     lastPage,
     isLoading,
     isError,
     currentLimit,
-    currentSort,
-    currentOrder,
     changePage,
     changeLimit,
-    changeSort,
-    changeOrder,
     refreshNotices,
   } = useAllNotices(token ?? "")
+  const { isNoticeReadTrackingEnabled } = useNoticeUnreadState()
+  const { markNoticesAsSeen } = useMarkNoticesAsSeen()
+
+  const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleNoticeDeleted = useCallback(
     async (noticeId: string) => {
@@ -57,29 +59,76 @@ const Notices = () => {
     }
   }, [isError, showToast, t])
 
+  useEffect(() => {
+    return () => {
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isNoticeReadTrackingEnabled) {
+      return
+    }
+    if (isLoading) {
+      return
+    }
+    if (hasMarkedSeenRef.current) {
+      return
+    }
+
+    const applyReadState = async () => {
+      try {
+        const markResult = await markNoticesAsSeen()
+        hasMarkedSeenRef.current = true
+        if (!hasInitializedUnreadAnimationRef.current) {
+          const unreadBeforeSeen = new Set(
+            notices
+              .filter((notice) => isNoticeUnread(notice.createdAt, markResult.previousLastSeenNoticesAt))
+              .map((notice) => notice.id),
+          )
+          hasInitializedUnreadAnimationRef.current = true
+          setUnreadNoticeIdsForAnimation(unreadBeforeSeen)
+          if (unreadBeforeSeen.size > 0) {
+            setShouldFadeUnreadBadges(true)
+            fadeTimeoutRef.current = window.setTimeout(() => {
+              setUnreadNoticeIdsForAnimation(new Set())
+              setShouldFadeUnreadBadges(false)
+            }, UNREAD_ANIMATION_FADE_MS)
+          }
+        }
+      } catch (error) {
+        hasMarkedSeenRef.current = false
+        authError("[NoticesReadTracking] mark-seen failed", sanitizeForLog({ message: (error as Error)?.message }))
+        showToast("Não foi possível atualizar a leitura dos avisos. Tentaremos novamente depois.", "warning")
+      }
+    }
+
+    void applyReadState()
+  }, [isLoading, isNoticeReadTrackingEnabled, markNoticesAsSeen, notices, showToast])
+
   return (
     <div className="notices-page">
-      <h1>{t("Notices.Title")}</h1>
-
-      {isAdmin && <NoticeForm onNoticeCreated={handleNoticeCreated} />}
+      <header className="notices-page-header">
+        <h1>{t("Notices.Title")}</h1>
+        <p>{t("Notices.Subtitle")}</p>
+      </header>
 
       {isLoading ? (
-        <LoadingSpinner />
+        <NoticePageSkeleton />
       ) : (
         <NoticeBoard
           notices={notices}
-          total={total}
+          unreadNoticeIds={unreadNoticeIdsForAnimation}
+          shouldFadeUnreadBadges={shouldFadeUnreadBadges}
           currentPage={currentPage}
           lastPage={lastPage}
           currentLimit={currentLimit}
-          currentSort={currentSort}
-          currentOrder={currentOrder}
           onNoticeDeleted={handleNoticeDeleted}
           onNoticeUpdated={handleNoticeUpdated}
           onChangePage={changePage}
           onChangeLimit={changeLimit}
-          onChangeSort={changeSort}
-          onChangeOrder={changeOrder}
         />
       )}
     </div>
@@ -87,4 +136,3 @@ const Notices = () => {
 }
 
 export default Notices
-

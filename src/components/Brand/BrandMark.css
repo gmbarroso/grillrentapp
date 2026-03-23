@@ -1,0 +1,83 @@
+.brand-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.brand-avatar {
+  width: min(40%, 260px);
+  max-width: 260px;
+}
+
+.brand-avatar img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.brand-wordmark {
+  display: flex;
+  align-items: baseline;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-weight: 800;
+}
+
+.brand-wordmark-seu {
+  color: var(--color-navy);
+}
+
+.brand-wordmark-ze {
+  color: var(--color-green);
+}
+
+.brand-tagline {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: clamp(0.65rem, 1.2vw, 0.95rem);
+  color: #0b2a66;
+  font-weight: 600;
+}
+
+.brand-tagline-line {
+  width: clamp(1.9rem, 8vw, 3rem);
+  height: 4px;
+  border-radius: 999px;
+  background: #56c87a;
+}
+
+.brand-mark-compact .brand-avatar {
+  width: 44px;
+}
+
+.brand-mark-compact {
+  gap: 0.15rem;
+}
+
+.brand-mark-compact .brand-wordmark {
+  font-size: 1.22rem;
+}
+
+.brand-mark-compact .brand-tagline {
+  display: none;
+}
+
+:root[data-theme="dark"] .brand-wordmark-seu {
+  color: #dce8ff;
+}
+
+:root[data-theme="dark"] .brand-wordmark-ze {
+  color: #6fe09f;
+}
+
+:root[data-theme="dark"] .brand-tagline {
+  color: #c5d4ef;
+}
+
+:root[data-theme="dark"] .brand-tagline-line {
+  background: #6fe09f;
+}

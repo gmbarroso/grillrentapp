@@ -1,0 +1,182 @@
+.onboarding-page {
+  width: min(560px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+}
+
+.onboarding-card {
+  width: 100%;
+  border: 1px solid #d5e3f7;
+  border-radius: 14px;
+  background: var(--surface-elevated);
+  box-shadow: 0 12px 30px rgba(13, 42, 72, 0.08);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.onboarding-card h1 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.onboarding-brand-seu {
+  color: var(--color-navy);
+}
+
+.onboarding-brand-ze {
+  color: var(--color-green);
+}
+
+.onboarding-card p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.onboarding-rules {
+  margin: 0;
+  padding-left: 1rem;
+  color: #475569;
+  font-size: 0.86rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.onboarding-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.onboarding-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.onboarding-form input {
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.95rem;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
+.onboarding-form input:focus {
+  outline: 2px solid var(--accent-primary-strong);
+  border-color: #7ea8f2;
+}
+
+.onboarding-form input:invalid {
+  border-color: #d4deed;
+  box-shadow: none;
+}
+
+.onboarding-password-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d4deed;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.onboarding-password-wrap input {
+  border: none;
+  flex: 1;
+}
+
+.onboarding-password-toggle {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  padding: 0 0.65rem;
+  cursor: pointer;
+}
+
+.onboarding-actions {
+  display: flex;
+  gap: 0.55rem;
+  justify-content: flex-end;
+}
+
+.onboarding-chip {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #e8f2ff;
+  color: #1b4f8a;
+}
+
+:root[data-theme="dark"] .onboarding-card {
+  border-color: var(--border-default);
+  background: var(--surface-elevated);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="dark"] .onboarding-card h1 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .onboarding-brand-seu {
+  color: #dce8ff;
+}
+
+:root[data-theme="dark"] .onboarding-brand-ze {
+  color: #6fe09f;
+}
+
+:root[data-theme="dark"] .onboarding-card p {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .onboarding-rules {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .onboarding-form label {
+  color: #d9e4fb;
+}
+
+:root[data-theme="dark"] .onboarding-form input {
+  border-color: #3a527b;
+  background: #182641;
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .onboarding-form input::placeholder {
+  color: #9cb0d4;
+}
+
+:root[data-theme="dark"] .onboarding-form input:focus {
+  outline: 2px solid #5a83c5;
+  border-color: #5a83c5;
+}
+
+:root[data-theme="dark"] .onboarding-form input:invalid {
+  border-color: #3a527b;
+}
+
+:root[data-theme="dark"] .onboarding-password-wrap {
+  border-color: #3a527b;
+  background: #182641;
+}
+
+:root[data-theme="dark"] .onboarding-password-toggle {
+  color: #afc2e6;
+}
+
+:root[data-theme="dark"] .onboarding-chip {
+  background: #20365f;
+  color: #c8dcff;
+}

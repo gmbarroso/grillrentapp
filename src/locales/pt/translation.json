@@ -113,8 +113,8 @@
     "TablesAndChairsIncluded": "Esta reserva inclui mesas e cadeiras"
   },
   "Resource": {
-    "daily": "Churrasqueira",
-    "hourly": "Quadra de Tênis"
+    "daily": "Dia inteiro",
+    "hourly": "Por hora"
   },
   "Header": {
     "Title": "App de Aluguel de Churrasqueiras",
@@ -183,7 +183,14 @@
     "Cancel": "Cancelar"
   },
   "Notices": {
-    "Title": "Avisos"
+    "Title": "Avisos",
+    "Subtitle": "Fique por dentro das novidades e comunicados"
+  },
+  "NoticeCarousel": {
+    "PreviousAriaLabel": "Aviso anterior",
+    "NextAriaLabel": "Próximo aviso",
+    "SelectorAriaLabel": "Seletor de avisos",
+    "GoToNoticeAriaLabel": "Ir para aviso {{index}}"
   },
   "NoticeBoard": {
     "NoNotices": "Não há avisos disponíveis no momento.",
@@ -228,7 +235,7 @@
     "Cancel": "Cancelar"
   },
   "Loading": "Carregando...",
-  "BookOnBehalf": "Reservar em nome do apartamento",
+  "BookOnBehalf": "Reservar em nome de um apartamento",
   "BookOnBehalfTooltip": "Digite o número do apartamento para o qual você está reservando",
   "BookOnBehalfPlaceholder": "Digite o número do apartamento"
 }

@@ -1,12 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
-import { useTranslation } from "react-i18next"
+import { useEffect, useState } from "react"
+import { Bell } from "lucide-react"
 import { useUpdateNotice } from "../../hooks/notice/useUpdateNotice"
 import { useToast } from "../../context/ToastContext"
 import { Button } from "../"
-import type { Notice } from "../../types/Notice"
+import type { Notice } from "../../types"
 import "./NoticeForm.css"
 import { useLoading } from "../../context/LoadingContext"
 
@@ -17,7 +17,6 @@ interface EditNoticeFormProps {
 }
 
 const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated, onCancel }) => {
-  const { t } = useTranslation()
   const [title, setTitle] = useState(notice.title)
   const [subtitle, setSubtitle] = useState(notice.subtitle)
   const [content, setContent] = useState(notice.content)
@@ -35,80 +34,88 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
     e.preventDefault()
 
     if (!title.trim() || !content.trim()) {
-      showToast(t("NoticeForm.ValidationError"), "error")
+      showToast("Preencha título e conteúdo para atualizar o aviso.", "error")
       return
     }
 
     try {
       setIsLoading(true)
-      const { success, error } = await updateNotice(notice.id, { title, subtitle, content })
+      const { success, error } = await updateNotice(notice.id, {
+        title: title.trim(),
+        subtitle: subtitle.trim(),
+        content: content.trim(),
+      })
 
       if (success) {
-        showToast(t("NoticeForm.UpdateSuccess"), "success")
+        showToast("Aviso atualizado com sucesso.", "success")
         onNoticeUpdated()
       } else {
         console.error("Error updating notice:", error)
-        showToast(t("NoticeForm.UpdateError"), "error")
+        showToast("Não foi possível atualizar o aviso.", "error")
       }
     } catch (error) {
       console.error("Error updating notice:", error)
-      showToast(t("NoticeForm.UpdateError"), "error")
+      showToast("Não foi possível atualizar o aviso.", "error")
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="notice-form-container">
-      <form className="notice-form" onSubmit={handleSubmit}>
-        <h3>{t("NoticeForm.EditTitle")}</h3>
-        <div className="form-group">
-          <label htmlFor="edit-notice-title">{t("NoticeForm.TitleLabel")}</label>
-          <input
-            id="edit-notice-title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder={t("NoticeForm.TitlePlaceholder")}
-            required
-            maxLength={100}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="edit-notice-subtitle">{t("NoticeForm.SubtitleLabel")}</label>
-          <input
-            id="edit-notice-subtitle"
-            type="text"
-            value={subtitle}
-            onChange={(e) => setSubtitle(e.target.value)}
-            placeholder={t("NoticeForm.SubtitlePlaceholder")}
-            maxLength={200}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="edit-notice-content">{t("NoticeForm.ContentLabel")}</label>
-          <textarea
-            id="edit-notice-content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder={t("NoticeForm.ContentPlaceholder")}
-            required
-            rows={5}
-            maxLength={2000}
-          />
-        </div>
-        <div className="form-actions">
-          <Button variant="secondary" type="submit" disabled={isLoading} >
-            {isLoading ? t("NoticeForm.Updating") : t("NoticeForm.Update")}
-          </Button>
-          <Button variant="danger" type="button" onClick={onCancel} >
-            {t("NoticeForm.Cancel")}
-          </Button>
-        </div>
-      </form>
-    </div>
+    <form className="notice-compose-form" onSubmit={handleSubmit}>
+      <header className="notice-compose-header">
+        <Bell size={16} />
+        <h3>Editar Aviso</h3>
+      </header>
+
+      <div className="notice-compose-group">
+        <label htmlFor="edit-notice-title">Título</label>
+        <input
+          id="edit-notice-title"
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Título do aviso"
+          required
+          maxLength={100}
+        />
+      </div>
+
+      <div className="notice-compose-group">
+        <label htmlFor="edit-notice-subtitle">Subtítulo (opcional)</label>
+        <input
+          id="edit-notice-subtitle"
+          type="text"
+          value={subtitle}
+          onChange={(e) => setSubtitle(e.target.value)}
+          placeholder="Subtítulo do aviso"
+          maxLength={200}
+        />
+      </div>
+
+      <div className="notice-compose-group">
+        <label htmlFor="edit-notice-content">Conteúdo</label>
+        <textarea
+          id="edit-notice-content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Escreva o conteúdo do aviso..."
+          required
+          rows={5}
+          maxLength={2000}
+        />
+      </div>
+
+      <footer className="notice-compose-actions">
+        <Button variant="secondary" type="button" onClick={onCancel} disabled={isLoading}>
+          Cancelar
+        </Button>
+        <Button variant="primary" type="submit" disabled={isLoading}>
+          Atualizar Aviso
+        </Button>
+      </footer>
+    </form>
   )
 }
 
 export default EditNoticeForm
-

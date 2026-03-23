@@ -1,0 +1,165 @@
+.admin-settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.admin-page-heading h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: var(--text-primary);
+}
+
+.admin-page-heading p {
+  margin: 0.22rem 0 0;
+  color: var(--text-secondary);
+}
+
+.admin-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.7rem;
+}
+
+.settings-card {
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+  padding: 0.9rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.settings-card.disabled {
+  opacity: 0.7;
+}
+
+.settings-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.55rem;
+}
+
+.settings-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-icon.blue {
+  background: #eaf2ff;
+  color: var(--accent-primary);
+}
+
+.settings-icon.green {
+  background: #e9f8ef;
+  color: #189651;
+}
+
+.settings-icon.yellow {
+  background: #fff7e2;
+  color: #b07c10;
+}
+
+.settings-icon.cyan {
+  background: #e8f7f7;
+  color: #0a7f8f;
+}
+
+.settings-icon.red {
+  background: #ffedf0;
+  color: #d21f35;
+}
+
+.status-chip {
+  border-radius: 999px;
+  font-size: 0.72rem;
+  padding: 0.12rem 0.42rem;
+  border: 1px solid #d4deed;
+}
+
+.status-chip.disconnected {
+  color: #d21f35;
+  border-color: #f3b8c0;
+  background: #fff1f3;
+}
+
+.status-chip.connected {
+  color: #0c7a3e;
+  border-color: #9fd8b5;
+  background: #ecfbf2;
+}
+
+.status-chip.soon {
+  color: #6b7280;
+}
+
+.settings-card h3 {
+  margin: 0;
+  font-size: 1.02rem;
+  color: var(--text-primary);
+}
+
+.settings-card p {
+  margin: 0.35rem 0 0.7rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.settings-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+:root[data-theme="dark"] .settings-icon.blue {
+  background: #1f3353;
+  color: #a6c8ff;
+}
+
+:root[data-theme="dark"] .settings-icon.green {
+  background: #1d4533;
+  color: #9ae6b4;
+}
+
+:root[data-theme="dark"] .settings-icon.yellow {
+  background: #4d3b18;
+  color: #f8d48d;
+}
+
+:root[data-theme="dark"] .settings-icon.cyan {
+  background: #193c44;
+  color: #9de3ee;
+}
+
+:root[data-theme="dark"] .settings-icon.red {
+  background: #4d1f28;
+  color: #ffb4c0;
+}
+
+:root[data-theme="dark"] .status-chip {
+  border-color: var(--border-default);
+  background: var(--surface-muted);
+}
+
+:root[data-theme="dark"] .status-chip.soon {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .status-chip.disconnected {
+  background: #4d1f28;
+  color: #ffb4c0;
+  border-color: #9f3042;
+}
+
+:root[data-theme="dark"] .status-chip.connected {
+  background: #1d4533;
+  color: #9ae6b4;
+  border-color: #2f6b4f;
+}

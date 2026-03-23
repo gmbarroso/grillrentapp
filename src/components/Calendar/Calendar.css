@@ -1,60 +1,43 @@
 .calendar {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  width: 100%;
 }
 
-.calendar-input {
-  padding: 0.5rem;
-  border: 1px solid var(--color-primary);
-  border-radius: 4px;
+.calendar-widget .custom-calendar {
+  max-width: none;
+  width: 100%;
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
 }
 
-.error-message {
-  color: var(--color-error);
+.calendar-widget .calendar-header {
+  margin-bottom: 0.7rem;
 }
 
-.no-dates-message {
+.calendar-widget .current-month {
   color: var(--color-text);
+  text-transform: lowercase;
 }
 
-.confirmation-dialog {
-  background-color: var(--color-card-background);
-  border: 1px solid var(--color-primary);
-  border-radius: 4px;
-  padding: 1rem;
-  margin-top: 1rem;
+.calendar-widget .weekday {
+  color: #6b7280;
+  font-weight: 500;
+  padding: 0.35rem 0;
+  text-transform: lowercase;
 }
 
-.confirmation-dialog p {
-  margin-bottom: 1rem;
+.calendar-widget .calendar-day {
+  height: 1.95rem;
+  border-radius: 6px;
 }
 
-.confirm-button,
-.cancel-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.calendar-widget .calendar-day.selected {
+  background-color: var(--color-blue);
+  color: var(--text-on-accent);
 }
 
-.confirm-button {
-  background-color: var(--color-primary);
-  color: white;
-  margin-right: 0.5rem;
+.calendar-widget .calendar-legend {
+  margin-top: 0.8rem;
 }
-
-.confirm-button:hover {
-  background-color: var(--color-primary-dark);
-}
-
-.cancel-button {
-  background-color: var(--color-secondary);
-  color: var(--color-text);
-}
-
-.cancel-button:hover {
-  background-color: var(--color-secondary-dark);
-}
-

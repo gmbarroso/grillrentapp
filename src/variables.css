@@ -1,35 +1,42 @@
 :root {
-  /* Light theme */
-  --color-background: #f0f7f4;
-  --color-text: #1b4332;
-  --color-primary: #14382c;
-  --color-primary-light: #2d6a4f;
-  --color-primary-dark: #14342b;
-  --color-secondary: #74c69d;
-  --color-secondary-light: #d0d4d3;
-  --color-accent: #40916c;
+  --font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --color-navy: #0d388e;
+  --color-blue: #1e5fbf;
+  --color-green: #2ecc71;
+  --color-lime: #8bc34a;
+  --color-yellow: #ffc107;
+
+  --color-background: #f4f6fb;
+  --color-text: #1d2635;
+  --color-primary: var(--color-blue);
+  --color-primary-light: #8eb6ec;
+  --color-primary-dark: var(--color-navy);
+  --color-secondary: #dbe8fb;
+  --color-secondary-light: #edf3fd;
+  --color-accent: var(--color-lime);
   --color-error: #b91c1c;
   --color-card-background: #ffffff;
   --color-error-dark: #7f1d1d;
-  --color-success: #2d6a4f;
-  --color-border: #b7e4c7;
-  --button-border-radius: 4px;
+  --color-success: #16824b;
+  --color-border: #d4deee;
+  --button-border-radius: 8px;
   --button-transition: all 0.3s ease;
 }
 
 .dark {
-  --color-background: #585555;
-  --color-text: #f0f7f4;
-  --color-primary: #40916c;
-  --color-primary-light: #95d5b2;
-  --color-primary-dark: #2d6a4f;
-  --color-secondary: #2d6a4f;
-  --color-secondary-light: #40916c;
-  --color-accent: #b7e4c7;
+  --color-background: #0f1727;
+  --color-text: #f2f6ff;
+  --color-primary: #3d83ef;
+  --color-primary-light: #a8c8f6;
+  --color-primary-dark: #0f48af;
+  --color-secondary: #1d2d4d;
+  --color-secondary-light: #26395f;
+  --color-accent: #a4d86b;
   --color-error: #ef4444;
-  --color-card-background: #14342b;
+  --color-card-background: #152038;
   --color-error-dark: #dc2626;
-  --color-success: #95d5b2;
-  --color-border: #40916c;
+  --color-success: #5fde93;
+  --color-border: #2f446c;
 }
-

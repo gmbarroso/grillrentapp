@@ -114,8 +114,8 @@
     "TablesAndChairsIncluded": "Esta reserva incluye mesas y sillas"
   },
   "Resource": {
-    "daily": "Parrilla",
-    "hourly": "Cancha de Tenis"
+    "daily": "Diario",
+    "hourly": "Por hora"
   },
   "Header": {
     "Title": "App de Alquiler de Parrillas",
@@ -181,7 +181,14 @@
     "Cancel": "Cancelar"
   },
   "Notices": {
-    "Title": "Avisos"
+    "Title": "Avisos",
+    "Subtitle": "Manténgase al tanto de las novedades y comunicados"
+  },
+  "NoticeCarousel": {
+    "PreviousAriaLabel": "Aviso anterior",
+    "NextAriaLabel": "Próximo aviso",
+    "SelectorAriaLabel": "Selector de avisos",
+    "GoToNoticeAriaLabel": "Ir al aviso {{index}}"
   },
   "NoticeBoard": {
     "NoNotices": "No hay avisos disponibles en este momento.",
@@ -226,7 +233,7 @@
     "Cancel": "Cancelar"
   },
   "ErrorFetchingSlots": "Error al obtener los horarios disponibles. Por favor, inténtalo de nuevo.",
-  "BookOnBehalf": "Reservar en nombre del apartamento",
+  "BookOnBehalf": "Reservar en nombre de un apartamento",
   "BookOnBehalfTooltip": "Ingrese el número de apartamento para el que está reservando",
   "BookOnBehalfPlaceholder": "Ingrese el número de apartamento"
 }

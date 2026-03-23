@@ -1,4 +1,6 @@
 export * from "./Booking"
-export * from "./Availability"
+export * from "./Message"
+export * from "./Notice"
+export * from "./Organization"
 export * from "./Resource"
 export * from "./User"

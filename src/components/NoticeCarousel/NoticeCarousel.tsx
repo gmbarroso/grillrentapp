@@ -1,0 +1,93 @@
+import { useEffect, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
+import type { Notice } from "../../types"
+import "./NoticeCarousel.css"
+
+interface NoticeCarouselProps {
+  notices: Notice[]
+  unreadNoticeIds?: Set<string>
+}
+
+const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" })
+
+export default function NoticeCarousel({ notices, unreadNoticeIds }: NoticeCarouselProps) {
+  const { t } = useTranslation()
+  const [activeIndex, setActiveIndex] = useState(0)
+  const hasManyNotices = notices.length > 1
+
+  useEffect(() => {
+    setActiveIndex(0)
+  }, [notices.length])
+
+  useEffect(() => {
+    if (!hasManyNotices) return
+
+    const intervalId = window.setInterval(() => {
+      setActiveIndex((currentIndex) => (currentIndex + 1) % notices.length)
+    }, 6000)
+
+    return () => {
+      window.clearInterval(intervalId)
+    }
+  }, [hasManyNotices, notices.length])
+
+  const activeNotice = useMemo(() => notices[activeIndex], [activeIndex, notices])
+
+  if (!activeNotice) {
+    return null
+  }
+
+  const changeNotice = (nextIndex: number) => {
+    if (nextIndex < 0) {
+      setActiveIndex(notices.length - 1)
+      return
+    }
+
+    if (nextIndex >= notices.length) {
+      setActiveIndex(0)
+      return
+    }
+
+    setActiveIndex(nextIndex)
+  }
+
+  return (
+    <article className="notice-carousel-card">
+      <header className="notice-carousel-header">
+        <div className="notice-carousel-title-wrap">
+          <h4>{activeNotice.title}</h4>
+          {unreadNoticeIds?.has(activeNotice.id) ? <span className="notice-carousel-novo-chip">Novo</span> : null}
+        </div>
+        <time>{shortDateFormatter.format(new Date(activeNotice.createdAt))}</time>
+      </header>
+
+      <p className="notice-carousel-subtitle">{activeNotice.subtitle}</p>
+      <p className="notice-carousel-content">{activeNotice.content}</p>
+
+      {hasManyNotices ? (
+        <footer className="notice-carousel-footer">
+          <div className="notice-carousel-actions">
+            <button type="button" onClick={() => changeNotice(activeIndex - 1)} aria-label={t("NoticeCarousel.PreviousAriaLabel")}>
+              ←
+            </button>
+            <button type="button" onClick={() => changeNotice(activeIndex + 1)} aria-label={t("NoticeCarousel.NextAriaLabel")}>
+              →
+            </button>
+          </div>
+
+          <div className="notice-carousel-dots" aria-label={t("NoticeCarousel.SelectorAriaLabel")}>
+            {notices.map((notice, index) => (
+              <button
+                key={notice.id}
+                type="button"
+                className={`notice-carousel-dot ${index === activeIndex ? "active" : ""}`.trim()}
+                onClick={() => setActiveIndex(index)}
+                aria-label={t("NoticeCarousel.GoToNoticeAriaLabel", { index: index + 1 })}
+              />
+            ))}
+          </div>
+        </footer>
+      ) : null}
+    </article>
+  )
+}

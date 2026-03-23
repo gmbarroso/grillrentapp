@@ -13,6 +13,12 @@
   width: 100%;
 }
 
+.main-content-fluid {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
 @media (max-width: 768px) {
   .main-content {
     padding: 1rem;
@@ -20,5 +26,10 @@
     margin-left: 1rem;
     margin-right: 1rem;
   }
-}
 
+  .main-content-fluid {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}

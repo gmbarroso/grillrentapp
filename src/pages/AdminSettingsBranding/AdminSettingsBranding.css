@@ -1,0 +1,167 @@
+.admin-branding-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.settings-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.admin-page-heading h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: var(--text-primary);
+}
+
+.admin-page-heading p {
+  margin: 0.22rem 0 0;
+  color: var(--text-secondary);
+}
+
+.branding-card {
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  padding: 0.95rem;
+}
+
+.branding-card > header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.branding-card > header h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.branding-card > header p {
+  margin: 0.18rem 0 0;
+  color: var(--text-secondary);
+}
+
+.settings-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-icon.blue {
+  background: #eaf2ff;
+  color: var(--accent-primary);
+}
+
+.logo-row {
+  margin: 0.85rem 0;
+  display: flex;
+  gap: 0.8rem;
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: 0.85rem;
+}
+
+.logo-box {
+  width: 64px;
+  height: 64px;
+  border: 1px dashed var(--border-default);
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+  font-weight: 700;
+  background: var(--surface-muted);
+}
+
+.logo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.logo-actions button {
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.logo-actions button.danger {
+  color: #d21f35;
+}
+
+.logo-actions small {
+  color: var(--text-secondary);
+}
+
+.branding-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.branding-form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.branding-form-grid label.full {
+  grid-column: 1 / -1;
+}
+
+.branding-form-grid label > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.branding-form-grid input,
+.branding-form-grid textarea {
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+}
+
+:root[data-theme="dark"] .settings-icon.blue {
+  background: #1f3353;
+  color: #a6c8ff;
+}
+
+.branding-card footer {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+@media (max-width: 760px) {
+  .branding-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .branding-card footer {
+    flex-direction: column-reverse;
+  }
+}

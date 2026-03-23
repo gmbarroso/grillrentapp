@@ -26,7 +26,7 @@ export function useFetch<Data = any, Error = any>(key: string | null, config?: S
 
   return {
     data,
-    isLoading: isValidating,
+    isLoading: isValidating && typeof data === "undefined",
     isError: error,
     mutate,
   }

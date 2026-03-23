@@ -1,0 +1,66 @@
+.quick-action-card {
+  min-height: 78px;
+  border: 1px solid var(--border-default);
+  background: var(--surface-elevated);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0.85rem;
+}
+
+.quick-action-card:hover {
+  box-shadow: 0 8px 22px rgba(13, 56, 142, 0.12);
+}
+
+.quick-action-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+
+.quick-action-card-blue .quick-action-icon {
+  background: #ddebff;
+  color: var(--color-blue);
+}
+
+.quick-action-card-yellow .quick-action-icon {
+  background: #fff2cc;
+  color: #8a6200;
+}
+
+.quick-action-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.quick-action-content strong {
+  font-size: 1.03rem;
+  line-height: 1;
+}
+
+.quick-action-content span {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.quick-action-arrow {
+  margin-left: auto;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+:root[data-theme="dark"] .quick-action-card-blue .quick-action-icon {
+  background: #1f3353;
+  color: #a6c8ff;
+}
+
+:root[data-theme="dark"] .quick-action-card-yellow .quick-action-icon {
+  background: #4d3b18;
+  color: #f8d48d;
+}

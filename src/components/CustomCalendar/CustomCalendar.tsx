@@ -4,24 +4,35 @@ import type React from "react"
 import { useTranslation } from "react-i18next"
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import type { ReservedSlotInfo } from "../../hooks/booking/useReservedTimes"
 import "./CustomCalendar.css"
 
 interface CustomCalendarProps {
   reservedDays?: string[]
+  reservedDayDetails?: Record<string, ReservedSlotInfo>
   onDateSelect: (date: Date) => void
   minDate?: Date
   maxDate?: Date
   resourceType?: "daily" | "hourly"
   selectedDate?: Date | null
+  allowMultipleSelection?: boolean
+  selectedDates?: Date[]
+  onDateToggle?: (date: Date) => void
+  allowReservedSelection?: boolean
 }
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
   reservedDays = [],
+  reservedDayDetails = {},
   onDateSelect,
   minDate = new Date(),
   maxDate,
   resourceType = "daily",
   selectedDate = null,
+  allowMultipleSelection = false,
+  selectedDates = [],
+  onDateToggle,
+  allowReservedSelection = false,
 }) => {
   const { t } = useTranslation()
 
@@ -56,8 +67,32 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   }, [selectedDate, currentMonth, internalSelectedDate])
   */
 
+  function formatDateString(date: Date): string {
+    return date.toISOString().split("T")[0]
+  }
+
   // Memoize the reservedDaysSet to prevent unnecessary recalculations
   const reservedDaysSet = useMemo(() => new Set(reservedDays), [reservedDays])
+  const selectedDateSet = useMemo(
+    () =>
+      new Set(
+        selectedDates.map((date) =>
+          formatDateString(new Date(date.getFullYear(), date.getMonth(), date.getDate())),
+        ),
+      ),
+    [selectedDates],
+  )
+
+  const reservedDayTooltip = useCallback((dateKey: string) => {
+    const info = reservedDayDetails[dateKey]
+    if (!info?.userApartment || info.userBlock === undefined || info.userBlock === null) return ""
+
+    const parts = [`Reservado pelo apt. ${info.userApartment} bl. ${info.userBlock}`]
+    if (info.bookedOnBehalf?.trim()) {
+      parts.push(`Reserva em nome de ${info.bookedOnBehalf}`)
+    }
+    return parts.join(" • ")
+  }, [reservedDayDetails])
 
   const defaultMaxDate = new Date()
   defaultMaxDate.setMonth(defaultMaxDate.getMonth() + 3)
@@ -69,10 +104,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   const getFirstDayOfMonth = (year: number, month: number) => {
     return new Date(year, month, 1).getDay()
-  }
-
-  const formatDateString = (date: Date): string => {
-    return date.toISOString().split("T")[0]
   }
 
   // Memoize the isDateReserved function
@@ -102,6 +133,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   // Memoize the isDateSelected function
   const isDateSelected = useCallback(
     (date: Date): boolean => {
+      if (allowMultipleSelection) {
+        return selectedDateSet.has(formatDateString(date))
+      }
+
       if (!internalSelectedDate) return false
 
       return (
@@ -110,11 +145,18 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         date.getFullYear() === internalSelectedDate.getFullYear()
       )
     },
-    [internalSelectedDate],
+    [allowMultipleSelection, internalSelectedDate, selectedDateSet],
   )
 
   const handleDateClick = (date: Date) => {
-    if (isDateReserved(date) || isDateOutOfRange(date)) {
+    const isReserved = isDateReserved(date)
+    if ((isReserved && !allowReservedSelection) || isDateOutOfRange(date)) {
+      return
+    }
+
+    if (allowMultipleSelection && onDateToggle) {
+      onDateToggle(date)
+      setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1))
       return
     }
 
@@ -178,12 +220,20 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       // Only mark as reserved if it's within the allowed date range
       const isReserved = !isOutOfRange && isDateReserved(date)
       const isSelected = isDateSelected(date)
+      const dayTooltip = isReserved ? reservedDayTooltip(dateString) : ""
 
       const className = `calendar-day ${isReserved ? "reserved" : ""} ${isOutOfRange ? "out-of-range" : ""} ${isSelected ? "selected" : ""}`
 
       days.push(
-        <div key={day} className={className} onClick={() => handleDateClick(date)}>
+        <div
+          key={day}
+          className={className}
+          onClick={() => handleDateClick(date)}
+          data-reserved-tooltip={dayTooltip || undefined}
+          aria-label={dayTooltip || undefined}
+        >
           {day}
+          {isReserved && dayTooltip ? <span className="calendar-reserved-dot" aria-hidden="true"></span> : null}
         </div>,
       )
     }
@@ -194,23 +244,23 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   return (
     <div className="custom-calendar">
       <div className="calendar-header">
-        <button className="month-nav-button" onClick={goToPreviousMonth} aria-label="Previous month">
+        <button className="month-nav-button" onClick={goToPreviousMonth} aria-label="Mês anterior">
           <ChevronLeft size={20} />
         </button>
         <div className="current-month">{formatMonthName(currentMonth)}</div>
-        <button className="month-nav-button" onClick={goToNextMonth} aria-label="Next month">
+        <button className="month-nav-button" onClick={goToNextMonth} aria-label="Próximo mês">
           <ChevronRight size={20} />
         </button>
       </div>
 
       <div className="calendar-weekdays">
-        <div className="weekday">Sun</div>
-        <div className="weekday">Mon</div>
-        <div className="weekday">Tue</div>
-        <div className="weekday">Wed</div>
-        <div className="weekday">Thu</div>
-        <div className="weekday">Fri</div>
-        <div className="weekday">Sat</div>
+        <div className="weekday">Dom</div>
+        <div className="weekday">Seg</div>
+        <div className="weekday">Ter</div>
+        <div className="weekday">Qua</div>
+        <div className="weekday">Qui</div>
+        <div className="weekday">Sex</div>
+        <div className="weekday">Sáb</div>
       </div>
 
       <div className="calendar-grid">{renderCalendarDays()}</div>

@@ -6,18 +6,18 @@ import "./Tooltip.css"
 
 interface TooltipProps {
   content: string
+  iconText?: string
 }
 
-const Tooltip: React.FC<TooltipProps> = ({ content }) => {
+const Tooltip: React.FC<TooltipProps> = ({ content, iconText = "?" }) => {
   const [isVisible, setIsVisible] = useState(false)
 
   return (
     <div className="tooltip-container" onMouseEnter={() => setIsVisible(true)} onMouseLeave={() => setIsVisible(false)}>
-      <span className="tooltip-icon">?</span>
+      <span className="tooltip-icon">{iconText}</span>
       {isVisible && <div className="tooltip-content">{content}</div>}
     </div>
   )
 }
 
 export default Tooltip
-

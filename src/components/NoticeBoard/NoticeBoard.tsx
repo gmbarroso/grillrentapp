@@ -5,44 +5,40 @@ import { useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
 import { useDeleteNotice } from "../../hooks/notice/useDeleteNotice"
-import { Modal, Button } from "../"
+import { Modal, Button, PaginationControls } from "../"
 import { useToast } from "../../context/ToastContext"
-import { Trash2, Edit } from "lucide-react"
+import { Trash2, Edit, Bell, MessageCircle } from "lucide-react"
 import EditNoticeForm from "../NoticeForm/EditNoticeForm"
 import "./NoticeBoard.css"
-import type { Notice } from "../../types/Notice"
+import type { Notice } from "../../types"
 import { useLoading } from "../../context/LoadingContext"
 
 interface NoticeBoardProps {
   notices: Notice[]
-  total: number
+  unreadNoticeIds?: Set<string>
+  shouldFadeUnreadBadges?: boolean
+  canManageNotices?: boolean
   currentPage: number
   lastPage: number
   currentLimit: number
-  currentSort: string
-  currentOrder: "ASC" | "DESC"
   onNoticeDeleted: (noticeId: string) => void
   onNoticeUpdated: () => void
   onChangePage: (page: number) => void
   onChangeLimit: (limit: number) => void
-  onChangeSort: (sort: string) => void
-  onChangeOrder: (order: "ASC" | "DESC") => void
 }
 
 const NoticeBoard: React.FC<NoticeBoardProps> = ({
   notices,
-  total,
+  unreadNoticeIds,
+  shouldFadeUnreadBadges = false,
+  canManageNotices = false,
   currentPage,
   lastPage,
   currentLimit,
-  currentSort,
-  currentOrder,
   onNoticeDeleted,
   onNoticeUpdated,
   onChangePage,
   onChangeLimit,
-  onChangeSort,
-  onChangeOrder,
 }) => {
   const { t } = useTranslation()
   const { user } = useAuth()
@@ -97,20 +93,11 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
     setSelectedNoticeId(null)
   }, [])
 
-  const handleSortChange = (column: string) => {
-    if (currentSort === column) {
-      onChangeOrder(currentOrder === "ASC" ? "DESC" : "ASC")
-    } else {
-      onChangeSort(column)
-      onChangeOrder("DESC")
-    }
-  }
-
-  const isAdmin = user?.role === "admin"
+  const canShowManageActions = user?.role === "admin" && canManageNotices
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString("en-GB", {
+    return date.toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -119,17 +106,13 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
     })
   }
 
-  if (editingNotice) {
-    return (
-      <EditNoticeForm
-        notice={editingNotice}
-        onNoticeUpdated={() => {
-          setEditingNotice(null)
-          onNoticeUpdated()
-        }}
-        onCancel={handleCancelEdit}
-      />
-    )
+  const whatsappStatusLabel = (status?: string) => {
+    if (!status) return null
+    if (status === "sent") return "WhatsApp enviado"
+    if (status === "retrying" || status === "pending") return "WhatsApp pendente"
+    if (status === "failed") return "WhatsApp falhou"
+    if (status === "skipped") return "WhatsApp desativado"
+    return null
   }
 
   return (
@@ -142,49 +125,72 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
             {notices.map((notice) => (
               <div key={notice.id} className="notice-item">
                 <div className="notice-header">
-                  <h4 className="notice-title">{notice.title}</h4>
-                  {isAdmin && (
-                    <div className="notice-actions">
-                      <button
-                        onClick={() => handleEditClick(notice)}
-                        className="edit-button"
-                        aria-label={t("NoticeBoard.Edit")}
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteClick(notice.id)}
-                        className="delete-button"
-                        aria-label={t("NoticeBoard.Delete")}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                  <div className="notice-heading">
+                    <div className="notice-icon-box">
+                      <Bell size={15} />
                     </div>
-                  )}
+                    <div className="notice-title-wrap">
+                      <div className="notice-title-line">
+                        <h4 className="notice-title">{notice.title}</h4>
+                        {unreadNoticeIds?.has(notice.id) ? (
+                          <span className={`notice-new-chip ${shouldFadeUnreadBadges ? "fade-out" : ""}`.trim()}>
+                            Novo
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="notice-subtitle">{notice.subtitle || "Comunicado oficial"}</div>
+                    </div>
+                  </div>
+
+                  <div className="notice-header-right">
+                    {notice.sendViaWhatsapp || /whats/i.test(`${notice.subtitle} ${notice.content}`) ? (
+                      <span className="notice-channel-chip">
+                        <MessageCircle size={13} />
+                        WhatsApp
+                      </span>
+                    ) : null}
+                    {notice.sendViaWhatsapp && whatsappStatusLabel(notice.whatsappDeliveryStatus) ? (
+                      <span className={`notice-whatsapp-status notice-whatsapp-status-${notice.whatsappDeliveryStatus || "pending"}`}>
+                        {whatsappStatusLabel(notice.whatsappDeliveryStatus)}
+                      </span>
+                    ) : null}
+                    {canShowManageActions && (
+                      <div className="notice-actions">
+                        <button
+                          onClick={() => handleEditClick(notice)}
+                          className="edit-button"
+                          aria-label={t("NoticeBoard.Edit")}
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(notice.id)}
+                          className="delete-button"
+                          aria-label={t("NoticeBoard.Delete")}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="notice-subtitle">{notice.subtitle}</div>
                 <div className="notice-content">{notice.content}</div>
                 <div className="notice-footer">
-                  <span className="notice-author">{notice.authorName}</span>
+                  <span className="notice-author">Por {notice.authorName}</span>
                   <span className="notice-date">{formatDate(notice.createdAt)}</span>
                 </div>
               </div>
             ))}
           </div>
-          <div className="pagination">
-            <Button variant="secondary" onClick={() => onChangePage(currentPage - 1)} disabled={currentPage === 1}>
-              {t("NoticeBoard.PreviousPage")}
-            </Button>
-            <span>{t("NoticeBoard.PageInfo", { current: currentPage, total: lastPage })}</span>
-            <Button variant="secondary" onClick={() => onChangePage(currentPage + 1)} disabled={currentPage === lastPage}>
-              {t("NoticeBoard.NextPage")}
-            </Button>
-            <select value={currentLimit} onChange={(e) => onChangeLimit(Number(e.target.value))}>
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-            </select>
-          </div>
+          <PaginationControls
+            className="notice-board-pagination pagination-separated"
+            currentPage={currentPage}
+            lastPage={lastPage}
+            currentLimit={currentLimit}
+            onChangePage={onChangePage}
+            onChangeLimit={onChangeLimit}
+            pageSizeOptions={[10, 20, 50]}
+          />
         </>
       )}
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
@@ -199,9 +205,21 @@ const NoticeBoard: React.FC<NoticeBoardProps> = ({
           </Button>
         </div>
       </Modal>
+
+      <Modal isOpen={Boolean(editingNotice)} onClose={handleCancelEdit} wide>
+        {editingNotice ? (
+          <EditNoticeForm
+            notice={editingNotice}
+            onNoticeUpdated={() => {
+              setEditingNotice(null)
+              onNoticeUpdated()
+            }}
+            onCancel={handleCancelEdit}
+          />
+        ) : null}
+      </Modal>
     </div>
   )
 }
 
 export default NoticeBoard
-

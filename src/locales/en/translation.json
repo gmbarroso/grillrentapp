@@ -114,8 +114,8 @@
     "TablesAndChairsIncluded": "This reservation includes tables and chairs"
   },
   "Resource": {
-    "daily": "Grill",
-    "hourly": "Tennis Court"
+    "daily": "Daily",
+    "hourly": "Hourly"
   },
   "Header": {
     "Title": "Grill Rent App",
@@ -181,7 +181,14 @@
     "Cancel": "Cancel"
   },
   "Notices": {
-    "Title": "Notices"
+    "Title": "Notices",
+    "Subtitle": "Stay up to date with news and announcements"
+  },
+  "NoticeCarousel": {
+    "PreviousAriaLabel": "Previous notice",
+    "NextAriaLabel": "Next notice",
+    "SelectorAriaLabel": "Notice selector",
+    "GoToNoticeAriaLabel": "Go to notice {{index}}"
   },
   "NoticeBoard": {
     "NoNotices": "No notices available at the moment.",
@@ -231,7 +238,7 @@
     "Available": "Available",
     "Reserved": "Reserved"
   },
-  "BookOnBehalf": "Book on behalf of apartment",
+  "BookOnBehalf": "Book on behalf of an apartment",
   "BookOnBehalfTooltip": "Enter the apartment number you are booking for",
   "BookOnBehalfPlaceholder": "Enter apartment number"
 }

@@ -53,6 +53,7 @@ export const fetchWithAuthHandling = async (url: string, options: RequestInit = 
     method,
     headers,
     credentials: "include",
+    cache: "no-store",
   })
 
   if (response.status === 401) {
@@ -77,13 +78,20 @@ export const logApiResponse = (endpoint: string, status: number, data?: any): vo
   }
 }
 
+const isLikelyNetworkError = (error: unknown): boolean => {
+  if (error instanceof TypeError) return true
+  if (!(error instanceof Error)) return false
+
+  const message = error.message.toLowerCase()
+  return (
+    message.includes("networkerror") ||
+    message.includes("cors") ||
+    message.includes("load failed")
+  )
+}
+
 export const handleApiError = (error: any, endpoint: string): Error => {
-  if (
-    error.message &&
-    (error.message.includes("CORS") ||
-      error.message.includes("NetworkError") ||
-      error.message.includes("Failed to fetch"))
-  ) {
+  if (isLikelyNetworkError(error)) {
     authError(`[API] CORS error when accessing ${stripSensitiveQueryParams(endpoint)}:`, error)
     return new Error(
       `CORS error: Unable to access the API. Please check your network connection and API configuration.`,
@@ -92,4 +100,20 @@ export const handleApiError = (error: any, endpoint: string): Error => {
 
   authError(`[API] Error accessing ${stripSensitiveQueryParams(endpoint)}:`, error)
   return error instanceof Error ? error : new Error(`Unknown error accessing ${endpoint}`)
+}
+
+export const extractApiErrorMessage = async (response: Response, fallbackMessage: string): Promise<string> => {
+  try {
+    const payload = await response.json() as { message?: unknown; error?: unknown }
+    if (typeof payload?.message === "string" && payload.message.trim()) {
+      return payload.message
+    }
+    if (typeof payload?.error === "string" && payload.error.trim()) {
+      return payload.error
+    }
+  } catch {
+    // Ignore parse errors and return fallback below.
+  }
+
+  return fallbackMessage
 }

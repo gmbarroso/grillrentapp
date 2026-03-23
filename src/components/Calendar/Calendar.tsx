@@ -1,52 +1,61 @@
 import type React from "react"
-import { useState, useMemo } from "react"
+import { useMemo } from "react"
+import CustomCalendar from "../CustomCalendar/CustomCalendar"
+import type { ReservedSlotInfo } from "../../hooks/booking/useReservedTimes"
 import "./Calendar.css"
 
 interface CalendarProps {
-  availableDates: Date[]
-  unavailableDates: Date[]
+  availableDates?: Date[]
+  unavailableDates?: Date[]
+  reservedDays?: string[]
+  reservedDayDetails?: Record<string, ReservedSlotInfo>
   onDateSelect: (date: Date) => void
+  minDate?: Date
+  maxDate?: Date
+  resourceType?: "daily" | "hourly"
+  selectedDate?: Date | null
+  allowMultipleSelection?: boolean
+  selectedDates?: Date[]
+  onDateToggle?: (date: Date) => void
+  allowReservedSelection?: boolean
 }
 
-const Calendar: React.FC<CalendarProps> = ({ availableDates, unavailableDates, onDateSelect }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-
-  const formatDateForInput = (date: Date): string => {
-    return date.toISOString().split("T")[0]
-  }
-
-  // const formatDateForDisplay = (date: Date): string => {
-  //   return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
-  // }
-
-  const maxDate = useMemo(() => {
-    const date = new Date()
-    date.setMonth(date.getMonth() + 3)
-    return formatDateForInput(date)
-  }, [])
-
-  // const isDateUnavailable = (date: Date): boolean => {
-  //   return unavailableDates.some(unavailableDate => unavailableDate.toDateString() === date.toDateString())
-  // }
-
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(event.target.value + "T00:00:00")
-    setSelectedDate(date)
-    onDateSelect(date)
-  }
+const Calendar: React.FC<CalendarProps> = ({
+  unavailableDates = [],
+  reservedDays,
+  reservedDayDetails = {},
+  onDateSelect,
+  minDate,
+  maxDate,
+  resourceType = "daily",
+  selectedDate = null,
+  allowMultipleSelection = false,
+  selectedDates = [],
+  onDateToggle,
+  allowReservedSelection = false,
+}) => {
+  const normalizedReservedDays = useMemo(() => {
+    if (reservedDays) return reservedDays
+    return unavailableDates.map((date) => date.toISOString().split("T")[0])
+  }, [reservedDays, unavailableDates])
 
   return (
-    <div className="calendar">
-      <input
-        type="date"
-        onChange={handleDateChange}
-        className="calendar-input"
-        min={formatDateForInput(new Date())}
-        max={maxDate}
+    <div className="calendar calendar-widget">
+      <CustomCalendar
+        reservedDays={normalizedReservedDays}
+        reservedDayDetails={reservedDayDetails}
+        onDateSelect={onDateSelect}
+        minDate={minDate}
+        maxDate={maxDate}
+        resourceType={resourceType}
+        selectedDate={selectedDate}
+        allowMultipleSelection={allowMultipleSelection}
+        selectedDates={selectedDates}
+        onDateToggle={onDateToggle}
+        allowReservedSelection={allowReservedSelection}
       />
     </div>
   )
 }
 
 export default Calendar
-

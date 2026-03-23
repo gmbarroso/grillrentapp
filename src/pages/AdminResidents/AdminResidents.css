@@ -1,0 +1,228 @@
+.admin-residents-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.admin-page-heading h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--text-primary);
+}
+
+.admin-page-heading p {
+  margin: 0.24rem 0 0;
+  color: var(--text-secondary);
+}
+
+.admin-page-heading.with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.admin-filter-card,
+.admin-table-card {
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--surface-elevated);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  padding: 0.78rem;
+}
+
+.admin-search-input {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+}
+
+.admin-search-input svg {
+  color: var(--text-secondary);
+}
+
+.admin-search-input input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.94rem;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+}
+
+.admin-table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.admin-table-scroll th,
+.admin-table-scroll td {
+  padding: 0.62rem 0.38rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 0.92rem;
+}
+
+.admin-table-scroll td {
+  color: var(--text-primary);
+}
+
+.resident-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resident-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-muted);
+  color: var(--accent-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.role-pill {
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  border: 1px solid var(--border-default);
+}
+
+.role-pill.admin {
+  color: var(--accent-primary);
+  border-color: #9dc2ef;
+  background: #f1f7ff;
+}
+
+.role-pill.resident {
+  color: var(--text-secondary);
+  background: var(--surface-muted);
+}
+
+.resident-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.table-icon-button {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.table-icon-button.danger {
+  color: #e31d2f;
+}
+
+.admin-residents-pagination {
+  padding: 0 0.2rem;
+}
+
+.resident-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.resident-modal h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.resident-modal p {
+  margin: 0.2rem 0 0.5rem;
+  color: var(--text-secondary);
+}
+
+.resident-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.resident-modal label small {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.resident-modal input,
+.resident-modal select {
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 0.58rem 0.65rem;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+}
+
+.resident-password-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface-elevated);
+}
+
+.resident-password-wrap input {
+  border: none;
+  flex: 1;
+}
+
+.resident-password-toggle {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 0 0.65rem;
+  cursor: pointer;
+}
+
+.resident-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 130px;
+  gap: 0.8rem;
+}
+
+.resident-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 760px) {
+  .admin-page-heading.with-action {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-page-heading h2 {
+    font-size: 1.45rem;
+  }
+
+  .resident-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resident-modal-actions {
+    flex-direction: column-reverse;
+  }
+}

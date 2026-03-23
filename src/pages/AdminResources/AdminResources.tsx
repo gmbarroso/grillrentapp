@@ -100,7 +100,7 @@ const AdminResources = () => {
               </header>
 
               <p className="resource-description">
-                {resource.description?.trim() || (isHourly ? "Recurso com reserva por faixa de horario" : "Recurso com reserva por dia completo")}
+                {resource.description?.trim() || (isHourly ? "Recurso com reserva por faixa de horário" : "Recurso com reserva por dia completo")}
               </p>
             </article>
           )
@@ -118,7 +118,7 @@ const AdminResources = () => {
                 type="text"
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                placeholder="Ex.: Salao de Festas"
+                placeholder="Ex.: Salão de Festas"
                 maxLength={80}
               />
             </label>
@@ -133,7 +133,7 @@ const AdminResources = () => {
           </div>
 
           <label>
-            Descricao
+            Descrição
             <textarea
               value={description}
               onChange={(event) => setDescription(event.target.value)}

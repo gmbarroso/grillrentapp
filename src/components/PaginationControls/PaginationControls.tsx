@@ -1,4 +1,4 @@
-import { Button } from ".."
+import Button from "../Button/Button"
 import "./PaginationControls.css"
 
 interface PaginationControlsProps {

@@ -1,6 +1,7 @@
 import { Calendar, Clock3, MapPin, Trash2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import type { Booking } from "../../types"
+import { formatBookingDate, formatBookingTimeInterval } from "../../utils/booking-datetime"
 import Tooltip from "../Tooltip/Tooltip"
 import "./ReservationPreviewCard.css"
 
@@ -12,11 +13,6 @@ interface ReservationPreviewCardProps {
   isDeleting?: boolean
 }
 
-const dateFormatter = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" })
-const timeFormatter = new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" })
-
-const toDate = (value: string): Date => new Date(value)
-
 export default function ReservationPreviewCard({
   booking,
   statusLabel,
@@ -25,10 +21,8 @@ export default function ReservationPreviewCard({
   isDeleting = false,
 }: ReservationPreviewCardProps) {
   const { t } = useTranslation()
-  const start = toDate(booking.startTime)
-  const end = toDate(booking.endTime)
-  const isAllDay = start.getHours() === 0 && end.getHours() === 23
-  const timeRange = isAllDay ? "Dia inteiro" : `${timeFormatter.format(start)} - ${timeFormatter.format(end)}`
+  const isAllDay = booking.resourceType === "daily"
+  const timeRange = isAllDay ? t("BookingList.AllDay") : formatBookingTimeInterval(booking.startTime, booking.endTime)
 
   return (
     <article className="reservation-preview-card">
@@ -36,7 +30,7 @@ export default function ReservationPreviewCard({
       <span className={`reservation-status ${pending ? "pending" : "confirmed"}`.trim()}>{statusLabel}</span>
       <p>
         <Calendar size={14} />
-        {dateFormatter.format(start)}
+        {formatBookingDate(booking.startTime, "pt-BR")}
       </p>
       <p>
         <Clock3 size={14} />

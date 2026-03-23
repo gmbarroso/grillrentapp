@@ -146,7 +146,7 @@ export default function DashboardSidebar({
             </div>
           )}
 
-          <div className="dashboard-theme-panel">
+          <div className="dashboard-theme-panel" data-tour-target="theme-panel">
             <div className="dashboard-theme-options" role="group" aria-label="Selecao de tema">
               {themeOptions.map((option) => {
                 const Icon = option.icon

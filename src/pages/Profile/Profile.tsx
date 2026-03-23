@@ -9,7 +9,7 @@ import { useAuth } from "../../context/AuthContext"
 import { useUserProfile } from "../../hooks/user/useUserProfile"
 import { useUpdateProfile } from "../../hooks/user/useUpdateProfile"
 import { useLoading } from "../../context/LoadingContext"
-import { ProfilePageSkeleton, Button } from "../../components"
+import { ProfilePageSkeleton, Button, TourPageHint } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { extractApiErrorMessage, fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
 import "./Profile.css"
@@ -19,7 +19,7 @@ const API_BASE_URL = getApiBaseUrl()
 const Profile: React.FC = () => {
   const { token } = useAuth()
   const { data: userResponse, error: userError, isLoading: isUserLoading, fetchProfile } = useUserProfile(token)
-  const { updateProfile, isLoading: isUpdating } = useUpdateProfile(token ?? "")
+  const { updateProfile, setOnboardingEmail, isLoading: isUpdating } = useUpdateProfile(token ?? "")
   const { showToast } = useToast()
   const navigate = useNavigate()
 
@@ -64,23 +64,38 @@ const Profile: React.FC = () => {
       return
     }
 
-    const updateData = {
-      name,
-      email,
-    }
+    const currentEmail = (userResponse?.user.email || "").trim().toLowerCase()
+    const nextEmail = email.trim().toLowerCase()
+    const hasNameChanged = name !== userResponse?.user.name
+    const hasEmailChanged = nextEmail !== currentEmail
 
     try {
-      const response = await updateProfile(updateData)
-      if (response?.user) {
-        showToast(t("Profile.Success"), "success")
-        await fetchProfile()
-        const onboardingRequired = Boolean(response.onboardingRequired ?? response.onboarding?.onboardingRequired)
-        const mustVerifyEmail = Boolean(response.mustVerifyEmail ?? response.onboarding?.mustVerifyEmail)
-        if (onboardingRequired && mustVerifyEmail) {
-          showToast("E-mail atualizado. Verifique o novo e-mail para continuar.", "success")
-          navigate("/onboarding/verify-email")
+      if (!hasNameChanged && !hasEmailChanged) {
+        showToast("Nenhuma alteração para salvar.", "success")
+        return
+      }
+
+      if (hasNameChanged) {
+        const response = await updateProfile({ name })
+        if (!response?.user) {
+          throw new Error(t("Profile.Error"))
         }
       }
+
+      if (hasEmailChanged) {
+        const response = await setOnboardingEmail(nextEmail)
+        if (!response) {
+          throw new Error(t("Profile.Error"))
+        }
+      }
+
+      await fetchProfile()
+      if (hasEmailChanged) {
+        showToast("E-mail atualizado. Verifique o novo e-mail para continuar.", "success")
+        navigate("/onboarding/verify-email")
+        return
+      }
+      showToast(t("Profile.Success"), "success")
     } catch {
       showToast(t("Profile.Error"), "error")
     }
@@ -122,6 +137,14 @@ const Profile: React.FC = () => {
 
   return (
     <div className="profile-page">
+      <TourPageHint
+        title="Perfil"
+        description="Nesta pagina voce atualiza nome e email, pode alterar senha e repetir o tour de boas-vindas."
+        stepIndex={7}
+        totalSteps={10}
+        backTo="/mybookeddates?startTour=1&tourStep=6"
+        nextTo="/contact?startTour=1&tourStep=8"
+      />
       <section className="profile-card">
         <header>
           <h2>
@@ -160,7 +183,7 @@ const Profile: React.FC = () => {
             </div>
           </div>
 
-          <Button variant="primary" type="submit" fullWidth>
+          <Button variant="primary" type="submit" fullWidth isLoading={isUpdating} loadingText="Atualizando...">
             Atualizar Perfil
           </Button>
           <Button variant="primary" type="button" fullWidth onClick={() => navigate("/change-password")}>

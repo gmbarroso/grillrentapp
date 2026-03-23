@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Clock3, Send } from "lucide-react"
 import { useToast } from "../../context/ToastContext"
 import { useCreateContactMessage } from "../../hooks/message/useMessages"
 import { useOrganizationSettings } from "../../hooks/organization/useOrganizationSettings"
-import { Button } from "../../components"
+import { Button, TourPageHint } from "../../components"
 import "./Contact.css"
 
 type ContactCategory = "suggestion" | "complaint" | "question"
@@ -52,6 +52,16 @@ const Contact = () => {
 
   return (
     <div className="contact-page-v2">
+      <TourPageHint
+        title="Contato"
+        description="Use esta pagina para enviar sugestoes, reclamacoes e duvidas. A administracao recebe a mensagem no faleconosco vinculada ao seu email validado."
+        stepIndex={8}
+        totalSteps={10}
+        backTo="/profile?startTour=1&tourStep=7"
+        nextTo="/?startTour=1&tourStep=9"
+        nextLabel="Proximo"
+      />
+
       <section className="contact-card-v2">
         <header>
           <h2>Fale Conosco</h2>

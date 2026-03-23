@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Bell, CalendarDays } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
@@ -21,21 +21,73 @@ import { compareBookingStartAsc, isBookingForCurrentUser, isUpcomingBooking } fr
 import "./Home.css"
 
 const API_BASE_URL = getApiBaseUrl()
-const CURRENT_FIRST_ACCESS_TOUR_VERSION = 1
+const CURRENT_FIRST_ACCESS_TOUR_VERSION = 4
+const TOUR_CALLOUT_MAX_WIDTH = 340
+
+type TourAnchor = "quick-reserve" | "next-bookings" | "notices" | "sidebar-toggle" | "theme-panel" | null
+
+interface FirstAccessTourStep {
+  title: string
+  description: string
+  anchor: TourAnchor
+  previewRoute?: "/mybookeddates" | "/profile" | "/contact"
+}
+
 const FIRST_ACCESS_TOUR_STEPS = [
   {
     title: "Bem-vindo ao painel",
     description: "Aqui voce acompanha suas informacoes principais e acessa as acoes rapidas.",
+    anchor: null,
+  },
+  {
+    title: "Mostrar e ocultar menu",
+    description: "Use este botao para recolher ou expandir a barra lateral e ganhar mais espaco na tela.",
+    anchor: "sidebar-toggle",
+  },
+  {
+    title: "Trocar tema",
+    description: "No menu lateral, use os botoes de tema para alternar entre claro, escuro ou automatico.",
+    anchor: "theme-panel",
   },
   {
     title: "Nova reserva",
-    description: "Use Minhas reservas para escolher recurso, data e horario disponiveis.",
+    description: "Em Minhas reservas, recursos por hora reservam faixa de horario e recursos dia inteiro reservam o dia completo.",
+    anchor: "quick-reserve",
+  },
+  {
+    title: "Minhas proximas reservas",
+    description: "Aqui voce ve suas reservas futuras. Na pagina /mybookeddates voce tambem pode cancelar reservas quando necessario.",
+    anchor: "next-bookings",
   },
   {
     title: "Avisos e comunicacao",
     description: "Veja avisos recentes no dashboard e acesse Contato para falar com a administracao.",
+    anchor: "notices",
   },
-]
+  {
+    title: "Pagina Minhas reservas",
+    description: "Em /mybookeddates voce faz novas reservas e acompanha suas reservas ativas para remover com confirmacao.",
+    anchor: null,
+    previewRoute: "/mybookeddates",
+  },
+  {
+    title: "Pagina Perfil",
+    description: "Em /profile voce atualiza nome e email, altera senha e pode repetir o tour de boas-vindas.",
+    anchor: null,
+    previewRoute: "/profile",
+  },
+  {
+    title: "Pagina Contato",
+    description: "Em /contact voce envia reclamacoes, sugestoes e duvidas para a administracao, identificadas com seu email validado.",
+    anchor: null,
+    previewRoute: "/contact",
+  },
+  {
+    title: "Tour concluido",
+    description: "Pronto. Agora voce conhece o principal do app e pode começar a usar normalmente.",
+    anchor: null,
+  },
+] as const satisfies readonly FirstAccessTourStep[]
 
 const Home = () => {
   const { user, token, onboarding, tour, refreshProfile } = useAuth()
@@ -45,6 +97,10 @@ const Home = () => {
   const [isTourOpen, setIsTourOpen] = useState(false)
   const [tourStepIndex, setTourStepIndex] = useState(0)
   const [isPersistingTour, setIsPersistingTour] = useState(false)
+  const [tourAnchorRect, setTourAnchorRect] = useState<DOMRect | null>(null)
+  const newReservationCardRef = useRef<HTMLDivElement | null>(null)
+  const nextBookingsRef = useRef<HTMLDivElement | null>(null)
+  const noticesCardRef = useRef<HTMLDivElement | null>(null)
 
   const {
     bookings,
@@ -67,20 +123,27 @@ const Home = () => {
   }, [noticesError, showToast])
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search)
     const isOnboardingDone = !onboarding.onboardingRequired
     if (!isOnboardingDone) return
 
     const hasCompletedTour = (tour.firstAccessTourVersionCompleted ?? 0) >= CURRENT_FIRST_ACCESS_TOUR_VERSION
-    const forceStartTour = new URLSearchParams(location.search).get("startTour") === "1"
+    const forceStartTour = searchParams.get("startTour") === "1"
+    if (!forceStartTour && isTourOpen) return
     if (!forceStartTour && hasCompletedTour) return
 
-    setTourStepIndex(0)
+    const forcedStep = Number(searchParams.get("tourStep") ?? "0")
+    const normalizedStep = Number.isInteger(forcedStep) && forcedStep >= 0 && forcedStep < FIRST_ACCESS_TOUR_STEPS.length
+      ? forcedStep
+      : 0
+
+    setTourStepIndex(forceStartTour ? normalizedStep : 0)
     setIsTourOpen(true)
 
     if (forceStartTour) {
       navigate("/", { replace: true })
     }
-  }, [location.search, navigate, onboarding.onboardingRequired, tour.firstAccessTourVersionCompleted])
+  }, [isTourOpen, location.search, navigate, onboarding.onboardingRequired, tour.firstAccessTourVersionCompleted])
 
   const upcomingBookings = useMemo(() => {
     const now = new Date()
@@ -109,16 +172,104 @@ const Home = () => {
     [lastSeenNoticesAt, recentNotices],
   )
 
-  const dateLabel = new Intl.DateTimeFormat("pt-BR", {
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }).format(new Date())
-
   const isLoadingDashboard = isLoadingBookings || isLoadingNotices
   const isLastTourStep = tourStepIndex === FIRST_ACCESS_TOUR_STEPS.length - 1
   const currentTourStep = FIRST_ACCESS_TOUR_STEPS[tourStepIndex]
+  const isTourCalloutStep = isTourOpen && tourStepIndex > 0
+  const hasTourAnchor = currentTourStep.anchor !== null
+  const hasResolvedTourAnchor = hasTourAnchor && Boolean(tourAnchorRect)
+
+  useEffect(() => {
+    if (!isTourOpen) return
+    if (!currentTourStep.previewRoute) return
+    navigate(`${currentTourStep.previewRoute}?startTour=1&tourStep=${tourStepIndex}`, { replace: true })
+  }, [currentTourStep.previewRoute, isTourOpen, navigate, tourStepIndex])
+
+  useEffect(() => {
+    if (!isTourCalloutStep) {
+      setTourAnchorRect(null)
+      return
+    }
+
+    const getTarget = (anchor: TourAnchor) => {
+      if (anchor === "quick-reserve") return newReservationCardRef.current
+      if (anchor === "next-bookings") return nextBookingsRef.current
+      if (anchor === "notices") return noticesCardRef.current
+      if (anchor === "sidebar-toggle") return document.querySelector<HTMLElement>('[data-tour-target="sidebar-toggle"]')
+      if (anchor === "theme-panel") return document.querySelector<HTMLElement>('[data-tour-target="theme-panel"]')
+      return null
+    }
+
+    const updateAnchor = () => {
+      if (currentTourStep.anchor === "theme-panel") {
+        const maybeThemePanel = getTarget("theme-panel")
+        if (!maybeThemePanel) {
+          const sidebarToggle = getTarget("sidebar-toggle")
+          sidebarToggle?.dispatchEvent(new MouseEvent("click", { bubbles: true }))
+        } else {
+          maybeThemePanel.scrollIntoView({ block: "center", inline: "nearest" })
+        }
+      }
+
+      const target = getTarget(currentTourStep.anchor)
+      setTourAnchorRect(target ? target.getBoundingClientRect() : null)
+    }
+
+    updateAnchor()
+    if (currentTourStep.anchor === "theme-panel") {
+      window.setTimeout(updateAnchor, 140)
+    }
+    window.addEventListener("resize", updateAnchor)
+    window.addEventListener("scroll", updateAnchor, true)
+
+    return () => {
+      window.removeEventListener("resize", updateAnchor)
+      window.removeEventListener("scroll", updateAnchor, true)
+    }
+  }, [currentTourStep.anchor, isTourCalloutStep, tourStepIndex])
+
+  const tourCalloutPosition = useMemo(() => {
+    const viewportWidth = typeof window === "undefined" ? 1280 : window.innerWidth
+    const viewportHeight = typeof window === "undefined" ? 800 : window.innerHeight
+    const width = Math.min(TOUR_CALLOUT_MAX_WIDTH, viewportWidth - 24)
+    const estimatedHeight = 230
+
+    if (!tourAnchorRect) {
+      return {
+        style: {
+          width,
+          left: (viewportWidth - width) / 2,
+          top: Math.max(16, viewportHeight * 0.25),
+        },
+        placement: "below" as const,
+      }
+    }
+
+    const left = Math.min(
+      Math.max(12, tourAnchorRect.left + (tourAnchorRect.width - width) / 2),
+      viewportWidth - width - 12,
+    )
+    const shouldPlaceAbove = (viewportHeight - tourAnchorRect.bottom) < (estimatedHeight + 20)
+      && tourAnchorRect.top > (estimatedHeight + 28)
+    const top = shouldPlaceAbove
+      ? Math.max(16, tourAnchorRect.top - estimatedHeight - 12)
+      : Math.min(Math.max(16, tourAnchorRect.bottom + 12), viewportHeight - estimatedHeight)
+
+    return {
+      style: { width, left, top },
+      placement: shouldPlaceAbove ? ("above" as const) : ("below" as const),
+    }
+  }, [tourAnchorRect])
+
+  const tourHighlightStyle = useMemo(() => {
+    if (!tourAnchorRect) return undefined
+    return {
+      top: tourAnchorRect.top - 6,
+      left: tourAnchorRect.left - 6,
+      width: tourAnchorRect.width + 12,
+      height: tourAnchorRect.height + 12,
+    }
+  }, [tourAnchorRect])
 
   const persistTourCompletion = async () => {
     if (isPersistingTour) return
@@ -148,11 +299,27 @@ const Home = () => {
       void persistTourCompletion()
       return
     }
-    setTourStepIndex((prev) => prev + 1)
+    setTourStepIndex((prev) => {
+      const nextIndex = prev + 1
+      const nextStep = FIRST_ACCESS_TOUR_STEPS[nextIndex]
+      if (nextStep?.previewRoute) {
+        navigate(`${nextStep.previewRoute}?startTour=1&tourStep=${nextIndex}`)
+        return prev
+      }
+      return nextIndex
+    })
   }
 
   const handleBackTour = () => {
-    setTourStepIndex((prev) => Math.max(prev - 1, 0))
+    setTourStepIndex((prev) => {
+      const prevIndex = Math.max(prev - 1, 0)
+      const prevStep = FIRST_ACCESS_TOUR_STEPS[prevIndex]
+      if (prevStep?.previewRoute) {
+        navigate(`${prevStep.previewRoute}?startTour=1&tourStep=${prevIndex}`)
+        return prev
+      }
+      return prevIndex
+    })
   }
 
   return (
@@ -170,19 +337,25 @@ const Home = () => {
         </header>
 
         <div className="dashboard-home-actions">
-          <QuickActionCard title="Nova Reserva" subtitle="Agendar quadra ou churrasqueira" to="/mybookeddates" icon={CalendarDays} />
-          <QuickActionCard title="Avisos" subtitle={`${recentNotices.length} avisos recentes`} to="/notices" icon={Bell} tone="yellow" />
+          <div className="dashboard-tour-target" ref={newReservationCardRef}>
+            <QuickActionCard title="Nova Reserva" subtitle="Agendar quadra ou churrasqueira" to="/mybookeddates" icon={CalendarDays} />
+          </div>
+          <div className="dashboard-tour-target" ref={noticesCardRef}>
+            <QuickActionCard title="Avisos" subtitle={`${recentNotices.length} avisos recentes`} to="/notices" icon={Bell} tone="yellow" />
+          </div>
         </div>
 
-        <MyNextBookedDates
-          id="reservas"
-          bookings={upcomingBookings}
-          title="Minhas próximas reservas"
-          headingLevel="h3"
-          actionLabel="Minhas reservas →"
-          onActionClick={() => navigate("/mybookeddates")}
-          emptyMessage="Voce nao tem reservas."
-        />
+        <div className="dashboard-tour-target" ref={nextBookingsRef}>
+          <MyNextBookedDates
+            id="reservas"
+            bookings={upcomingBookings}
+            title="Minhas próximas reservas"
+            headingLevel="h3"
+            actionLabel="Minhas reservas →"
+            onActionClick={() => navigate("/mybookeddates")}
+            emptyMessage="Voce nao tem reservas."
+          />
+        </div>
 
         <section className="dashboard-section">
           <header>
@@ -201,7 +374,7 @@ const Home = () => {
           </div>
         </section>
 
-        <Modal isOpen={isTourOpen} onClose={() => void persistTourCompletion()}>
+        <Modal isOpen={isTourOpen && tourStepIndex === 0} onClose={() => void persistTourCompletion()}>
           <div className="first-access-tour">
             <span className="first-access-tour-chip">
               Tour {tourStepIndex + 1}/{FIRST_ACCESS_TOUR_STEPS.length}
@@ -228,6 +401,50 @@ const Home = () => {
             </div>
           </div>
         </Modal>
+
+        {isTourCalloutStep ? (
+          <div className="tour-callout-overlay" role="presentation">
+            {hasResolvedTourAnchor && tourHighlightStyle ? <div className="tour-highlight" style={tourHighlightStyle} /> : null}
+            <div
+              className={`tour-callout ${
+                hasResolvedTourAnchor ? `tour-callout-arrow-${tourCalloutPosition.placement}` : "tour-callout-no-anchor"
+              }`.trim()}
+              style={tourCalloutPosition.style}
+            >
+              <span className="first-access-tour-chip">
+                Tour {tourStepIndex + 1}/{FIRST_ACCESS_TOUR_STEPS.length}
+              </span>
+              <h2>{currentTourStep.title}</h2>
+              <p>{currentTourStep.description}</p>
+              <div className="first-access-tour-actions">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleBackTour}
+                  disabled={isPersistingTour}
+                >
+                  Voltar
+                </Button>
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => void persistTourCompletion()}
+                  disabled={isPersistingTour}
+                >
+                  Pular tour
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleAdvanceTour}
+                  isLoading={isPersistingTour}
+                  loadingText="Salvando..."
+                >
+                  {isLastTourStep ? "Concluir tour" : "Proximo"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     )
   )

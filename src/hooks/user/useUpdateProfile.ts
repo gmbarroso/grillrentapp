@@ -3,13 +3,34 @@
 import { useState } from "react"
 import { useFetch } from "../useFetch"
 import type { UserResponse } from "../../types"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
+import {
+  extractApiErrorMessage,
+  getApiBaseUrl,
+  logApiRequest,
+  logApiResponse,
+  handleApiError,
+  fetchWithAuthHandling,
+} from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
 
 interface UpdateUserProfileDto {
   name?: string
-  email?: string | null
+}
+
+interface OnboardingEmailResponse {
+  message: string
+  onboarding?: {
+    mustProvideEmail?: boolean
+    mustVerifyEmail?: boolean
+    mustChangePassword?: boolean
+    onboardingRequired?: boolean
+    isOnboardingComplete?: boolean
+  }
+  mustProvideEmail?: boolean
+  mustVerifyEmail?: boolean
+  mustChangePassword?: boolean
+  onboardingRequired?: boolean
 }
 
 export function useUpdateProfile(token: string | null) {
@@ -35,7 +56,8 @@ export function useUpdateProfile(token: string | null) {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to update profile")
+        const message = await extractApiErrorMessage(response, `Falha ao atualizar perfil (${response.status})`)
+        throw new Error(message)
       }
 
       const data: UserResponse = await response.json()
@@ -52,9 +74,43 @@ export function useUpdateProfile(token: string | null) {
     }
   }
 
+  const setOnboardingEmail = async (email: string): Promise<OnboardingEmailResponse | null> => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const endpoint = "/users/onboarding/email"
+      const payload = { email: email.trim() }
+      logApiRequest("POST", `${API_BASE_URL}${endpoint}`, payload)
+
+      const response = await fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const message = await extractApiErrorMessage(response, `Falha ao atualizar e-mail (${response.status})`)
+        throw new Error(message)
+      }
+
+      const data: OnboardingEmailResponse = await response.json()
+      logApiResponse(endpoint, response.status, data)
+      return data
+    } catch (err) {
+      const apiError = handleApiError(err, "/users/onboarding/email")
+      setError(apiError.message)
+      return null
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const canDeleteProfile = (userRole: string): boolean => {
     return userRole === "admin"
   }
 
-  return { updateProfile, isLoading, error, canDeleteProfile }
+  return { updateProfile, setOnboardingEmail, isLoading, error, canDeleteProfile }
 }

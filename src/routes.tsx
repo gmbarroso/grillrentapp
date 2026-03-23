@@ -37,7 +37,15 @@ const resolveOnboardingRoute = (flags: {
   mustVerifyEmail: boolean
   mustChangePassword: boolean
 }): string => {
-  void flags
+  if (flags.mustProvideEmail) {
+    return "/onboarding/email"
+  }
+  if (flags.mustVerifyEmail) {
+    return "/onboarding/verify-email"
+  }
+  if (flags.mustChangePassword) {
+    return "/onboarding/change-password"
+  }
   return "/onboarding/email"
 }
 

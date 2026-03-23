@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
-import { BookingSection, Button, DashboardHomeSkeleton, Modal, MyNextBookedDates } from "../../components"
+import { BookingSection, Button, DashboardHomeSkeleton, Modal, MyNextBookedDates, TourPageHint } from "../../components"
 import { useAllBookings } from "../../hooks/booking/useAllBookings"
 import { useDeleteBooking } from "../../hooks/booking/useDeleteBooking"
 import { compareBookingStartAsc, isBookingForCurrentUser, isUpcomingBooking } from "../../utils/booking-visibility"
@@ -68,6 +68,15 @@ const MyReservations = () => {
 
   return (
     <div className="my-reservations-page">
+      <TourPageHint
+        title="Minhas reservas"
+        description="Aqui voce cria reservas e acompanha as proximas reservas. Para cancelar, use o botao de remover na reserva e confirme a acao."
+        stepIndex={6}
+        totalSteps={10}
+        backTo="/?startTour=1&tourStep=5"
+        nextTo="/profile?startTour=1&tourStep=7"
+      />
+
       <MyNextBookedDates
         bookings={upcomingPreview}
         title="Minhas próximas reservas"

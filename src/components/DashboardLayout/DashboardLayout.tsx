@@ -167,6 +167,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <button
               type="button"
               className="dashboard-shell-sidebar-toggle"
+              data-tour-target="sidebar-toggle"
               onClick={toggleSidebar}
               aria-label={
                 isMobileViewport

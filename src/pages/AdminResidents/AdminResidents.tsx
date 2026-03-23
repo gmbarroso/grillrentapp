@@ -338,10 +338,10 @@ const AdminResidents = () => {
             <input type="text" value={createName} onChange={(event) => setCreateName(event.target.value)} maxLength={50} />
           </label>
 
-          <label>
+          {/* <label>
             E-mail (opcional)
             <input type="email" value={createEmail} onChange={(event) => setCreateEmail(event.target.value)} maxLength={100} />
-          </label>
+          </label> */}
 
           <div className="resident-modal-grid">
             <label>

@@ -282,7 +282,7 @@ const SignUp = () => {
                   <dd>
                     {DEFAULT_APARTMENT}, Bloco {DEFAULT_BLOCK}
                   </dd>
-                  <dt>Permissao</dt>
+                  <dt>Permissão</dt>
                   <dd>Administrador</dd>
                 </dl>
               </div>

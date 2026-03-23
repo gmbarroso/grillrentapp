@@ -108,8 +108,8 @@ const AdminSettings = () => {
             </span>
             <small className="status-chip soon">Em breve</small>
           </div>
-          <h3>Notificacoes</h3>
-          <p>Preferencias de envio de avisos e alertas automaticos</p>
+          <h3>Notificações</h3>
+          <p>Preferências de envio de avisos e alertas automáticos</p>
         </article>
 
         <article className="settings-card disabled">
@@ -119,8 +119,8 @@ const AdminSettings = () => {
             </span>
             <small className="status-chip soon">Em breve</small>
           </div>
-          <h3>Aparencia</h3>
-          <p>Cores, temas e personalizacao visual do sistema</p>
+          <h3>Aparência</h3>
+          <p>Cores, temas e personalização visual do sistema</p>
         </article>
 
         <article className="settings-card disabled">
@@ -130,8 +130,8 @@ const AdminSettings = () => {
             </span>
             <small className="status-chip soon">Em breve</small>
           </div>
-          <h3>Seguranca</h3>
-          <p>Politicas de senha, sessoes ativas e permissoes</p>
+          <h3>Segurança</h3>
+          <p>Políticas de senha, sessões ativas e permissões</p>
         </article>
       </section>
     </div>

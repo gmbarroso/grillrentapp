@@ -129,9 +129,11 @@ const Profile: React.FC = () => {
     }
   }
 
-  if (isUserLoading) return <ProfilePageSkeleton />
+  const isProfilePending = Boolean(token) && !userError && !userResponse?.user
+
+  if (isUserLoading || isProfilePending) return <ProfilePageSkeleton />
   if (userError) return <div>{t("Profile.Error")}</div>
-  if (!userResponse?.user) return <div>{t("Profile.UserNotFound")}</div>
+  if (!userResponse?.user) return <div>{t("Profile.Error")}</div>
 
   const user = userResponse.user
 

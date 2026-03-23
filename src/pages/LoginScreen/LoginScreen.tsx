@@ -84,10 +84,10 @@ export default function LoginScreen() {
         <div className="login-brand-wrap">
           <BrandMark />
         </div>
-        <AuthCard title="Bem-vindo" subtitle="Entre com os dados do seu condominio">
+        <AuthCard title="Bem-vindo" subtitle="Entre com os dados do seu condomínio">
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="login-field">
-              <label htmlFor="organizationSlug">Codigo do condominio</label>
+              <label htmlFor="organizationSlug">Código do condomínio</label>
               <input
                 id="organizationSlug"
                 className="login-input"
@@ -170,7 +170,7 @@ export default function LoginScreen() {
             </div> */}
 
             {/* <button className="login-secondary" type="button" onClick={() => navigate("/signup")}>
-              Cadastrar novo condominio
+              Cadastrar novo condomínio
             </button> */}
           </form>
         </AuthCard>

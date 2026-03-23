@@ -36,55 +36,55 @@ interface FirstAccessTourStep {
 const FIRST_ACCESS_TOUR_STEPS = [
   {
     title: "Bem-vindo ao painel",
-    description: "Aqui voce acompanha suas informacoes principais e acessa as acoes rapidas.",
+    description: "Aqui você acompanha suas informações principais e acessa as ações rápidas.",
     anchor: null,
   },
   {
     title: "Mostrar e ocultar menu",
-    description: "Use este botao para recolher ou expandir a barra lateral e ganhar mais espaco na tela.",
+    description: "Use este botão para recolher ou expandir a barra lateral e ganhar mais espaço na tela.",
     anchor: "sidebar-toggle",
   },
   {
     title: "Trocar tema",
-    description: "No menu lateral, use os botoes de tema para alternar entre claro, escuro ou automatico.",
+    description: "No menu lateral, use os botões de tema para alternar entre claro, escuro ou automático.",
     anchor: "theme-panel",
   },
   {
     title: "Nova reserva",
-    description: "Em Minhas reservas, recursos por hora reservam faixa de horario e recursos dia inteiro reservam o dia completo.",
+    description: "Em Minhas reservas, recursos por hora reservam faixa de horário e recursos dia inteiro reservam o dia completo.",
     anchor: "quick-reserve",
   },
   {
-    title: "Minhas proximas reservas",
-    description: "Aqui voce ve suas reservas futuras. Na pagina /mybookeddates voce tambem pode cancelar reservas quando necessario.",
+    title: "Minhas próximas reservas",
+    description: "Aqui você vê suas reservas futuras. Na página /mybookeddates você também pode cancelar reservas quando necessário.",
     anchor: "next-bookings",
   },
   {
-    title: "Avisos e comunicacao",
-    description: "Veja avisos recentes no dashboard e acesse Contato para falar com a administracao.",
+    title: "Avisos e comunicação",
+    description: "Veja avisos recentes no dashboard e acesse Contato para falar com a administração.",
     anchor: "notices",
   },
   {
-    title: "Pagina Minhas reservas",
-    description: "Em /mybookeddates voce faz novas reservas e acompanha suas reservas ativas para remover com confirmacao.",
+    title: "Página Minhas reservas",
+    description: "Em /mybookeddates você faz novas reservas e acompanha suas reservas ativas para remover com confirmação.",
     anchor: null,
     previewRoute: "/mybookeddates",
   },
   {
-    title: "Pagina Perfil",
-    description: "Em /profile voce atualiza nome e email, altera senha e pode repetir o tour de boas-vindas.",
+    title: "Página Perfil",
+    description: "Em /profile você atualiza nome e email, altera senha e pode repetir o tour de boas-vindas.",
     anchor: null,
     previewRoute: "/profile",
   },
   {
-    title: "Pagina Contato",
-    description: "Em /contact voce envia reclamacoes, sugestoes e duvidas para a administracao, identificadas com seu email validado.",
+    title: "Página Contato",
+    description: "Em /contact você envia reclamações, sugestões e dúvidas para a administração, identificadas com seu email validado.",
     anchor: null,
     previewRoute: "/contact",
   },
   {
-    title: "Tour concluido",
-    description: "Pronto. Agora voce conhece o principal do app e pode começar a usar normalmente.",
+    title: "Tour concluído",
+    description: "Pronto. Agora você conhece o principal do app e pode começar a usar normalmente.",
     anchor: null,
   },
 ] as const satisfies readonly FirstAccessTourStep[]
@@ -287,7 +287,7 @@ const Home = () => {
       await refreshProfile()
     } catch (error) {
       console.error(handleApiError(error, "/users/tour/complete"))
-      showToast(error instanceof Error ? error.message : "Nao foi possivel concluir o tour agora.", "error")
+      showToast(error instanceof Error ? error.message : "Não foi possível concluir o tour agora.", "error")
     } finally {
       setIsPersistingTour(false)
       setIsTourOpen(false)
@@ -353,7 +353,7 @@ const Home = () => {
             headingLevel="h3"
             actionLabel="Minhas reservas →"
             onActionClick={() => navigate("/mybookeddates")}
-            emptyMessage="Voce nao tem reservas."
+            emptyMessage="Você não tem reservas."
           />
         </div>
 
@@ -369,7 +369,7 @@ const Home = () => {
             {recentNotices.length > 0 ? (
               <NoticeCarousel notices={recentNotices} unreadNoticeIds={unreadRecentNoticeIds} />
             ) : (
-              <p className="dashboard-empty-message">Nao ha avisos recentes.</p>
+              <p className="dashboard-empty-message">Não há avisos recentes.</p>
             )}
           </div>
         </section>
@@ -396,7 +396,7 @@ const Home = () => {
                 isLoading={isPersistingTour}
                 loadingText="Salvando..."
               >
-                {isLastTourStep ? "Concluir tour" : "Proximo"}
+                {isLastTourStep ? "Concluir tour" : "Próximo"}
               </Button>
             </div>
           </div>
@@ -439,7 +439,7 @@ const Home = () => {
                   isLoading={isPersistingTour}
                   loadingText="Salvando..."
                 >
-                  {isLastTourStep ? "Concluir tour" : "Proximo"}
+                  {isLastTourStep ? "Concluir tour" : "Próximo"}
                 </Button>
               </div>
             </div>

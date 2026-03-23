@@ -62,7 +62,7 @@ const AdminResources = () => {
       closeModal()
     } catch (error) {
       console.error("Error creating resource:", error)
-      showToast("Nao foi possivel criar o recurso.", "error")
+      showToast("Não foi possível criar o recurso.", "error")
     }
   }
 

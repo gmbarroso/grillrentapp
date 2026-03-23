@@ -123,7 +123,7 @@ const Profile: React.FC = () => {
       navigate("/?startTour=1")
     } catch (error) {
       console.error(handleApiError(error, "/users/tour/reset"))
-      showToast(error instanceof Error ? error.message : "Nao foi possivel resetar o tour agora.", "error")
+      showToast(error instanceof Error ? error.message : "Não foi possível resetar o tour agora.", "error")
     } finally {
       setIsResettingTour(false)
     }

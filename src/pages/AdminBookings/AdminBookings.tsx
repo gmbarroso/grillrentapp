@@ -62,7 +62,7 @@ const AdminBookings = () => {
     <div className="admin-bookings-page">
       <header className="admin-page-heading">
         <h2>Todas as Reservas</h2>
-        <p>Visualize e gerencie todas as reservas do condominio</p>
+        <p>Visualize e gerencie todas as reservas do condomínio</p>
       </header>
 
       <section className="admin-filter-card">
@@ -110,14 +110,14 @@ const AdminBookings = () => {
                 <th>Morador</th>
                 <th>Apt.</th>
                 <th>Status</th>
-                <th className="admin-bookings-actions-column">Acoes</th>
+                <th className="admin-bookings-actions-column">Ações</th>
               </tr>
             </thead>
             <tbody>
               {filteredBookings.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="admin-bookings-empty-row">
-                    Nenhuma reserva encontrada para os filtros aplicados nesta pagina.
+                    Nenhuma reserva encontrada para os filtros aplicados nesta página.
                   </td>
                 </tr>
               ) : null}

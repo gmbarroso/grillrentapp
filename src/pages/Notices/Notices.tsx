@@ -92,7 +92,7 @@ const Notices = () => {
         }
       } catch (error) {
         authError("[NoticesReadTracking] mark-seen failed", sanitizeForLog({ message: (error as Error)?.message }))
-        showToast("Nao foi possivel atualizar leitura dos avisos. Tentaremos novamente depois.", "warning")
+        showToast("Não foi possível atualizar a leitura dos avisos. Tentaremos novamente depois.", "warning")
       }
     }
 
@@ -102,7 +102,7 @@ const Notices = () => {
   return (
     <div className="notices-page">
       <header className="notices-page-header">
-        <h1>Avisos do Condominio</h1>
+        <h1>Avisos do Condomínio</h1>
         <p>Fique por dentro das novidades e comunicados</p>
       </header>
 

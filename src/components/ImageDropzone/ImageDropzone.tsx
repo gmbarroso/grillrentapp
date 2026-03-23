@@ -25,11 +25,11 @@ const fileToDataUrl = (file: File): Promise<string> => new Promise((resolve, rej
       resolve(reader.result)
       return
     }
-    reject(new Error("Nao foi possivel ler a imagem selecionada."))
+    reject(new Error("Não foi possível ler a imagem selecionada."))
   }
 
   reader.onerror = () => {
-    reject(new Error("Nao foi possivel ler a imagem selecionada."))
+    reject(new Error("Não foi possível ler a imagem selecionada."))
   }
 
   reader.readAsDataURL(file)
@@ -56,7 +56,7 @@ export default function ImageDropzone({
     if (disabled) return
 
     if (!file.type.startsWith("image/")) {
-      onError?.("Selecione um arquivo de imagem valido (PNG, JPG ou SVG).")
+      onError?.("Selecione um arquivo de imagem válido (PNG, JPG ou SVG).")
       return
     }
 
@@ -69,7 +69,7 @@ export default function ImageDropzone({
       const dataUrl = await fileToDataUrl(file)
       onImageChange(dataUrl)
     } catch {
-      onError?.("Nao foi possivel processar a imagem selecionada.")
+      onError?.("Não foi possível processar a imagem selecionada.")
     }
   }
 
@@ -114,7 +114,7 @@ export default function ImageDropzone({
         onDrop={handleDrop}
         role="presentation"
       >
-        {imageUrl ? <img src={imageUrl} alt="Logotipo do condominio" /> : <span>{emptyLabel}</span>}
+        {imageUrl ? <img src={imageUrl} alt="Logotipo do condomínio" /> : <span>{emptyLabel}</span>}
       </div>
 
       <div className="image-dropzone-actions">

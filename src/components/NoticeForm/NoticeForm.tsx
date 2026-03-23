@@ -51,7 +51,7 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
     e.preventDefault()
 
     if (!title.trim() || !content.trim()) {
-      showToast("Preencha titulo e conteudo para publicar o aviso.", "error")
+      showToast("Preencha título e conteúdo para publicar o aviso.", "error")
       return
     }
 
@@ -81,11 +81,11 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
         onNoticeCreated()
       } else {
         console.error("Error creating notice:", error)
-        showToast("Nao foi possivel publicar o aviso.", "error")
+        showToast("Não foi possível publicar o aviso.", "error")
       }
     } catch (error) {
       console.error("Error creating notice:", error)
-      showToast("Nao foi possivel publicar o aviso.", "error")
+      showToast("Não foi possível publicar o aviso.", "error")
     } finally {
       setIsLoading(false)
     }
@@ -99,37 +99,37 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
       </header>
 
       <div className="notice-compose-group">
-        <label htmlFor="notice-title">Titulo</label>
+        <label htmlFor="notice-title">Título</label>
         <input
           id="notice-title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Titulo do aviso"
+          placeholder="Título do aviso"
           required
           maxLength={100}
         />
       </div>
 
       <div className="notice-compose-group">
-        <label htmlFor="notice-subtitle">Subtitulo (opcional)</label>
+        <label htmlFor="notice-subtitle">Subtítulo (opcional)</label>
         <input
           id="notice-subtitle"
           type="text"
           value={subtitle}
           onChange={(e) => setSubtitle(e.target.value)}
-          placeholder="Subtitulo do aviso"
+          placeholder="Subtítulo do aviso"
           maxLength={200}
         />
       </div>
 
       <div className="notice-compose-group">
-        <label htmlFor="notice-content">Conteudo</label>
+        <label htmlFor="notice-content">Conteúdo</label>
         <textarea
           id="notice-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Escreva o conteudo do aviso..."
+          placeholder="Escreva o conteúdo do aviso..."
           required
           rows={5}
           maxLength={2000}
@@ -141,7 +141,7 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
           <MessageCircle size={16} />
           <div>
             <strong>Enviar via WhatsApp</strong>
-            <p>Enviar notificacao para todos os moradores</p>
+            <p>Enviar notificação para todos os moradores</p>
           </div>
         </div>
 

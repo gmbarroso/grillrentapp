@@ -16,11 +16,11 @@ interface MyNextBookedDatesProps {
 
 export default function MyNextBookedDates({
   bookings,
-  title = "Minhas proximas reservas",
+  title = "Minhas próximas reservas",
   headingLevel = "h3",
   actionLabel,
   onActionClick,
-  emptyMessage = "Voce nao tem reservas.",
+  emptyMessage = "Você não tem reservas.",
   id,
   onDeleteBooking,
   isDeletingBooking = false,

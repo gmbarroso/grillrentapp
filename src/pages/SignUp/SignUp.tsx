@@ -38,12 +38,12 @@ const SignUp = () => {
     setError(null)
 
     if (!organizationName.trim()) {
-      setError("Informe o nome do condominio.")
+      setError("Informe o nome do condomínio.")
       return
     }
 
     if (!normalizedOrganizationSlug) {
-      setError("Codigo do condominio invalido. Use apenas letras e numeros.")
+      setError("Código do condomínio inválido. Use apenas letras e números.")
       return
     }
 
@@ -64,7 +64,7 @@ const SignUp = () => {
     }
 
     if (password !== confirmPassword) {
-      setError("As senhas nao conferem.")
+      setError("As senhas não conferem.")
       return
     }
 
@@ -75,7 +75,7 @@ const SignUp = () => {
     setError(null)
 
     if (!normalizedOrganizationSlug) {
-      setError("Codigo do condominio invalido. Revise e tente novamente.")
+      setError("Código do condomínio inválido. Revise e tente novamente.")
       return
     }
 
@@ -93,10 +93,10 @@ const SignUp = () => {
     } catch (err: unknown) {
       const code = typeof err === "object" && err && "code" in err ? String((err as { code?: unknown }).code || "") : ""
       if (code === "INVALID_CONDOMINIUM_CODE") {
-        setError("Codigo do condominio invalido.")
+        setError("Código do condomínio inválido.")
         return
       }
-      setError("Nao foi possivel criar o condominio. Tente novamente.")
+      setError("Não foi possível criar o condomínio. Tente novamente.")
     }
   }
 
@@ -112,8 +112,8 @@ const SignUp = () => {
         {step === 1 && (
           <>
             <header className="signup-header">
-              <h2>Cadastrar condominio</h2>
-              <p>Informe os dados do seu condominio para criar uma nova organizacao.</p>
+              <h2>Cadastrar condomínio</h2>
+              <p>Informe os dados do seu condomínio para criar uma nova organização.</p>
             </header>
             <div className="signup-progress">
               <span className="active" />
@@ -122,7 +122,7 @@ const SignUp = () => {
             </div>
             <section className="signup-card">
               <div className="signup-field">
-                <label>Nome do condominio</label>
+                <label>Nome do condomínio</label>
                 <div className="signup-input-wrap">
                   <Building2 size={16} />
                   <input
@@ -134,7 +134,7 @@ const SignUp = () => {
                 </div>
               </div>
               <div className="signup-field">
-                <label>Codigo do condominio</label>
+                <label>Código do condomínio</label>
                 <div className="signup-input-wrap">
                   <Hash size={16} />
                   <input
@@ -144,10 +144,10 @@ const SignUp = () => {
                     onChange={(e) => setOrganizationSlug(e.target.value)}
                   />
                 </div>
-                <small>Codigo unico usado pelos moradores para acessar o sistema.</small>
+                <small>Código único usado pelos moradores para acessar o sistema.</small>
               </div>
               <div className="signup-field">
-                <label>Endereco</label>
+                <label>Endereço</label>
                 <div className="signup-input-wrap">
                   <MapPin size={16} />
                   <input type="text" placeholder="Ex: Rua das Flores, 123" value={address} onChange={(e) => setAddress(e.target.value)} />
@@ -172,7 +172,7 @@ const SignUp = () => {
           <>
             <header className="signup-header">
               <h2>Administrador</h2>
-              <p>Dados do primeiro administrador do condominio.</p>
+              <p>Dados do primeiro administrador do condomínio.</p>
             </header>
             <div className="signup-progress">
               <span className="active" />
@@ -259,7 +259,7 @@ const SignUp = () => {
             </div>
             <section className="signup-card">
               <div className="signup-review-group">
-                <h3>Condominio</h3>
+                <h3>Condomínio</h3>
                 <dl>
                   <dt>Nome</dt>
                   <dd>{organizationName}</dd>
@@ -292,7 +292,7 @@ const SignUp = () => {
                   <ArrowLeft size={16} /> Voltar
                 </button>
                 <button type="button" className="signup-primary" onClick={createOrganization} disabled={isLoading}>
-                  {isLoading ? "Criando..." : "Criar condominio"}
+                  {isLoading ? "Criando..." : "Criar condomínio"}
                 </button>
               </div>
             </section>
@@ -302,17 +302,17 @@ const SignUp = () => {
         {step === 4 && (
           <>
             <header className="signup-header">
-              <h2>Condominio criado</h2>
-              <p>Seu condominio foi cadastrado com sucesso.</p>
+              <h2>Condomínio criado</h2>
+              <p>Seu condomínio foi cadastrado com sucesso.</p>
             </header>
             <section className="signup-card signup-success-card">
               <div className="signup-success-icon">✓</div>
               <h3>{organizationName}</h3>
               <p>
-                Seu condominio foi criado com o codigo <b>{normalizedOrganizationSlug}</b>.
+                Seu condomínio foi criado com o código <b>{normalizedOrganizationSlug}</b>.
               </p>
               <p>
-                Faca login com o codigo <b>{normalizedOrganizationSlug}</b>, apto <b>{DEFAULT_APARTMENT}</b>, bloco <b>{DEFAULT_BLOCK}</b> e a senha que voce cadastrou.
+                Faça login com o código <b>{normalizedOrganizationSlug}</b>, apto <b>{DEFAULT_APARTMENT}</b>, bloco <b>{DEFAULT_BLOCK}</b> e a senha que você cadastrou.
               </p>
               <button type="button" className="signup-primary" onClick={() => navigate("/login")}>
                 Ir para o login
@@ -324,11 +324,11 @@ const SignUp = () => {
         {step !== 4 && (
           <p className="signup-link-login">
             <button type="button" onClick={() => navigate("/login")}>
-              <ArrowLeft size={14} /> Ja tenho uma conta
+              <ArrowLeft size={14} /> Já tenho uma conta
             </button>
           </p>
         )}
-        <p className="signup-caption">Sistema de Gestao Condominial</p>
+        <p className="signup-caption">Sistema de Gestão Condominial</p>
       </main>
     </div>
   )

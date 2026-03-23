@@ -108,7 +108,7 @@ export default function DashboardSidebar({
                   <SidebarUnreadTag
                     unreadCount={item.unreadCount || 0}
                     showDot={Boolean(item.hasNew)}
-                    ariaLabel={`Itens nao lidos em ${item.label}`}
+                    ariaLabel={`Itens não lidos em ${item.label}`}
                   />
                 </Link>
               )
@@ -138,7 +138,7 @@ export default function DashboardSidebar({
                     <SidebarUnreadTag
                       unreadCount={item.unreadCount || 0}
                       showDot={Boolean(item.hasNew)}
-                      ariaLabel={`Itens nao lidos em ${item.label}`}
+                      ariaLabel={`Itens não lidos em ${item.label}`}
                     />
                   </Link>
                 )
@@ -147,7 +147,7 @@ export default function DashboardSidebar({
           )}
 
           <div className="dashboard-theme-panel" data-tour-target="theme-panel">
-            <div className="dashboard-theme-options" role="group" aria-label="Selecao de tema">
+            <div className="dashboard-theme-options" role="group" aria-label="Seleção de tema">
               {themeOptions.map((option) => {
                 const Icon = option.icon
                 const isActive = themeMode === option.mode

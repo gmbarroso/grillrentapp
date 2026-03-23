@@ -8,15 +8,15 @@ import "./AdminMessages.css"
 
 const categoryOptions: Array<{ value: ContactMessageCategory | "all"; label: string }> = [
   { value: "all", label: "Todas" },
-  { value: "suggestion", label: "Sugestoes" },
-  { value: "complaint", label: "Reclamacoes" },
-  { value: "question", label: "Duvidas" },
+  { value: "suggestion", label: "Sugestões" },
+  { value: "complaint", label: "Reclamações" },
+  { value: "question", label: "Dúvidas" },
 ]
 
 function categoryLabel(category: ContactMessageCategory): string {
-  if (category === "complaint") return "Reclamacao"
-  if (category === "question") return "Duvida"
-  return "Sugestao"
+  if (category === "complaint") return "Reclamação"
+  if (category === "question") return "Dúvida"
+  return "Sugestão"
 }
 
 function categoryIcon(category: ContactMessageCategory) {
@@ -26,16 +26,16 @@ function categoryIcon(category: ContactMessageCategory) {
 }
 
 function replyEmailLabel(reply: MessageReply): string {
-  if (!reply.sendViaEmail) return "Nao enviado por e-mail"
+  if (!reply.sendViaEmail) return "Não enviado por e-mail"
   if (reply.emailDeliveryStatus === "sent") return "E-mail enviado"
   if (reply.emailDeliveryStatus === "failed") return "Falha no e-mail"
   if (reply.emailDeliveryStatus === "pending") return "E-mail pendente"
   if (reply.emailDeliveryStatus === "skipped") return "E-mail ignorado"
-  return "E-mail nao solicitado"
+  return "E-mail não solicitado"
 }
 
 function replyOriginLabel(reply: MessageReply): string {
-  if (reply.originRole === "admin") return "Administracao (app)"
+  if (reply.originRole === "admin") return "Administração (app)"
   if (reply.originChannel === "email_inbound") return "Morador (email)"
   return "Morador (app)"
 }
@@ -83,13 +83,13 @@ export default function AdminMessages() {
 
     try {
       await deleteMessage(deletingMessageId)
-      showToast("Mensagem excluida do app.", "success")
+      showToast("Mensagem excluída do app.", "success")
       if (expandedMessageId === deletingMessageId) {
         setExpandedMessageId(null)
       }
     } catch (error) {
       console.error("Error deleting message:", error)
-      showToast("Nao foi possivel excluir a mensagem.", "error")
+      showToast("Não foi possível excluir a mensagem.", "error")
     } finally {
       setDeletingMessageId(null)
     }
@@ -99,7 +99,7 @@ export default function AdminMessages() {
     <div className="admin-messages-page">
       <header className="admin-messages-header">
         <h2>Caixa de Mensagens</h2>
-        <p>{unreadCount > 0 ? `${unreadCount} mensagem(ns) nao lida(s)` : "Todas as mensagens foram lidas"}</p>
+        <p>{unreadCount > 0 ? `${unreadCount} mensagem(ns) não lida(s)` : "Todas as mensagens foram lidas"}</p>
       </header>
 
       <section className="admin-messages-stats">
@@ -109,15 +109,15 @@ export default function AdminMessages() {
         </article>
         <article>
           <strong>{unreadCount}</strong>
-          <span>Nao lidas</span>
+          <span>Não lidas</span>
         </article>
         <article>
           <strong>{suggestionCount}</strong>
-          <span>Sugestoes</span>
+          <span>Sugestões</span>
         </article>
         <article>
           <strong>{complaintCount + questionCount}</strong>
-          <span>Reclamacoes e Duvidas</span>
+          <span>Reclamações e Dúvidas</span>
         </article>
       </section>
 
@@ -172,7 +172,7 @@ export default function AdminMessages() {
                     {categoryLabel(message.category)}
                   </span>
                   <span className={`status-chip ${message.status}`.trim()}>
-                    {message.status === "replied" ? "Respondida" : message.status === "read" ? "Lida" : "Nao lida"}
+                    {message.status === "replied" ? "Respondida" : message.status === "read" ? "Lida" : "Não lida"}
                   </span>
                   <button
                     type="button"
@@ -252,7 +252,7 @@ export default function AdminMessages() {
       <Modal isOpen={Boolean(deletingMessageId)} onClose={() => setDeletingMessageId(null)}>
         <h2>Excluir mensagem</h2>
         <p>Tem certeza que deseja excluir esta mensagem do app?</p>
-        <p>Excluir no app nao remove e-mails ja enviados.</p>
+        <p>Excluir no app não remove e-mails já enviados.</p>
         <div className="admin-message-modal-actions">
           <Button variant="danger" onClick={handleDeleteMessage}>
             Excluir

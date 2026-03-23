@@ -34,7 +34,7 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
     e.preventDefault()
 
     if (!title.trim() || !content.trim()) {
-      showToast("Preencha titulo e conteudo para atualizar o aviso.", "error")
+      showToast("Preencha título e conteúdo para atualizar o aviso.", "error")
       return
     }
 
@@ -51,11 +51,11 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
         onNoticeUpdated()
       } else {
         console.error("Error updating notice:", error)
-        showToast("Nao foi possivel atualizar o aviso.", "error")
+        showToast("Não foi possível atualizar o aviso.", "error")
       }
     } catch (error) {
       console.error("Error updating notice:", error)
-      showToast("Nao foi possivel atualizar o aviso.", "error")
+      showToast("Não foi possível atualizar o aviso.", "error")
     } finally {
       setIsLoading(false)
     }
@@ -69,37 +69,37 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
       </header>
 
       <div className="notice-compose-group">
-        <label htmlFor="edit-notice-title">Titulo</label>
+        <label htmlFor="edit-notice-title">Título</label>
         <input
           id="edit-notice-title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Titulo do aviso"
+          placeholder="Título do aviso"
           required
           maxLength={100}
         />
       </div>
 
       <div className="notice-compose-group">
-        <label htmlFor="edit-notice-subtitle">Subtitulo (opcional)</label>
+        <label htmlFor="edit-notice-subtitle">Subtítulo (opcional)</label>
         <input
           id="edit-notice-subtitle"
           type="text"
           value={subtitle}
           onChange={(e) => setSubtitle(e.target.value)}
-          placeholder="Subtitulo do aviso"
+          placeholder="Subtítulo do aviso"
           maxLength={200}
         />
       </div>
 
       <div className="notice-compose-group">
-        <label htmlFor="edit-notice-content">Conteudo</label>
+        <label htmlFor="edit-notice-content">Conteúdo</label>
         <textarea
           id="edit-notice-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Escreva o conteudo do aviso..."
+          placeholder="Escreva o conteúdo do aviso..."
           required
           rows={5}
           maxLength={2000}

@@ -70,7 +70,7 @@ const MyReservations = () => {
     <div className="my-reservations-page">
       <TourPageHint
         title="Minhas reservas"
-        description="Aqui voce cria reservas e acompanha as proximas reservas. Para cancelar, use o botao de remover na reserva e confirme a acao."
+        description="Aqui você cria reservas e acompanha as próximas reservas. Para cancelar, use o botão de remover na reserva e confirme a ação."
         stepIndex={6}
         totalSteps={10}
         backTo="/?startTour=1&tourStep=5"
@@ -81,7 +81,7 @@ const MyReservations = () => {
         bookings={upcomingPreview}
         title="Minhas próximas reservas"
         headingLevel="h2"
-        emptyMessage="Voce nao tem reservas."
+        emptyMessage="Você não tem reservas."
         onDeleteBooking={handleDeleteBooking}
         isDeletingBooking={isDeletingBooking}
       />

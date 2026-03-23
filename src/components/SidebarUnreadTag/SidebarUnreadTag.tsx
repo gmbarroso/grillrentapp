@@ -4,7 +4,7 @@ interface SidebarUnreadTagProps {
   ariaLabel?: string
 }
 
-export default function SidebarUnreadTag({ unreadCount = 0, showDot = false, ariaLabel = "Itens nao lidos" }: SidebarUnreadTagProps) {
+export default function SidebarUnreadTag({ unreadCount = 0, showDot = false, ariaLabel = "Itens não lidos" }: SidebarUnreadTagProps) {
   if (unreadCount > 0) {
     return (
       <small className="dashboard-nav-unread-tag" aria-label={ariaLabel}>

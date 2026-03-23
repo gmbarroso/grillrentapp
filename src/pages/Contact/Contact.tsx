@@ -61,33 +61,33 @@ const Contact = () => {
       setAttachments([])
     } catch (error) {
       console.error("Error sending contact message:", error)
-      showToast("Nao foi possivel enviar a mensagem. Tente novamente.", "error")
+      showToast("Não foi possível enviar a mensagem. Tente novamente.", "error")
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const contactEmail = organization?.email || "Nao informado"
+  const contactEmail = organization?.email || "Não informado"
   const contactPhone = organization?.phone || "Em breve"
-  const contactAddress = organization?.address || "Nao informado"
-  const contactBusinessHours = organization?.businessHours || "Nao informado"
+  const contactAddress = organization?.address || "Não informado"
+  const contactBusinessHours = organization?.businessHours || "Não informado"
 
   return (
     <div className="contact-page-v2">
       <TourPageHint
         title="Contato"
-        description="Use esta pagina para enviar sugestoes, reclamacoes e duvidas. A administracao recebe a mensagem no faleconosco vinculada ao seu email validado."
+        description="Use esta página para enviar sugestões, reclamações e dúvidas. A administração recebe a mensagem no faleconosco vinculada ao seu email validado."
         stepIndex={8}
         totalSteps={10}
         backTo="/profile?startTour=1&tourStep=7"
         nextTo="/?startTour=1&tourStep=9"
-        nextLabel="Proximo"
+        nextLabel="Próximo"
       />
 
       <section className="contact-card-v2">
         <header>
           <h2>Fale Conosco</h2>
-          <p>Entre em contato com a administracao do condominio</p>
+          <p>Entre em contato com a administração do condomínio</p>
         </header>
 
         <div className="contact-info-list">
@@ -126,7 +126,7 @@ const Contact = () => {
               <Clock3 size={15} />
             </span>
             <div>
-              <strong>Horario de Atendimento</strong>
+              <strong>Horário de Atendimento</strong>
               <p>{contactBusinessHours}</p>
             </div>
           </article>
@@ -136,7 +136,7 @@ const Contact = () => {
       <section className="contact-card-v2">
         <header>
           <h2>Enviar Mensagem</h2>
-          <p>Envie sugestoes, reclamacoes ou duvidas diretamente para a administracao.</p>
+          <p>Envie sugestões, reclamações ou dúvidas diretamente para a administração.</p>
         </header>
 
         <form className="contact-form-v2" onSubmit={handleSubmit}>
@@ -155,9 +155,9 @@ const Contact = () => {
             value={category}
             onChange={(event) => setCategory(event.target.value as ContactCategory)}
           >
-            <option value="suggestion">Sugestao</option>
-            <option value="complaint">Reclamacao</option>
-            <option value="question">Duvida</option>
+            <option value="suggestion">Sugestão</option>
+            <option value="complaint">Reclamação</option>
+            <option value="question">Dúvida</option>
           </select>
 
           <label htmlFor="contact-message">Mensagem</label>
@@ -171,7 +171,7 @@ const Contact = () => {
 
           <label>Anexar imagens (opcional)</label>
           <p className="contact-attachment-hint">
-            Voce pode adicionar ate {MAX_ATTACHMENTS} imagens, com no maximo {ATTACHMENT_MAX_FILE_SIZE_MB}MB cada.
+            Você pode adicionar até {MAX_ATTACHMENTS} imagens, com no máximo {ATTACHMENT_MAX_FILE_SIZE_MB}MB cada.
           </p>
           <div className="contact-attachments-grid">
             {attachments.map((attachment, index) => (

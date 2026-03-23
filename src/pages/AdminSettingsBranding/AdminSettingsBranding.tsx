@@ -56,7 +56,7 @@ const AdminSettingsBranding = () => {
       })
       showToast("Identidade salva com sucesso.", "success")
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Nao foi possivel salvar a identidade."
+      const message = error instanceof Error ? error.message : "Não foi possível salvar a identidade."
       showToast(message, "error")
     } finally {
       setIsSaving(false)
@@ -85,8 +85,8 @@ const AdminSettingsBranding = () => {
             <Building2 size={15} />
           </span>
           <div>
-            <h3>Dados do Condominio</h3>
-            <p>Essas informacoes aparecem no menu lateral e na pagina de contato</p>
+            <h3>Dados do Condomínio</h3>
+            <p>Essas informações aparecem no menu lateral e na página de contato</p>
           </div>
         </header>
 
@@ -106,7 +106,7 @@ const AdminSettingsBranding = () => {
 
         <div className="branding-form-grid">
           <label>
-            <span><Building2 size={13} />Nome do Condominio</span>
+            <span><Building2 size={13} />Nome do Condomínio</span>
             <input
               value={form.name}
               onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
@@ -115,7 +115,7 @@ const AdminSettingsBranding = () => {
           </label>
 
           <label className="full">
-            <span><MapPin size={13} />Endereco</span>
+            <span><MapPin size={13} />Endereço</span>
             <textarea
               rows={2}
               value={form.address}
@@ -143,7 +143,7 @@ const AdminSettingsBranding = () => {
           </label>
 
           <label className="full">
-            <span><Clock3 size={13} />Horario de Funcionamento</span>
+            <span><Clock3 size={13} />Horário de Funcionamento</span>
             <input
               value={form.businessHours}
               onChange={(event) => setForm((prev) => ({ ...prev, businessHours: event.target.value }))}
@@ -157,7 +157,7 @@ const AdminSettingsBranding = () => {
             variant="secondary"
             onClick={() => {
               setForm(loadedForm)
-              showToast("Alteracoes descartadas.", "success")
+              showToast("Alterações descartadas.", "success")
             }}
             disabled={isLoading || isSaving}
           >

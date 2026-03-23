@@ -147,10 +147,34 @@
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .login-submit:hover {
   background: var(--color-navy);
+}
+
+.login-submit:disabled {
+  opacity: 0.9;
+  cursor: wait;
+}
+
+.login-submit-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: login-submit-spin 0.7s linear infinite;
+}
+
+@keyframes login-submit-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .login-divider {

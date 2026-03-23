@@ -70,7 +70,7 @@ const bookingOwnerLabel = (booking: Booking) => `apt. ${booking.userApartment} b
 const bookingDetailsTooltip = (booking: Booking) => {
   const lines = [`Reservado pelo ${bookingOwnerLabel(booking)}`]
   if (booking.bookedOnBehalf?.trim()) {
-    lines.push(`Reserva em nome de Apt ${booking.bookedOnBehalf}`)
+    lines.push(`Reserva em nome de ${booking.bookedOnBehalf}`)
   }
   return lines.join(" • ")
 }

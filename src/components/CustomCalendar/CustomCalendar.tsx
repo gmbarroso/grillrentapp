@@ -68,7 +68,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
     const parts = [`Reservado pelo apt. ${info.userApartment} bl. ${info.userBlock}`]
     if (info.bookedOnBehalf?.trim()) {
-      parts.push(`Reserva em nome de Apt ${info.bookedOnBehalf}`)
+      parts.push(`Reserva em nome de ${info.bookedOnBehalf}`)
     }
     return parts.join(" • ")
   }, [reservedDayDetails])

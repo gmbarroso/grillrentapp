@@ -18,13 +18,12 @@ function AppContent() {
   const { isLoading } = useLoading()
   const location = useLocation()
   const dashboardRoutes = ["/", "/mybookeddates", "/notices", "/profile", "/change-password", "/contact"]
+  const authRoutes = ["/login", "/logout", "/forgot-password", "/reset-password", "/signup"]
   const onboardingRoutes = ["/onboarding/welcome", "/onboarding/email", "/onboarding/verify-email", "/onboarding/change-password"]
   const isDashboardRoute = dashboardRoutes.includes(location.pathname) || location.pathname.startsWith("/admin/")
+  const isAuthOrOnboardingRoute = authRoutes.includes(location.pathname) || onboardingRoutes.includes(location.pathname)
   const hideGlobalChrome =
-    location.pathname === "/login"
-    || location.pathname === "/forgot-password"
-    || location.pathname === "/reset-password"
-    || location.pathname === "/signup"
+    authRoutes.includes(location.pathname)
     || onboardingRoutes.includes(location.pathname)
     || isDashboardRoute
 
@@ -36,7 +35,7 @@ function AppContent() {
         <AppRoutes />
       </main>
       {!hideGlobalChrome && <Footer />}
-      {isLoading && !isDashboardRoute && <LoadingSpinner overlay />}
+      {isLoading && !isDashboardRoute && !isAuthOrOnboardingRoute && <LoadingSpinner overlay />}
     </div>
   )
 }

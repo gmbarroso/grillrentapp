@@ -98,6 +98,19 @@
   gap: 0.4rem;
 }
 
+.contact-attachment-hint {
+  margin: -0.2rem 0 0.35rem;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.contact-attachments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
 @media (max-width: 760px) {
   .contact-page-v2 {
     max-width: 100%;

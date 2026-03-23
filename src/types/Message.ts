@@ -32,6 +32,7 @@ export interface Message {
   subject: string
   category: ContactMessageCategory
   content: string
+  attachments?: string[] | null
   status: ContactMessageStatus
   readAt?: string | null
   adminEmailDeliveryStatus: MessageEmailDeliveryStatus

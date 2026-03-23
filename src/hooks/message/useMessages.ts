@@ -23,6 +23,7 @@ interface ContactMessagePayload {
   subject: string
   category: ContactMessageCategory
   content: string
+  attachments?: string[]
 }
 
 interface ReplyMessagePayload {

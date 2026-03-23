@@ -3,10 +3,12 @@ import { Mail, Phone, MapPin, Clock3, Send } from "lucide-react"
 import { useToast } from "../../context/ToastContext"
 import { useCreateContactMessage } from "../../hooks/message/useMessages"
 import { useOrganizationSettings } from "../../hooks/organization/useOrganizationSettings"
-import { Button, TourPageHint } from "../../components"
+import { Button, ImageDropzone, TourPageHint } from "../../components"
 import "./Contact.css"
 
 type ContactCategory = "suggestion" | "complaint" | "question"
+const MAX_ATTACHMENTS = 5
+const ATTACHMENT_MAX_FILE_SIZE_MB = 1
 
 const Contact = () => {
   const { showToast } = useToast()
@@ -15,7 +17,25 @@ const Contact = () => {
   const [subject, setSubject] = useState("")
   const [category, setCategory] = useState<ContactCategory>("suggestion")
   const [message, setMessage] = useState("")
+  const [attachments, setAttachments] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleAddAttachment = (imageDataUrl: string) => {
+    if (attachments.length >= MAX_ATTACHMENTS) {
+      showToast(`Limite de ${MAX_ATTACHMENTS} imagens atingido.`, "error")
+      return
+    }
+
+    setAttachments((previous) => [...previous, imageDataUrl])
+  }
+
+  const handleReplaceAttachment = (index: number, imageDataUrl: string) => {
+    setAttachments((previous) => previous.map((attachment, currentIndex) => (currentIndex === index ? imageDataUrl : attachment)))
+  }
+
+  const handleRemoveAttachment = (index: number) => {
+    setAttachments((previous) => previous.filter((_, currentIndex) => currentIndex !== index))
+  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -31,12 +51,14 @@ const Contact = () => {
         subject: subject.trim(),
         category,
         content: message.trim(),
+        attachments: attachments.length > 0 ? attachments : undefined,
       })
 
       showToast("Mensagem enviada com sucesso.", "success")
       setSubject("")
       setCategory("suggestion")
       setMessage("")
+      setAttachments([])
     } catch (error) {
       console.error("Error sending contact message:", error)
       showToast("Nao foi possivel enviar a mensagem. Tente novamente.", "error")
@@ -146,6 +168,37 @@ const Contact = () => {
             value={message}
             onChange={(event) => setMessage(event.target.value)}
           />
+
+          <label>Anexar imagens (opcional)</label>
+          <p className="contact-attachment-hint">
+            Voce pode adicionar ate {MAX_ATTACHMENTS} imagens, com no maximo {ATTACHMENT_MAX_FILE_SIZE_MB}MB cada.
+          </p>
+          <div className="contact-attachments-grid">
+            {attachments.map((attachment, index) => (
+              <ImageDropzone
+                key={`contact-attachment-${index}`}
+                imageUrl={attachment}
+                onImageChange={(imageDataUrl) => handleReplaceAttachment(index, imageDataUrl)}
+                onImageRemove={() => handleRemoveAttachment(index)}
+                onError={(errorMessage) => showToast(errorMessage, "error")}
+                disabled={isSubmitting}
+                maxFileSizeMb={ATTACHMENT_MAX_FILE_SIZE_MB}
+                emptyLabel={`Img ${index + 1}`}
+              />
+            ))}
+            {attachments.length < MAX_ATTACHMENTS ? (
+              <ImageDropzone
+                key="contact-attachment-add"
+                onImageChange={handleAddAttachment}
+                onImageRemove={() => undefined}
+                onError={(errorMessage) => showToast(errorMessage, "error")}
+                disabled={isSubmitting}
+                maxFileSizeMb={ATTACHMENT_MAX_FILE_SIZE_MB}
+                helperText={`${attachments.length}/${MAX_ATTACHMENTS}`}
+                emptyLabel="+"
+              />
+            ) : null}
+          </div>
 
           <Button variant="primary" type="submit" fullWidth disabled={isSubmitting}>
             <Send size={14} />

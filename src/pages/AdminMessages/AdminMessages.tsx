@@ -221,6 +221,25 @@ export default function AdminMessages() {
               {isExpanded ? (
                 <div className="admin-message-body">
                   <p className="admin-message-content">{message.content}</p>
+                  {(message.attachments || []).length > 0 ? (
+                    <div className="admin-message-attachments">
+                      <h4>Anexos</h4>
+                      <div className="admin-message-attachments-grid">
+                        {(message.attachments || []).map((attachment, index) => (
+                          <a
+                            key={`${message.id}-attachment-${index}`}
+                            href={attachment}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="admin-message-attachment-item"
+                            aria-label={`Abrir anexo ${index + 1} da mensagem ${message.subject}`}
+                          >
+                            <img src={attachment} alt={`Anexo ${index + 1}`} loading="lazy" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
 
                   <div className="admin-message-replies">
                     <h4>Respostas</h4>

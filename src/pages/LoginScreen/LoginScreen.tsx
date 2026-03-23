@@ -19,6 +19,7 @@ export default function LoginScreen() {
   const [block, setBlock] = useState("1")
   const [password, setPassword] = useState("")
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { login } = useAuth()
@@ -37,6 +38,8 @@ export default function LoginScreen() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isSubmitting) return
+    setIsSubmitting(true)
     setIsLoading(true)
 
     const blockNumber = Number.parseInt(block) || 1
@@ -73,6 +76,7 @@ export default function LoginScreen() {
       showToast(t("Login.Error"), "error")
     } finally {
       setIsLoading(false)
+      setIsSubmitting(false)
     }
   }
 
@@ -92,7 +96,8 @@ export default function LoginScreen() {
                 id="organizationSlug"
                 className="login-input-slug"
                 type="text"
-                placeholder={`# ${t("Login.CondominiumCode")}`}
+                // placeholder={`# ${t("Login.CondominiumCode")}`}
+                placeholder={`# Código do condomínio`}
                 value={organizationSlug}
                 onChange={(e) => setOrganizationSlug(e.target.value)}
                 required
@@ -161,8 +166,17 @@ export default function LoginScreen() {
               </div>
             </div>
 
-            <button className="login-submit" type="submit">
-              {t("Login.SignIn")}
+            <button className="login-submit" type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <span className="login-submit-spinner" aria-hidden="true" />
+                  {/* {t("Login.SigningIn")} */}
+                  Entrando
+                </>
+              ) : (
+                // t("Login.SignIn")
+                "Entrar"
+              )}
             </button>
 
             {/* <div className="login-divider">

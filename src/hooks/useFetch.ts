@@ -18,7 +18,7 @@ export function useFetch<Data = any, Error = any>(key: string | null, config?: S
     [config?.fetcher],
   )
 
-  const { data, error, mutate, isValidating } = useSWR<Data, Error>(key, finalFetcher, {
+  const { data, error, mutate, isValidating, isLoading: swrIsLoading } = useSWR<Data, Error>(key, finalFetcher, {
     ...swrConfig,
     ...config,
     fetcher: undefined,
@@ -26,7 +26,7 @@ export function useFetch<Data = any, Error = any>(key: string | null, config?: S
 
   return {
     data,
-    isLoading: isValidating && typeof data === "undefined",
+    isLoading: swrIsLoading || (Boolean(key) && typeof data === "undefined" && !error) || isValidating,
     isError: error,
     mutate,
   }

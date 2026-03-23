@@ -11,8 +11,10 @@ const resolveNextRoute = (flags: {
   mustVerifyEmail: boolean
   mustChangePassword: boolean
 }) => {
-  void flags
-  return "/onboarding/email"
+  if (flags.mustProvideEmail) return "/onboarding/email"
+  if (flags.mustVerifyEmail) return "/onboarding/email-verify"
+  if (flags.mustChangePassword) return "/onboarding/change-password"
+  return "/dashboard"
 }
 
 export default function OnboardingWelcome() {

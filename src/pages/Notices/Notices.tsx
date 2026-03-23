@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useCallback, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useAuth } from "../../context/AuthContext"
@@ -35,6 +33,8 @@ const Notices = () => {
   const { isNoticeReadTrackingEnabled } = useNoticeUnreadState()
   const { markNoticesAsSeen } = useMarkNoticesAsSeen()
 
+  const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const handleNoticeDeleted = useCallback(
     async (noticeId: string) => {
       await refreshNotices()
@@ -58,6 +58,14 @@ const Notices = () => {
       showToast(t("NoticeBoard.ErrorLoading"), "error")
     }
   }, [isError, showToast, t])
+
+  useEffect(() => {
+    return () => {
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!isNoticeReadTrackingEnabled) {
@@ -84,7 +92,7 @@ const Notices = () => {
           setUnreadNoticeIdsForAnimation(unreadBeforeSeen)
           if (unreadBeforeSeen.size > 0) {
             setShouldFadeUnreadBadges(true)
-            window.setTimeout(() => {
+            fadeTimeoutRef.current = window.setTimeout(() => {
               setUnreadNoticeIdsForAnimation(new Set())
               setShouldFadeUnreadBadges(false)
             }, UNREAD_ANIMATION_FADE_MS)

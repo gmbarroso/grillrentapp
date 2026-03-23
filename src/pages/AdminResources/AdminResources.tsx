@@ -47,7 +47,7 @@ const AdminResources = () => {
     }
 
     if (trimmedDescription.length > DESCRIPTION_MAX_LENGTH) {
-      showToast(`A descricao deve ter no maximo ${DESCRIPTION_MAX_LENGTH} caracteres.`, "error")
+      showToast(`A descrição deve ter no máximo ${DESCRIPTION_MAX_LENGTH} caracteres.`, "error")
       return
     }
 
@@ -73,7 +73,7 @@ const AdminResources = () => {
       <header className="admin-page-heading with-action">
         <div>
           <h2>Resources</h2>
-          <p>Gerencie os recursos disponiveis para reserva pelos moradores</p>
+          <p>Gerencie os recursos disponíveis para reserva pelos moradores</p>
         </div>
 
         <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>

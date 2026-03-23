@@ -39,7 +39,7 @@ export default function PaginationControls({
       </Button>
 
       <span className="pagination-page-info">
-        Pagina {safeCurrentPage} de {Math.max(1, safeLastPage)}
+        Página {safeCurrentPage} de {Math.max(1, safeLastPage)}
       </span>
 
       <Button
@@ -47,11 +47,11 @@ export default function PaginationControls({
         onClick={() => onChangePage(safeCurrentPage + 1)}
         disabled={safeCurrentPage >= Math.max(1, safeLastPage)}
       >
-        Proxima
+        Próxima
       </Button>
 
       <label className="pagination-limit">
-        <span>Por pagina</span>
+        <span>Por página</span>
         <select value={currentLimit} onChange={(event) => onChangeLimit(Number(event.target.value))}>
           {pageSizeOptions.map((value) => (
             <option key={value} value={value}>

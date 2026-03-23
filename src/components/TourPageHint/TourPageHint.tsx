@@ -19,7 +19,7 @@ export default function TourPageHint({
   totalSteps,
   backTo,
   nextTo,
-  nextLabel = "Proximo",
+  nextLabel = "Próximo",
 }: TourPageHintProps) {
   const location = useLocation()
   const navigate = useNavigate()

@@ -6,7 +6,8 @@ import type { OrganizationSettings, UpdateOrganizationSettingsPayload } from "..
 const API_BASE_URL = getApiBaseUrl()
 const ORGANIZATION_ENDPOINT = `${API_BASE_URL}/organizations/current`
 
-const normalizeNullable = (value?: string | null): string | null => {
+const normalizeNullable = (value?: string | null): string | null | undefined => {
+  if (value === undefined) return undefined
   if (typeof value !== "string") return null
   const trimmed = value.trim()
   return trimmed.length > 0 ? trimmed : null

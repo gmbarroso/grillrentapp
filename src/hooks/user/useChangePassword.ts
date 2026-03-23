@@ -37,7 +37,7 @@ export function useChangePassword() {
       })
 
       if (!response.ok) {
-        const message = await extractApiErrorMessage(response, `Failed to change password (${response.status})`)
+        const message = await extractApiErrorMessage(response, `Não foi possível alterar a senha (${response.status})`)
         throw new Error(message)
       }
 

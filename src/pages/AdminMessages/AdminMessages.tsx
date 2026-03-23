@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { ChevronDown, ChevronUp, Mail, MessageCircleWarning, SendHorizontal, Lightbulb, CircleHelp, Trash2 } from "lucide-react"
+import { ChevronDown, ChevronUp, MessageCircleWarning, Lightbulb, CircleHelp, Trash2 } from "lucide-react"
 import { Button, Modal, PaginationControls, Skeleton } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { useAdminMessages } from "../../hooks/message/useMessages"
@@ -54,14 +54,10 @@ export default function AdminMessages() {
     setPage,
     setLimit,
     markMessageAsRead,
-    replyToMessage,
     deleteMessage,
   } = useAdminMessages()
 
   const [expandedMessageId, setExpandedMessageId] = useState<string | null>(null)
-  const [draftReplyByMessageId, setDraftReplyByMessageId] = useState<Record<string, string>>({})
-  const [sendViaEmailByMessageId, setSendViaEmailByMessageId] = useState<Record<string, boolean>>({})
-  const [submittingMessageId, setSubmittingMessageId] = useState<string | null>(null)
   const [deletingMessageId, setDeletingMessageId] = useState<string | null>(null)
 
   const unreadCount = useMemo(() => messages.filter((message) => message.status === "unread").length, [messages])
@@ -79,30 +75,6 @@ export default function AdminMessages() {
       } catch (error) {
         console.error("Error marking message as read:", error)
       }
-    }
-  }
-
-  const handleSubmitReply = async (message: Message) => {
-    const draft = (draftReplyByMessageId[message.id] || "").trim()
-    if (!draft) {
-      showToast("Digite uma resposta antes de enviar.", "error")
-      return
-    }
-
-    setSubmittingMessageId(message.id)
-    try {
-      await replyToMessage(message.id, {
-        content: draft,
-        sendViaEmail: sendViaEmailByMessageId[message.id] ?? true,
-      })
-      showToast("Resposta enviada com sucesso.", "success")
-      setDraftReplyByMessageId((previous) => ({ ...previous, [message.id]: "" }))
-      setSendViaEmailByMessageId((previous) => ({ ...previous, [message.id]: true }))
-    } catch (error) {
-      console.error("Error replying to message:", error)
-      showToast("Nao foi possivel enviar a resposta.", "error")
-    } finally {
-      setSubmittingMessageId(null)
     }
   }
 
@@ -181,8 +153,6 @@ export default function AdminMessages() {
 
         {messages.map((message) => {
           const isExpanded = expandedMessageId === message.id
-          const draft = draftReplyByMessageId[message.id] || ""
-          const sendViaEmail = sendViaEmailByMessageId[message.id] ?? true
 
           return (
             <article key={message.id} className={`admin-message-card ${isExpanded ? "expanded" : ""}`.trim()}>
@@ -242,7 +212,7 @@ export default function AdminMessages() {
                   ) : null}
 
                   <div className="admin-message-replies">
-                    <h4>Respostas</h4>
+                    <h4>Historico da conversa</h4>
                     {(message.replies || []).length === 0 ? <p>Nenhuma resposta enviada ainda.</p> : null}
                     {(message.replies || []).map((reply) => (
                       <div key={reply.id} className="admin-message-reply-item">
@@ -254,40 +224,6 @@ export default function AdminMessages() {
                         <p>{reply.content}</p>
                       </div>
                     ))}
-                  </div>
-
-                  <div className="admin-message-reply-form">
-                    <label htmlFor={`reply-${message.id}`}>Sua resposta:</label>
-                    <textarea
-                      id={`reply-${message.id}`}
-                      rows={4}
-                      placeholder="Digite sua mensagem aqui..."
-                      value={draft}
-                      onChange={(event) =>
-                        setDraftReplyByMessageId((previous) => ({ ...previous, [message.id]: event.target.value }))
-                      }
-                    />
-
-                    <label className="admin-message-email-toggle">
-                      <input
-                        type="checkbox"
-                        checked={sendViaEmail}
-                        onChange={(event) =>
-                          setSendViaEmailByMessageId((previous) => ({ ...previous, [message.id]: event.target.checked }))
-                        }
-                      />
-                      <Mail size={14} /> Enviar via e-mail para {message.senderName}
-                    </label>
-
-                    <Button
-                      variant="primary"
-                      onClick={() => handleSubmitReply(message)}
-                      isLoading={submittingMessageId === message.id}
-                      loadingText="Enviando resposta..."
-                    >
-                      <SendHorizontal size={14} />
-                      Enviar Resposta
-                    </Button>
                   </div>
                 </div>
               ) : null}

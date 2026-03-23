@@ -62,7 +62,7 @@ const AdminResidents = () => {
         initials: getInitials(user.name),
         name: user.name,
         email: user.email || "",
-        apartmentLabel: `Apto ${user.apartment} Bl. ${user.block}`,
+        apartmentLabel: `${user.apartment} bl. ${user.block}`,
         apartment: user.apartment,
         block: user.block,
         role: user.role === "admin" ? "Administrador" : "Morador",

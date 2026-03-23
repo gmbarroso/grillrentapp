@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react"
 import { mutate as mutateSWRCache } from "swr"
 import { useFetch } from "../useFetch"
 import { useAuthenticatedFetch } from "../useAuthenticatedFetch"
-import type { ContactMessageCategory, ContactMessageStatus, Message, MessageReply } from "../../types"
+import type { ContactMessageCategory, ContactMessageStatus, Message } from "../../types"
 import { getApiBaseUrl, handleApiError, logApiRequest, logApiResponse } from "../../utils/api"
 
 const API_BASE_URL = getApiBaseUrl()
@@ -24,11 +24,6 @@ interface ContactMessagePayload {
   category: ContactMessageCategory
   content: string
   attachments?: string[]
-}
-
-interface ReplyMessagePayload {
-  content: string
-  sendViaEmail?: boolean
 }
 
 export function useAdminMessages() {
@@ -101,35 +96,6 @@ export function useAdminMessages() {
     [authenticatedFetch, mutate],
   )
 
-  const replyToMessage = useCallback(
-    async (messageId: string, payload: ReplyMessagePayload): Promise<MessageReply> => {
-      const endpoint = `${API_BASE_URL}/messages/${messageId}/replies`
-      logApiRequest("POST", endpoint, payload)
-
-      try {
-        const response = await authenticatedFetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        })
-
-        if (!response.ok) {
-          throw new Error(`Failed to send reply: ${response.status}`)
-        }
-
-        const data = (await response.json()) as MessageReply
-        logApiResponse(endpoint, response.status, data)
-
-        await mutate()
-        await mutateSWRCache(MESSAGE_UNREAD_ENDPOINT)
-        return data
-      } catch (error) {
-        throw handleApiError(error, endpoint)
-      }
-    },
-    [authenticatedFetch, mutate],
-  )
-
   return {
     messages: data?.data || [],
     total: data?.total || 0,
@@ -155,7 +121,6 @@ export function useAdminMessages() {
     },
     refreshMessages,
     markMessageAsRead,
-    replyToMessage,
     deleteMessage: useCallback(
       async (messageId: string): Promise<{ success: true }> => {
         const endpoint = `${API_BASE_URL}/messages/${messageId}`
@@ -257,34 +222,6 @@ export function useResidentMessages() {
     revalidateOnFocus: true,
   })
 
-  const replyToMessage = useCallback(
-    async (messageId: string, payload: ReplyMessagePayload): Promise<MessageReply> => {
-      const endpoint = `${API_BASE_URL}/messages/${messageId}/replies/mine`
-      logApiRequest("POST", endpoint, payload)
-
-      try {
-        const response = await authenticatedFetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        })
-
-        if (!response.ok) {
-          throw new Error(`Failed to send resident reply: ${response.status}`)
-        }
-
-        const data = (await response.json()) as MessageReply
-        logApiResponse(endpoint, response.status, data)
-
-        await mutate()
-        return data
-      } catch (error) {
-        throw handleApiError(error, endpoint)
-      }
-    },
-    [authenticatedFetch, mutate],
-  )
-
   return {
     messages: data?.data || [],
     total: data?.total || 0,
@@ -308,7 +245,6 @@ export function useResidentMessages() {
       setLimit(next)
       setPage(1)
     },
-    replyToMessage,
     refreshMessages: mutate,
   }
 }

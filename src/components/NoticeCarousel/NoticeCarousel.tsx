@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import type { Notice } from "../../types"
 import "./NoticeCarousel.css"
 
@@ -10,6 +11,7 @@ interface NoticeCarouselProps {
 const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" })
 
 export default function NoticeCarousel({ notices, unreadNoticeIds }: NoticeCarouselProps) {
+  const { t } = useTranslation()
   const [activeIndex, setActiveIndex] = useState(0)
   const hasManyNotices = notices.length > 1
 
@@ -65,22 +67,22 @@ export default function NoticeCarousel({ notices, unreadNoticeIds }: NoticeCarou
       {hasManyNotices ? (
         <footer className="notice-carousel-footer">
           <div className="notice-carousel-actions">
-            <button type="button" onClick={() => changeNotice(activeIndex - 1)} aria-label="Aviso anterior">
+            <button type="button" onClick={() => changeNotice(activeIndex - 1)} aria-label={t("NoticeCarousel.PreviousAriaLabel")}>
               ←
             </button>
-            <button type="button" onClick={() => changeNotice(activeIndex + 1)} aria-label="Proximo aviso">
+            <button type="button" onClick={() => changeNotice(activeIndex + 1)} aria-label={t("NoticeCarousel.NextAriaLabel")}>
               →
             </button>
           </div>
 
-          <div className="notice-carousel-dots" aria-label="Seletor de avisos">
+          <div className="notice-carousel-dots" aria-label={t("NoticeCarousel.SelectorAriaLabel")}>
             {notices.map((notice, index) => (
               <button
                 key={notice.id}
                 type="button"
                 className={`notice-carousel-dot ${index === activeIndex ? "active" : ""}`.trim()}
                 onClick={() => setActiveIndex(index)}
-                aria-label={`Ir para aviso ${index + 1}`}
+                aria-label={t("NoticeCarousel.GoToNoticeAriaLabel", { index: index + 1 })}
               />
             ))}
           </div>

@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { mutate as mutateSWRCache } from "swr"
-import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
+import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling, extractApiErrorMessage } from "../../utils/api"
 import type { CreateNoticeDto, Notice } from "../../types"
 
 const API_BASE_URL = getApiBaseUrl()
@@ -29,12 +29,13 @@ export function useCreateNotice() {
         body: JSON.stringify(noticeData),
       })
 
+      if (!response.ok) {
+        const message = await extractApiErrorMessage(response, `Erro ao criar aviso: ${response.status}`)
+        throw new Error(message)
+      }
+
       const data = (await response.json()) as Notice
       logApiResponse(endpoint, response.status, data)
-
-      if (!response.ok) {
-        throw new Error(data.message || `Failed to create notice: ${response.status}`)
-      }
 
       await Promise.all([
         mutateSWRCache(UNREAD_COUNT_ENDPOINT),

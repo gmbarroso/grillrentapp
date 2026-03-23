@@ -181,7 +181,14 @@
     "Cancel": "Cancel"
   },
   "Notices": {
-    "Title": "Notices"
+    "Title": "Notices",
+    "Subtitle": "Stay up to date with news and announcements"
+  },
+  "NoticeCarousel": {
+    "PreviousAriaLabel": "Previous notice",
+    "NextAriaLabel": "Next notice",
+    "SelectorAriaLabel": "Notice selector",
+    "GoToNoticeAriaLabel": "Go to notice {{index}}"
   },
   "NoticeBoard": {
     "NoNotices": "No notices available at the moment.",

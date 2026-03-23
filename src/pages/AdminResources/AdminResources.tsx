@@ -72,7 +72,7 @@ const AdminResources = () => {
     <div className="admin-resources-page">
       <header className="admin-page-heading with-action">
         <div>
-          <h2>Resources</h2>
+          <h2>Recursos</h2>
           <p>Gerencie os recursos disponíveis para reserva pelos moradores</p>
         </div>
 

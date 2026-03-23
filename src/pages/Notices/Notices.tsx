@@ -77,11 +77,11 @@ const Notices = () => {
     if (hasMarkedSeenRef.current) {
       return
     }
-    hasMarkedSeenRef.current = true
 
     const applyReadState = async () => {
       try {
         const markResult = await markNoticesAsSeen()
+        hasMarkedSeenRef.current = true
         if (!hasInitializedUnreadAnimationRef.current) {
           const unreadBeforeSeen = new Set(
             notices
@@ -99,6 +99,7 @@ const Notices = () => {
           }
         }
       } catch (error) {
+        hasMarkedSeenRef.current = false
         authError("[NoticesReadTracking] mark-seen failed", sanitizeForLog({ message: (error as Error)?.message }))
         showToast("Não foi possível atualizar a leitura dos avisos. Tentaremos novamente depois.", "warning")
       }
@@ -110,8 +111,8 @@ const Notices = () => {
   return (
     <div className="notices-page">
       <header className="notices-page-header">
-        <h1>Avisos do Condomínio</h1>
-        <p>Fique por dentro das novidades e comunicados</p>
+        <h1>{t("Notices.Title")}</h1>
+        <p>{t("Notices.Subtitle")}</p>
       </header>
 
       {isLoading ? (

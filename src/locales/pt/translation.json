@@ -183,7 +183,14 @@
     "Cancel": "Cancelar"
   },
   "Notices": {
-    "Title": "Avisos"
+    "Title": "Avisos",
+    "Subtitle": "Fique por dentro das novidades e comunicados"
+  },
+  "NoticeCarousel": {
+    "PreviousAriaLabel": "Aviso anterior",
+    "NextAriaLabel": "Próximo aviso",
+    "SelectorAriaLabel": "Seletor de avisos",
+    "GoToNoticeAriaLabel": "Ir para aviso {{index}}"
   },
   "NoticeBoard": {
     "NoNotices": "Não há avisos disponíveis no momento.",

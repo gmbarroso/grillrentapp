@@ -15,6 +15,10 @@ interface CustomCalendarProps {
   maxDate?: Date
   resourceType?: "daily" | "hourly"
   selectedDate?: Date | null
+  allowMultipleSelection?: boolean
+  selectedDates?: Date[]
+  onDateToggle?: (date: Date) => void
+  allowReservedSelection?: boolean
 }
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
@@ -25,6 +29,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   maxDate,
   resourceType = "daily",
   selectedDate = null,
+  allowMultipleSelection = false,
+  selectedDates = [],
+  onDateToggle,
+  allowReservedSelection = false,
 }) => {
   const { t } = useTranslation()
 
@@ -59,8 +67,21 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   }, [selectedDate, currentMonth, internalSelectedDate])
   */
 
+  function formatDateString(date: Date): string {
+    return date.toISOString().split("T")[0]
+  }
+
   // Memoize the reservedDaysSet to prevent unnecessary recalculations
   const reservedDaysSet = useMemo(() => new Set(reservedDays), [reservedDays])
+  const selectedDateSet = useMemo(
+    () =>
+      new Set(
+        selectedDates.map((date) =>
+          formatDateString(new Date(date.getFullYear(), date.getMonth(), date.getDate())),
+        ),
+      ),
+    [selectedDates],
+  )
 
   const reservedDayTooltip = useCallback((dateKey: string) => {
     const info = reservedDayDetails[dateKey]
@@ -83,10 +104,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
 
   const getFirstDayOfMonth = (year: number, month: number) => {
     return new Date(year, month, 1).getDay()
-  }
-
-  const formatDateString = (date: Date): string => {
-    return date.toISOString().split("T")[0]
   }
 
   // Memoize the isDateReserved function
@@ -116,6 +133,10 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   // Memoize the isDateSelected function
   const isDateSelected = useCallback(
     (date: Date): boolean => {
+      if (allowMultipleSelection) {
+        return selectedDateSet.has(formatDateString(date))
+      }
+
       if (!internalSelectedDate) return false
 
       return (
@@ -124,11 +145,18 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
         date.getFullYear() === internalSelectedDate.getFullYear()
       )
     },
-    [internalSelectedDate],
+    [allowMultipleSelection, internalSelectedDate, selectedDateSet],
   )
 
   const handleDateClick = (date: Date) => {
-    if (isDateReserved(date) || isDateOutOfRange(date)) {
+    const isReserved = isDateReserved(date)
+    if ((isReserved && !allowReservedSelection) || isDateOutOfRange(date)) {
+      return
+    }
+
+    if (allowMultipleSelection && onDateToggle) {
+      onDateToggle(date)
+      setCurrentMonth(new Date(date.getFullYear(), date.getMonth(), 1))
       return
     }
 

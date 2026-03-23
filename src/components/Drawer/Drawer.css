@@ -1,0 +1,78 @@
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 0.24s ease;
+}
+
+.drawer-overlay.open {
+  opacity: 1;
+}
+
+.drawer-overlay.closing {
+  opacity: 0;
+}
+
+.drawer-panel {
+  position: relative;
+  background: var(--color-card-background);
+  color: var(--color-text);
+  width: min(100%, 540px);
+  max-width: 540px;
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.24s ease;
+}
+
+.drawer-panel.side-right {
+  transform: translateX(100%);
+}
+
+.drawer-panel.side-right.open {
+  transform: translateX(0);
+}
+
+.drawer-panel.side-right.closing {
+  transform: translateX(100%);
+}
+
+.drawer-panel.side-left {
+  transform: translateX(-100%);
+}
+
+.drawer-panel.side-left.open {
+  transform: translateX(0);
+}
+
+.drawer-panel.side-left.closing {
+  transform: translateX(-100%);
+}
+
+.drawer-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--color-text);
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .drawer-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.dark .drawer-close {
+  color: #f0f7f4;
+}

@@ -43,3 +43,27 @@ export interface BookingListProps {
   onChangeSort: (sort: string) => void
   onChangeOrder: (order: "ASC" | "DESC") => void
 }
+
+export interface BatchBookingSlotInput {
+  startTime: string
+  endTime: string
+}
+
+export interface BatchBookingSkippedItem {
+  startTime: string
+  endTime: string
+  reason: string
+}
+
+export interface BatchBookingSummary {
+  requested: number
+  created: number
+  skipped: number
+}
+
+export interface BatchBookingResponse {
+  message: string
+  summary: BatchBookingSummary
+  created: Booking[]
+  skipped: BatchBookingSkippedItem[]
+}

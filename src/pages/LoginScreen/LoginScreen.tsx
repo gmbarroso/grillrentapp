@@ -90,9 +90,9 @@ export default function LoginScreen() {
               <label htmlFor="organizationSlug">Código do condomínio</label>
               <input
                 id="organizationSlug"
-                className="login-input"
+                className="login-input-slug"
                 type="text"
-                placeholder={t("Login.CondominiumCode")}
+                placeholder={`# ${t("Login.CondominiumCode")}`}
                 value={organizationSlug}
                 onChange={(e) => setOrganizationSlug(e.target.value)}
                 required

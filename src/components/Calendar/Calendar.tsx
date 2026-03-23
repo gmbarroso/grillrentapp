@@ -14,6 +14,10 @@ interface CalendarProps {
   maxDate?: Date
   resourceType?: "daily" | "hourly"
   selectedDate?: Date | null
+  allowMultipleSelection?: boolean
+  selectedDates?: Date[]
+  onDateToggle?: (date: Date) => void
+  allowReservedSelection?: boolean
 }
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -25,6 +29,10 @@ const Calendar: React.FC<CalendarProps> = ({
   maxDate,
   resourceType = "daily",
   selectedDate = null,
+  allowMultipleSelection = false,
+  selectedDates = [],
+  onDateToggle,
+  allowReservedSelection = false,
 }) => {
   const normalizedReservedDays = useMemo(() => {
     if (reservedDays) return reservedDays
@@ -41,6 +49,10 @@ const Calendar: React.FC<CalendarProps> = ({
         maxDate={maxDate}
         resourceType={resourceType}
         selectedDate={selectedDate}
+        allowMultipleSelection={allowMultipleSelection}
+        selectedDates={selectedDates}
+        onDateToggle={onDateToggle}
+        allowReservedSelection={allowReservedSelection}
       />
     </div>
   )

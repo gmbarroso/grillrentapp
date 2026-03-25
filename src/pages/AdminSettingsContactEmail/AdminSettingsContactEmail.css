@@ -133,19 +133,19 @@
   gap: 0.55rem;
 }
 
-.smtp-guidance-card {
+.email-guidance-card {
   border: 1px solid var(--border-default);
   border-radius: 12px;
   background: var(--surface-muted);
   padding: 0.85rem 0.95rem;
 }
 
-.smtp-guidance-card h3 {
+.email-guidance-card h3 {
   margin: 0;
   font-size: 0.98rem;
 }
 
-.smtp-guidance-card ul {
+.email-guidance-card ul {
   margin: 0.5rem 0 0;
   padding-left: 1rem;
   color: var(--text-secondary);

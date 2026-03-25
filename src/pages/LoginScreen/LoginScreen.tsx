@@ -36,24 +36,30 @@ export default function LoginScreen() {
     }
   }, [location.pathname, location.state, navigate, showToast])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (isSubmitting) return
     setIsSubmitting(true)
     setIsLoading(true)
 
-    const blockNumber = Number.parseInt(block) || 1
+    const formData = new FormData(e.currentTarget)
+    const submittedOrganizationSlug = String(formData.get("organizationSlug") ?? organizationSlug)
+    const submittedApartment = String(formData.get("apartment") ?? apartment)
+    const submittedBlockRaw = String(formData.get("block") ?? block)
+    const submittedPassword = String(formData.get("password") ?? password)
+
+    const blockNumber = Number.parseInt(submittedBlockRaw, 10) || 1
     const validBlock = blockNumber > 2 ? 2 : blockNumber < 1 ? 1 : blockNumber
 
     try {
-      const normalizedOrganizationSlug = normalizeOrganizationSlug(organizationSlug)
+      const normalizedOrganizationSlug = normalizeOrganizationSlug(submittedOrganizationSlug)
 
       if (!normalizedOrganizationSlug) {
         showToast(t("Login.InvalidCondominiumCode"), "error")
         return
       }
 
-      const result = await login(normalizedOrganizationSlug, apartment, validBlock, password)
+      const result = await login(normalizedOrganizationSlug, submittedApartment, validBlock, submittedPassword)
       if (result.success) {
         if (typeof window !== "undefined") {
           const keysToRemove: string[] = []
@@ -89,13 +95,15 @@ export default function LoginScreen() {
           <BrandMark />
         </div>
         <AuthCard title="Bem-vindo" subtitle="Entre com os dados do seu condomínio">
-          <form className="login-form" onSubmit={handleSubmit}>
+          <form className="login-form" onSubmit={handleSubmit} autoComplete="on">
             <div className="login-field">
               <label htmlFor="organizationSlug">Código do condomínio</label>
               <input
                 id="organizationSlug"
+                name="organizationSlug"
                 className="login-input-slug"
                 type="text"
+                autoComplete="off"
                 // placeholder={`# ${t("Login.CondominiumCode")}`}
                 placeholder={`# Código do condomínio`}
                 value={organizationSlug}
@@ -109,8 +117,10 @@ export default function LoginScreen() {
                 <label htmlFor="apartment">Apartamento</label>
                 <input
                   id="apartment"
+                  name="apartment"
                   className="login-input"
                   type="text"
+                  autoComplete="username"
                   placeholder={t("Login.Apartment")}
                   value={apartment}
                   onChange={(e) => setApartment(e.target.value)}
@@ -121,8 +131,10 @@ export default function LoginScreen() {
                 <label htmlFor="block">Bloco</label>
                 <input
                   id="block"
+                  name="block"
                   className="login-input"
                   type="text"
+                  autoComplete="off"
                   placeholder={t("Login.Block")}
                   value={block}
                   onChange={(e) => {
@@ -148,8 +160,10 @@ export default function LoginScreen() {
               <div className="login-password-wrap">
                 <input
                   id="password"
+                  name="password"
                   className="login-input"
                   type={isPasswordVisible ? "text" : "password"}
+                  autoComplete="current-password"
                   placeholder={t("Login.Password")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

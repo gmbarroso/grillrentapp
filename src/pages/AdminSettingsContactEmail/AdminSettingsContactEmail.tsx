@@ -16,12 +16,6 @@ interface ContactEmailSettingsView {
   fromEmail: string | null
   replyToMode: ContactEmailReplyToMode
   customReplyTo: string | null
-  smtpHost: string | null
-  smtpPort: number | null
-  smtpSecure: boolean | null
-  smtpUser: string | null
-  smtpFrom: string | null
-  hasSmtpPassword: boolean
   canSendEmail: boolean
   validationErrors: string[]
 }
@@ -35,12 +29,6 @@ const emptySettings: ContactEmailSettingsView = {
   fromEmail: null,
   replyToMode: "resident_email",
   customReplyTo: null,
-  smtpHost: null,
-  smtpPort: null,
-  smtpSecure: null,
-  smtpUser: null,
-  smtpFrom: null,
-  hasSmtpPassword: false,
   canSendEmail: false,
   validationErrors: [],
 }
@@ -54,12 +42,6 @@ const AdminSettingsContactEmail = () => {
   const [fromEmail, setFromEmail] = useState("")
   const [replyToMode, setReplyToMode] = useState<ContactEmailReplyToMode>("resident_email")
   const [customReplyTo, setCustomReplyTo] = useState("")
-  const [smtpHost, setSmtpHost] = useState("")
-  const [smtpPort, setSmtpPort] = useState("465")
-  const [smtpSecure, setSmtpSecure] = useState("true")
-  const [smtpUser, setSmtpUser] = useState("")
-  const [smtpFrom, setSmtpFrom] = useState("")
-  const [smtpAppPassword, setSmtpAppPassword] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -71,12 +53,6 @@ const AdminSettingsContactEmail = () => {
     setFromEmail(payload.fromEmail || "")
     setReplyToMode(payload.replyToMode)
     setCustomReplyTo(payload.customReplyTo || "")
-    setSmtpHost(payload.smtpHost || "")
-    setSmtpPort(payload.smtpPort ? String(payload.smtpPort) : "465")
-    setSmtpSecure(payload.smtpSecure === null ? "true" : payload.smtpSecure ? "true" : "false")
-    setSmtpUser(payload.smtpUser || "")
-    setSmtpFrom(payload.smtpFrom || "")
-    setSmtpAppPassword("")
   }
 
   const loadSettings = async () => {
@@ -123,12 +99,6 @@ const AdminSettingsContactEmail = () => {
           fromEmail: fromEmail.trim() || null,
           replyToMode,
           customReplyTo: replyToMode === "custom" ? customReplyTo.trim() || null : null,
-          smtpHost: smtpHost.trim() || null,
-          smtpPort: smtpPort.trim() ? Number(smtpPort.trim()) : null,
-          smtpSecure: smtpSecure === "true",
-          smtpUser: smtpUser.trim() || null,
-          smtpFrom: smtpFrom.trim() || null,
-          smtpAppPassword: smtpAppPassword.trim() || null,
         }),
       })
 
@@ -242,68 +212,6 @@ const AdminSettingsContactEmail = () => {
             />
           </label>
 
-          <label>
-            <span>SMTP Host</span>
-            <input
-              value={smtpHost}
-              onChange={(event) => setSmtpHost(event.target.value)}
-              placeholder="smtp.gmail.com"
-              disabled={deliveryMode === "in_app_only"}
-            />
-          </label>
-
-          <label>
-            <span>SMTP Port</span>
-            <input
-              value={smtpPort}
-              onChange={(event) => setSmtpPort(event.target.value.replace(/[^\d]/g, ""))}
-              placeholder="465"
-              disabled={deliveryMode === "in_app_only"}
-            />
-          </label>
-
-          <label>
-            <span>SMTP Secure</span>
-            <select
-              value={smtpSecure}
-              onChange={(event) => setSmtpSecure(event.target.value)}
-              disabled={deliveryMode === "in_app_only"}
-            >
-              <option value="true">Verdadeiro (SSL/TLS)</option>
-              <option value="false">Falso (STARTTLS/plano)</option>
-            </select>
-          </label>
-
-          <label>
-            <span>SMTP User</span>
-            <input
-              value={smtpUser}
-              onChange={(event) => setSmtpUser(event.target.value)}
-              placeholder="mailer@condo.com"
-              disabled={deliveryMode === "in_app_only"}
-            />
-          </label>
-
-          <label>
-            <span>SMTP From</span>
-            <input
-              value={smtpFrom}
-              onChange={(event) => setSmtpFrom(event.target.value)}
-              placeholder="noreply@condo.com"
-              disabled={deliveryMode === "in_app_only"}
-            />
-          </label>
-
-          <label>
-            <span>Senha de App SMTP {settings.hasSmtpPassword ? "(salva)" : "(obrigatória)"}</span>
-            <input
-              type="password"
-              value={smtpAppPassword}
-              onChange={(event) => setSmtpAppPassword(event.target.value)}
-              placeholder={settings.hasSmtpPassword ? "Deixe em branco para manter a senha atual" : "Informe a senha de app"}
-              disabled={deliveryMode === "in_app_only"}
-            />
-          </label>
         </div>
 
         {settings.validationErrors.length > 0 ? (
@@ -334,14 +242,14 @@ const AdminSettingsContactEmail = () => {
         </footer>
       </section>
 
-      <section className="smtp-guidance-card">
-        <h3>Guia de configuração SMTP</h3>
+      <section className="email-guidance-card">
+        <h3>Guia de configuração com Resend</h3>
         <ul>
           <li>Os e-mails de destino devem ser apenas caixas de entrada de administradores. Moradores não são adicionados automaticamente.</li>
-          <li>O modo padrão é Apenas no app. Mantenha esse modo até configurar o SMTP da organização.</li>
-          <li>No modo No app e por e-mail, configure host SMTP, porta, segurança, usuário e remetente no nível da organização.</li>
-          <li>A senha de app SMTP é somente escrita e criptografada em repouso. Nunca é retornada em texto puro.</li>
-          <li>Não existe fallback SMTP global quando a organização habilita entrega por e-mail.</li>
+          <li>O modo padrão é Apenas no app. Ative No app e por e-mail somente após configurar o domínio remetente no Resend.</li>
+          <li>Use E-mail do Remetente para definir a identidade da organização (ex.: faleconosco.chacara@seuze.tech).</li>
+          <li>Os envs globais da API (`RESEND_API_KEY` e `RESEND_FROM`) continuam obrigatórios para entrega.</li>
+          <li>Onboarding e redefinição de senha também usam Resend e podem aplicar o remetente da organização quando configurado.</li>
         </ul>
       </section>
     </div>

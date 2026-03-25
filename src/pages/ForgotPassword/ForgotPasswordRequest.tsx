@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
-import { AuthCard, BrandMark } from "../../components"
+import { AuthCard, BrandMark, Button } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { useForgotPassword } from "../../hooks/user/useForgotPassword"
 import { normalizeOrganizationSlug } from "../../utils/organizationSlug"
@@ -22,7 +22,7 @@ export default function ForgotPasswordRequest() {
       return
     }
     try {
-      const response = await requestReset({
+      await requestReset({
         organizationSlug: normalizedOrganizationSlug,
         email: email.trim().toLowerCase(),
       })
@@ -30,7 +30,6 @@ export default function ForgotPasswordRequest() {
       navigate("/reset-password", {
         state: {
           organizationSlug: normalizedOrganizationSlug,
-          resetTokenPreview: response.resetTokenPreview,
         },
       })
     } catch {
@@ -69,12 +68,12 @@ export default function ForgotPasswordRequest() {
               />
             </div>
 
-            <button className="forgot-password-submit" type="submit" disabled={isLoading}>
+            <Button type="submit" variant="primary" fullWidth isLoading={isLoading} loadingText="Solicitando...">
               Solicitar redefinição
-            </button>
-            <button className="forgot-password-secondary" type="button" onClick={() => navigate("/login")}>
+            </Button>
+            <Button type="button" variant="secondary" fullWidth onClick={() => navigate("/login")} disabled={isLoading}>
               Voltar ao login
-            </button>
+            </Button>
           </form>
         </AuthCard>
       </div>

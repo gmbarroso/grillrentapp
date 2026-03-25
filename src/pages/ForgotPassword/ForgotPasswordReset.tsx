@@ -1,7 +1,7 @@
-import { useMemo, useState, type FormEvent } from "react"
+import { useState, type FormEvent } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Eye, EyeOff } from "lucide-react"
-import { AuthCard, BrandMark } from "../../components"
+import { AuthCard, BrandMark, Button } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { useForgotPassword } from "../../hooks/user/useForgotPassword"
 import { normalizeOrganizationSlug } from "../../utils/organizationSlug"
@@ -14,16 +14,14 @@ export default function ForgotPasswordReset() {
   const location = useLocation()
   const { showToast } = useToast()
   const { confirmReset, isLoading } = useForgotPassword()
-  const state = (location.state as { organizationSlug?: string; resetTokenPreview?: string } | null) || null
+  const state = location.state as { organizationSlug?: string } | null
 
-  const [organizationSlug, setOrganizationSlug] = useState(state.organizationSlug || readStoredOrganizationSlug())
-  const [token, setToken] = useState(state.resetTokenPreview || "")
+  const [organizationSlug, setOrganizationSlug] = useState(state?.organizationSlug || readStoredOrganizationSlug())
+  const [token, setToken] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
-  const hasPreviewToken = useMemo(() => Boolean(state?.resetTokenPreview), [state])
 
   const submit = async (event: FormEvent) => {
     event.preventDefault()
@@ -82,7 +80,6 @@ export default function ForgotPasswordReset() {
                 onChange={(event) => setToken(event.target.value)}
                 required
               />
-              {hasPreviewToken ? <small>Token de desenvolvimento preenchido automaticamente para teste local.</small> : null}
             </div>
 
             <div className="forgot-password-field">
@@ -123,12 +120,12 @@ export default function ForgotPasswordReset() {
               </div>
             </div>
 
-            <button className="forgot-password-submit" type="submit" disabled={isLoading}>
+            <Button type="submit" variant="primary" fullWidth isLoading={isLoading} loadingText="Validando...">
               Redefinir senha
-            </button>
-            <button className="forgot-password-secondary" type="button" onClick={() => navigate("/login")}>
+            </Button>
+            <Button type="button" variant="secondary" fullWidth onClick={() => navigate("/login")} disabled={isLoading}>
               Voltar ao login
-            </button>
+            </Button>
           </form>
         </AuthCard>
       </div>

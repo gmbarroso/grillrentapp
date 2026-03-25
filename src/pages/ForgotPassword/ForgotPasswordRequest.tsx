@@ -45,12 +45,14 @@ export default function ForgotPasswordRequest() {
         </div>
 
         <AuthCard title="Esqueci minha senha" subtitle="Solicite um token de redefinição por e-mail">
-          <form className="forgot-password-form" onSubmit={submit}>
+          <form className="forgot-password-form" onSubmit={submit} autoComplete="on">
             <div className="forgot-password-field">
               <label htmlFor="organizationSlug">Código do condomínio</label>
               <input
                 id="organizationSlug"
+                name="organizationSlug"
                 type="text"
+                autoComplete="off"
                 value={organizationSlug}
                 onChange={(event) => setOrganizationSlug(event.target.value)}
                 required
@@ -61,7 +63,9 @@ export default function ForgotPasswordRequest() {
               <label htmlFor="forgot-email">Email</label>
               <input
                 id="forgot-email"
+                name="email"
                 type="email"
+                autoComplete="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required

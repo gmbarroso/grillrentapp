@@ -59,12 +59,14 @@ export default function ForgotPasswordReset() {
         </div>
 
         <AuthCard title="Redefinir senha" subtitle="Informe o token de redefinição e sua nova senha">
-          <form className="forgot-password-form" onSubmit={submit}>
+          <form className="forgot-password-form" onSubmit={submit} autoComplete="on">
             <div className="forgot-password-field">
               <label htmlFor="organizationSlug">Código do condomínio</label>
               <input
                 id="organizationSlug"
                 type="text"
+                name="organizationSlug"
+                autoComplete="off"
                 value={organizationSlug}
                 onChange={(event) => setOrganizationSlug(event.target.value)}
                 required
@@ -76,6 +78,8 @@ export default function ForgotPasswordReset() {
               <input
                 id="reset-token"
                 type="text"
+                name="resetToken"
+                autoComplete="one-time-code"
                 value={token}
                 onChange={(event) => setToken(event.target.value)}
                 required
@@ -89,6 +93,8 @@ export default function ForgotPasswordReset() {
                 <input
                   id="new-password"
                   type={showNewPassword ? "text" : "password"}
+                  name="newPassword"
+                  autoComplete="new-password"
                   value={newPassword}
                   onChange={(event) => setNewPassword(event.target.value)}
                   minLength={8}
@@ -108,6 +114,8 @@ export default function ForgotPasswordReset() {
                 <input
                   id="confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   minLength={8}

@@ -248,7 +248,7 @@ const AdminSettingsContactEmail = () => {
           <li>Os e-mails de destino devem ser apenas caixas de entrada de administradores. Moradores não são adicionados automaticamente.</li>
           <li>O modo padrão é Apenas no app. Ative No app e por e-mail somente após configurar o domínio remetente no Resend.</li>
           <li>Use E-mail do Remetente para definir a identidade da organização (ex.: faleconosco.chacara@seuze.tech).</li>
-          <li>Os envs globais do API (`RESEND_API_KEY` e `RESEND_FROM`) continuam obrigatórios para entrega.</li>
+          <li>Os envs globais da API (`RESEND_API_KEY` e `RESEND_FROM`) continuam obrigatórios para entrega.</li>
           <li>Onboarding e redefinição de senha também usam Resend e podem aplicar o remetente da organização quando configurado.</li>
         </ul>
       </section>

@@ -14,9 +14,9 @@ export default function ForgotPasswordReset() {
   const location = useLocation()
   const { showToast } = useToast()
   const { confirmReset, isLoading } = useForgotPassword()
-  const state = (location.state as { organizationSlug?: string } | null) || null
+  const state = location.state as { organizationSlug?: string } | null
 
-  const [organizationSlug, setOrganizationSlug] = useState(state.organizationSlug || readStoredOrganizationSlug())
+  const [organizationSlug, setOrganizationSlug] = useState(state?.organizationSlug || readStoredOrganizationSlug())
   const [token, setToken] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")

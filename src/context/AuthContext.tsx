@@ -16,6 +16,7 @@ import {
 } from "../utils/auth-storage"
 import { clearStoredCsrfToken } from "../utils/csrf"
 import { authDebug, authError } from "../utils/auth-logger"
+import { shouldRetryProfileWithBearer } from "../utils/auth-profile-bootstrap"
 import type { OnboardingFlags, TourState, User } from "../types"
 
 interface AuthContextType {
@@ -38,6 +39,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const COOKIE_SESSION_TOKEN = "cookie-session"
+const PROFILE_BEARER_FALLBACK_ENABLED = (process.env.REACT_APP_AUTH_PROFILE_BEARER_FALLBACK || "").toLowerCase() === "true"
 const defaultOnboardingState: OnboardingFlags = {
   mustProvideEmail: false,
   mustVerifyEmail: false,
@@ -149,11 +151,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loginInFlightRef.current = true
       setIsAuthResolved(false)
       setIsAuthenticated(false)
-      await loginMutate({ organizationSlug, apartment, block, password })
+      const loginResult = await loginMutate({ organizationSlug, apartment, block, password })
       resetUnauthorizedSignal()
       authResetInProgressRef.current = false
       setToken(COOKIE_SESSION_TOKEN)
-      const profileResponse = await fetchProfile()
+      let profileResponse: Awaited<ReturnType<typeof fetchProfile>>
+      try {
+        profileResponse = await fetchProfile()
+      } catch (error) {
+        const canRetryWithBearer =
+          PROFILE_BEARER_FALLBACK_ENABLED
+          && shouldRetryProfileWithBearer(error)
+          && typeof loginResult?.access_token === "string"
+          && loginResult.access_token.length > 0
+        if (!canRetryWithBearer) {
+          throw error
+        }
+        authDebug("[Auth] Retrying profile bootstrap with bearer fallback")
+        profileResponse = await fetchProfile({ bearerToken: loginResult.access_token })
+      }
       if (!profileResponse?.user) {
         throw new Error("Não foi possível confirmar a sessão autenticada")
       }

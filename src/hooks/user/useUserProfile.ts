@@ -1,6 +1,7 @@
 import { useFetch } from "../useFetch"
 import type { UserResponse } from "../../types"
 import { getApiBaseUrl, logApiRequest, logApiResponse, handleApiError, fetchWithAuthHandling } from "../../utils/api"
+import { normalizeProfileApiError } from "../../utils/auth-profile-bootstrap"
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -10,7 +11,9 @@ export function useUserProfile(token?: string | null) {
     return fetchWithAuthHandling(url)
       .then((res) => {
         if (!res.ok) {
-          throw new Error("Failed to fetch user profile")
+          return normalizeProfileApiError(res).then((error) => {
+            throw error
+          })
         }
         const data = res.json()
         logApiResponse(url, res.status)
@@ -26,17 +29,20 @@ export function useUserProfile(token?: string | null) {
     fetcher,
   })
 
-  const fetchProfile = async (): Promise<UserResponse> => {
+  const fetchProfile = async (options?: { bearerToken?: string }): Promise<UserResponse> => {
     try {
       const endpoint = "/users/profile"
       logApiRequest("GET", `${API_BASE_URL}${endpoint}`)
+      const headers = options?.bearerToken ? { Authorization: `Bearer ${options.bearerToken}` } : undefined
 
       const response = await mutate(() =>
-        fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`)
+        fetchWithAuthHandling(`${API_BASE_URL}${endpoint}`, { headers })
           .then((res) => {
             logApiResponse(endpoint, res.status)
             if (!res.ok) {
-              throw new Error("Failed to fetch user profile")
+              return normalizeProfileApiError(res).then((error) => {
+                throw error
+              })
             }
             return res.json()
           })

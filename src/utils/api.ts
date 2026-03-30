@@ -2,7 +2,17 @@ import { authDebug, authError, sanitizeForLog, stripSensitiveQueryParams } from 
 import { isStateChangingMethod, readCsrfToken } from "./csrf"
 
 let unauthorizedSignalSent = false
+let runtimeBearerToken: string | null = null
 export const AUTH_UNAUTHORIZED_EVENT = "auth:unauthorized"
+
+export const setRuntimeBearerToken = (token: string | null): void => {
+  const normalized = typeof token === "string" ? token.trim() : ""
+  runtimeBearerToken = normalized.length > 0 ? normalized : null
+}
+
+export const clearRuntimeBearerToken = (): void => {
+  runtimeBearerToken = null
+}
 
 export const getApiBaseUrl = (): string => {
   // Check if we're in development mode
@@ -40,6 +50,9 @@ export const resetUnauthorizedSignal = (): void => {
 export const fetchWithAuthHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
   const method = options.method || "GET"
   const headers = new Headers(options.headers || {})
+  if (!headers.has("Authorization") && runtimeBearerToken) {
+    headers.set("Authorization", `Bearer ${runtimeBearerToken}`)
+  }
 
   if (isStateChangingMethod(method)) {
     const csrfToken = readCsrfToken()

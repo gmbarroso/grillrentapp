@@ -8,10 +8,11 @@ import { useLogoutUser } from "../hooks/user/useLogoutUser"
 import { useLoading } from "../context/LoadingContext"
 import {
   AUTH_UNAUTHORIZED_EVENT,
+  clearRuntimeBearerToken,
   resetUnauthorizedSignal,
+  setRuntimeBearerToken,
 } from "../utils/api"
 import {
-  clearStoredAccessToken,
   stripAccessTokenFromUrl,
 } from "../utils/auth-storage"
 import { clearStoredCsrfToken } from "../utils/csrf"
@@ -39,7 +40,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const COOKIE_SESSION_TOKEN = "cookie-session"
-const PROFILE_BEARER_FALLBACK_ENABLED = (process.env.REACT_APP_AUTH_PROFILE_BEARER_FALLBACK || "").toLowerCase() === "true"
+const PROFILE_BEARER_FALLBACK_ENABLED = (process.env.REACT_APP_AUTH_PROFILE_BEARER_FALLBACK ?? "true").toLowerCase() !== "false"
 const defaultOnboardingState: OnboardingFlags = {
   mustProvideEmail: false,
   mustVerifyEmail: false,
@@ -71,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   const clearAuthState = useCallback(() => {
-    clearStoredAccessToken()
+    clearRuntimeBearerToken()
     setIsAuthenticated(false)
     setToken(null)
   }, [])
@@ -90,7 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (stripAccessTokenFromUrl()) {
       authDebug("[Auth] Removed token-like params from URL before auth bootstrap")
     }
-    clearStoredAccessToken()
+    clearRuntimeBearerToken()
 
     authResetInProgressRef.current = false
     resetUnauthorizedSignal()
@@ -152,9 +153,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loginInFlightRef.current = true
       setIsAuthResolved(false)
       setIsAuthenticated(false)
+      clearRuntimeBearerToken()
       const loginResult = await loginMutate({ organizationSlug, apartment, block, password })
       resetUnauthorizedSignal()
       authResetInProgressRef.current = false
+      let usedBearerFallback = false
       let profileResponse: Awaited<ReturnType<typeof fetchProfile>>
       try {
         profileResponse = await fetchProfile()
@@ -168,10 +171,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           throw error
         }
         authDebug("[Auth] Retrying profile bootstrap with bearer fallback")
+        usedBearerFallback = true
+        setRuntimeBearerToken(loginResult.access_token)
         profileResponse = await fetchProfile({ bearerToken: loginResult.access_token })
       }
       if (!profileResponse?.user) {
         throw new Error("Não foi possível confirmar a sessão autenticada")
+      }
+      if (!usedBearerFallback) {
+        clearRuntimeBearerToken()
       }
       setToken(COOKIE_SESSION_TOKEN)
       setIsAuthenticated(true)
@@ -180,6 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: true }
     } catch (error) {
       authError("[Auth] Login error:", error)
+      clearRuntimeBearerToken()
       setIsAuthenticated(false)
       setToken(null)
       setIsAuthResolved(true)

@@ -127,6 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const onUnauthorized = () => {
+      if (loginInFlightRef.current) return
       handleUnauthorized()
     }
 
@@ -154,7 +155,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const loginResult = await loginMutate({ organizationSlug, apartment, block, password })
       resetUnauthorizedSignal()
       authResetInProgressRef.current = false
-      setToken(COOKIE_SESSION_TOKEN)
       let profileResponse: Awaited<ReturnType<typeof fetchProfile>>
       try {
         profileResponse = await fetchProfile()
@@ -173,6 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!profileResponse?.user) {
         throw new Error("Não foi possível confirmar a sessão autenticada")
       }
+      setToken(COOKIE_SESSION_TOKEN)
       setIsAuthenticated(true)
       setIsAuthResolved(true)
       loginInFlightRef.current = false

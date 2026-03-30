@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { normalizeProfileApiError } from "../../utils/auth-profile-bootstrap"
 
-describe("useUserProfile API error normalization", () => {
-  it("uses API-provided code when present", async () => {
+// These tests verify that normalizeProfileApiError produces errors that
+// useUserProfile can throw and that callers (e.g., AuthContext) can inspect.
+// Full hook-level tests require a DOM environment (jsdom/happy-dom) and
+// @testing-library/react to render the hook.
+describe("useUserProfile – normalized error shape", () => {
+  it("produces an error with status and code for 401 TOKEN_NOT_PROVIDED responses", async () => {
     const res = new Response(JSON.stringify({ message: "Token not provided", code: "TOKEN_NOT_PROVIDED" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
@@ -15,7 +19,7 @@ describe("useUserProfile API error normalization", () => {
     expect(normalized.message).toBe("Token not provided")
   })
 
-  it("infers TOKEN_NOT_PROVIDED when message matches", async () => {
+  it("infers TOKEN_NOT_PROVIDED code when message matches and no explicit code is present", async () => {
     const res = new Response(JSON.stringify({ message: "Token not provided" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },

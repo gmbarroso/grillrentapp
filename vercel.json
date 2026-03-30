@@ -1,4 +1,17 @@
 {
+    "redirects": [
+        {
+            "source": "/(.*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "chacarasacopa.vercel.app"
+                }
+            ],
+            "destination": "https://seuze.tech/$1",
+            "permanent": true
+        }
+    ],
     "rewrites": [
         {
             "source": "/(.*)",
@@ -20,4 +33,3 @@
         }
       ]
 }
-

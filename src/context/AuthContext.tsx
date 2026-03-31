@@ -160,6 +160,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthResolved(false)
       setIsAuthenticated(false)
       clearRuntimeBearerToken()
+      clearStoredAccessToken()
+      clearStoredCsrfToken()
       const loginResult = await loginMutate({ organizationSlug, apartment, block, password })
       if (typeof loginResult?.access_token === "string" && loginResult.access_token.length > 0) {
         persistAccessToken(loginResult.access_token)

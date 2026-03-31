@@ -1,11 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { clearRuntimeBearerToken, fetchWithAuthHandling, setRuntimeBearerToken } from "./api"
+import { clearStoredAccessToken, persistAccessToken } from "./auth-storage"
 
 describe("fetchWithAuthHandling runtime bearer fallback", () => {
   let fetchMock: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
     clearRuntimeBearerToken()
+    clearStoredAccessToken()
     fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
       return new Response(JSON.stringify({ ok: true, headers: Object.fromEntries(new Headers(init?.headers).entries()) }), {
         status: 200,
@@ -17,6 +19,7 @@ describe("fetchWithAuthHandling runtime bearer fallback", () => {
 
   afterEach(() => {
     clearRuntimeBearerToken()
+    clearStoredAccessToken()
     vi.unstubAllGlobals()
   })
 
@@ -47,6 +50,41 @@ describe("fetchWithAuthHandling runtime bearer fallback", () => {
   it("stops attaching Authorization after runtime token is cleared", async () => {
     setRuntimeBearerToken("runtime-token")
     clearRuntimeBearerToken()
+
+    await fetchWithAuthHandling("https://example.com/protected")
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const headers = new Headers(init.headers)
+    expect(headers.get("Authorization")).toBeNull()
+  })
+
+  it("attaches stored access token when runtime token is absent", async () => {
+    persistAccessToken("persisted-token")
+
+    await fetchWithAuthHandling("https://example.com/protected")
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const headers = new Headers(init.headers)
+    expect(headers.get("Authorization")).toBe("Bearer persisted-token")
+  })
+
+  it("prefers runtime token over stored access token", async () => {
+    persistAccessToken("persisted-token")
+    setRuntimeBearerToken("runtime-token")
+
+    await fetchWithAuthHandling("https://example.com/protected")
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const headers = new Headers(init.headers)
+    expect(headers.get("Authorization")).toBe("Bearer runtime-token")
+  })
+
+  it("stops attaching Authorization after stored token is cleared", async () => {
+    persistAccessToken("persisted-token")
+    clearStoredAccessToken()
 
     await fetchWithAuthHandling("https://example.com/protected")
 

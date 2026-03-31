@@ -31,7 +31,7 @@ describe("auth storage", () => {
     storage = createLocalStorage()
     replaceState = vi.fn()
     vi.stubGlobal("window", {
-      localStorage: storage,
+      sessionStorage: storage,
       location: {
         href: "https://example.com/home",
         pathname: "/home",
@@ -43,7 +43,7 @@ describe("auth storage", () => {
       },
     })
     vi.stubGlobal("document", { title: "Test Title" })
-    vi.stubGlobal("localStorage", storage)
+    vi.stubGlobal("sessionStorage", storage)
     clearStoredAccessToken()
   })
 

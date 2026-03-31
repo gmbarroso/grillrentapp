@@ -2,13 +2,13 @@ const TOKEN_KEY = "access_token"
 const LEGACY_TOKEN_KEY = "token"
 let inMemoryAccessToken: string | null = null
 
-const hasStorage = (): boolean => typeof window !== "undefined" && !!window.localStorage
+const hasStorage = (): boolean => typeof window !== "undefined" && !!window.sessionStorage
 
 export const readStoredAccessToken = (): string | null => {
   if (inMemoryAccessToken) return inMemoryAccessToken
   if (!hasStorage()) return null
 
-  const token = localStorage.getItem(TOKEN_KEY)
+  const token = sessionStorage.getItem(TOKEN_KEY)
   inMemoryAccessToken = token
   return token
 }
@@ -18,15 +18,15 @@ export const persistAccessToken = (token: string): void => {
   inMemoryAccessToken = token
   if (!hasStorage()) return
 
-  localStorage.setItem(TOKEN_KEY, token)
+  sessionStorage.setItem(TOKEN_KEY, token)
 }
 
 export const clearStoredAccessToken = (): void => {
   inMemoryAccessToken = null
   if (!hasStorage()) return
 
-  localStorage.removeItem(TOKEN_KEY)
-  localStorage.removeItem(LEGACY_TOKEN_KEY)
+  sessionStorage.removeItem(TOKEN_KEY)
+  sessionStorage.removeItem(LEGACY_TOKEN_KEY)
 }
 
 export const stripAccessTokenFromUrl = (): boolean => {

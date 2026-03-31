@@ -1,4 +1,5 @@
 import { authDebug, authError, sanitizeForLog, stripSensitiveQueryParams } from "./auth-logger"
+import { readStoredAccessToken } from "./auth-storage"
 import { isStateChangingMethod, readCsrfToken } from "./csrf"
 
 let unauthorizedSignalSent = false
@@ -50,8 +51,9 @@ export const resetUnauthorizedSignal = (): void => {
 export const fetchWithAuthHandling = async (url: string, options: RequestInit = {}): Promise<Response> => {
   const method = options.method || "GET"
   const headers = new Headers(options.headers || {})
-  if (!headers.has("Authorization") && runtimeBearerToken) {
-    headers.set("Authorization", `Bearer ${runtimeBearerToken}`)
+  const effectiveBearerToken = runtimeBearerToken || readStoredAccessToken()
+  if (!headers.has("Authorization") && effectiveBearerToken) {
+    headers.set("Authorization", `Bearer ${effectiveBearerToken}`)
   }
 
   if (isStateChangingMethod(method)) {

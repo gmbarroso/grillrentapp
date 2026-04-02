@@ -101,7 +101,7 @@ export default function LoginScreen() {
               <input
                 id="organizationSlug"
                 name="organizationSlug"
-                className="login-input-slug"
+                className="login-input login-input-slug"
                 type="text"
                 autoComplete="off"
                 // placeholder={`# ${t("Login.CondominiumCode")}`}

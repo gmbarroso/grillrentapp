@@ -4,6 +4,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { Bell, MessageCircle } from "lucide-react"
 import { useCreateNotice } from "../../hooks/notice/useCreateNotice"
+import { useNoticeConstraints } from "../../hooks/notice/useNoticeConstraints"
 import { useToast } from "../../context/ToastContext"
 import { Button } from "../"
 import { fetchWithAuthHandling, getApiBaseUrl } from "../../utils/api"
@@ -12,10 +13,8 @@ import { useLoading } from "../../context/LoadingContext"
 
 interface NoticeFormProps {
   onNoticeCreated: () => void
-  onCancel: () => void
+  onCancel: () => void | Promise<void>
 }
-
-const NOTICE_CONTENT_MAX_LENGTH = 10000
 
 const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) => {
   const [title, setTitle] = useState("")
@@ -23,7 +22,9 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
   const [content, setContent] = useState("")
   const [sendViaWhatsapp, setSendViaWhatsapp] = useState(false)
   const [isLoadingWhatsappDefault, setIsLoadingWhatsappDefault] = useState(true)
+  const [isCancelling, setIsCancelling] = useState(false)
   const { createNotice, isLoading } = useCreateNotice()
+  const { contentMaxLength } = useNoticeConstraints()
   const { showToast } = useToast()
   const { setIsLoading } = useLoading()
   const didSetDefaultRef = useRef(false)
@@ -32,7 +33,7 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
   const handleContentChange = (nextContent: string) => {
     setContent(nextContent)
 
-    const didReachLimit = nextContent.length >= NOTICE_CONTENT_MAX_LENGTH
+    const didReachLimit = nextContent.length >= contentMaxLength
     if (didReachLimit && !didShowContentLimitToastRef.current) {
       showToast("Limite de caracteres atingido.", "error")
       didShowContentLimitToastRef.current = true
@@ -109,6 +110,19 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
     }
   }
 
+  const handleCancel = async () => {
+    if (isCancelling || isLoading) return
+
+    try {
+      setIsCancelling(true)
+      await onCancel()
+    } catch (error) {
+      console.error("Error cancelling notice form:", error)
+    } finally {
+      setIsCancelling(false)
+    }
+  }
+
   return (
     <form className="notice-compose-form" onSubmit={handleSubmit}>
       <header className="notice-compose-header">
@@ -150,10 +164,10 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
           placeholder="Escreva o conteúdo do aviso..."
           required
           rows={5}
-          maxLength={NOTICE_CONTENT_MAX_LENGTH}
+          maxLength={contentMaxLength}
         />
-        {content.length >= NOTICE_CONTENT_MAX_LENGTH ? (
-          <small className="notice-compose-limit-info">*Limite de {NOTICE_CONTENT_MAX_LENGTH} de caracteres atingido.</small>
+        {content.length >= contentMaxLength ? (
+          <small className="notice-compose-limit-info">*Limite de {contentMaxLength} de caracteres atingido.</small>
         ) : null}
       </div>
 
@@ -178,10 +192,17 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
       </div>
 
       <footer className="notice-compose-actions">
-        <Button variant="secondary" type="button" onClick={onCancel} disabled={isLoading}>
+        <Button
+          variant="secondary"
+          type="button"
+          onClick={handleCancel}
+          isLoading={isCancelling}
+          loadingText="Cancelando..."
+          disabled={isLoading}
+        >
           Cancelar
         </Button>
-        <Button variant="primary" type="submit" disabled={isLoading}>
+        <Button variant="primary" type="submit" disabled={isLoading || isCancelling}>
           Publicar Aviso
         </Button>
       </footer>

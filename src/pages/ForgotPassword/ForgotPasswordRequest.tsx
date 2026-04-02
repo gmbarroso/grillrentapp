@@ -51,8 +51,10 @@ export default function ForgotPasswordRequest() {
               <input
                 id="organizationSlug"
                 name="organizationSlug"
+                className="forgot-password-input-slug"
                 type="text"
                 autoComplete="off"
+                placeholder="# Código do condomínio"
                 value={organizationSlug}
                 onChange={(event) => setOrganizationSlug(event.target.value)}
                 required

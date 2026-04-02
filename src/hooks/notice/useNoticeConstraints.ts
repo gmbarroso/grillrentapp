@@ -7,7 +7,7 @@ import { getApiBaseUrl, handleApiError, logApiRequest, logApiResponse } from "..
 
 const API_BASE_URL = getApiBaseUrl()
 const NOTICE_CONSTRAINTS_ENDPOINT = `${API_BASE_URL}/notices/constraints`
-const DEFAULT_NOTICE_CONTENT_MAX_LENGTH = 2000
+const DEFAULT_NOTICE_CONTENT_MAX_LENGTH = 10000
 
 interface NoticeConstraintsResponse {
   contentMaxLength?: number
@@ -37,11 +37,13 @@ export function useNoticeConstraints() {
   const { data, isLoading, isError } = useFetch<NoticeConstraintsResponse>(NOTICE_CONSTRAINTS_ENDPOINT, { fetcher })
   const resolvedContentMaxLength = data?.contentMaxLength
 
+  const sanitizedContentMaxLength =
+    typeof resolvedContentMaxLength === "number" && Number.isFinite(resolvedContentMaxLength)
+      ? Math.max(1, Math.floor(resolvedContentMaxLength))
+      : DEFAULT_NOTICE_CONTENT_MAX_LENGTH
+
   return {
-    contentMaxLength:
-      typeof resolvedContentMaxLength === "number" && Number.isFinite(resolvedContentMaxLength)
-        ? resolvedContentMaxLength
-        : DEFAULT_NOTICE_CONTENT_MAX_LENGTH,
+    contentMaxLength: sanitizedContentMaxLength,
     isLoading,
     isError: Boolean(isError),
   }

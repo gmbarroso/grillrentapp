@@ -116,6 +116,8 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
     try {
       setIsCancelling(true)
       await onCancel()
+    } catch (error) {
+      console.error("Error cancelling notice form:", error)
     } finally {
       setIsCancelling(false)
     }

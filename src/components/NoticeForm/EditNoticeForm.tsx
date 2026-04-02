@@ -87,6 +87,8 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
     try {
       setIsCancelling(true)
       await onCancel()
+    } catch (error) {
+      console.error("Error cancelling edit notice form:", error)
     } finally {
       setIsCancelling(false)
     }

@@ -4,6 +4,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { Bell } from "lucide-react"
 import { useUpdateNotice } from "../../hooks/notice/useUpdateNotice"
+import { useNoticeConstraints } from "../../hooks/notice/useNoticeConstraints"
 import { useToast } from "../../context/ToastContext"
 import { Button } from "../"
 import type { Notice } from "../../types"
@@ -13,16 +14,16 @@ import { useLoading } from "../../context/LoadingContext"
 interface EditNoticeFormProps {
   notice: Notice
   onNoticeUpdated: () => void
-  onCancel: () => void
+  onCancel: () => void | Promise<void>
 }
-
-const NOTICE_CONTENT_MAX_LENGTH = 10000
 
 const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated, onCancel }) => {
   const [title, setTitle] = useState(notice.title)
   const [subtitle, setSubtitle] = useState(notice.subtitle)
   const [content, setContent] = useState(notice.content)
+  const [isCancelling, setIsCancelling] = useState(false)
   const { updateNotice, isLoading } = useUpdateNotice()
+  const { contentMaxLength } = useNoticeConstraints()
   const { showToast } = useToast()
   const { setIsLoading } = useLoading()
   const didShowContentLimitToastRef = useRef(false)
@@ -37,7 +38,7 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
   const handleContentChange = (nextContent: string) => {
     setContent(nextContent)
 
-    const didReachLimit = nextContent.length >= NOTICE_CONTENT_MAX_LENGTH
+    const didReachLimit = nextContent.length >= contentMaxLength
     if (didReachLimit && !didShowContentLimitToastRef.current) {
       showToast("Limite de caracteres atingido.", "error")
       didShowContentLimitToastRef.current = true
@@ -77,6 +78,17 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
       showToast("Não foi possível atualizar o aviso.", "error")
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleCancel = async () => {
+    if (isCancelling || isLoading) return
+
+    try {
+      setIsCancelling(true)
+      await onCancel()
+    } finally {
+      setIsCancelling(false)
     }
   }
 
@@ -121,18 +133,25 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
           placeholder="Escreva o conteúdo do aviso..."
           required
           rows={5}
-          maxLength={NOTICE_CONTENT_MAX_LENGTH}
+          maxLength={contentMaxLength}
         />
-        {content.length >= NOTICE_CONTENT_MAX_LENGTH ? (
-          <small className="notice-compose-limit-info">*Limite de {NOTICE_CONTENT_MAX_LENGTH} de caracteres atingido.</small>
+        {content.length >= contentMaxLength ? (
+          <small className="notice-compose-limit-info">*Limite de {contentMaxLength} de caracteres atingido.</small>
         ) : null}
       </div>
 
       <footer className="notice-compose-actions">
-        <Button variant="secondary" type="button" onClick={onCancel} disabled={isLoading}>
+        <Button
+          variant="secondary"
+          type="button"
+          onClick={handleCancel}
+          isLoading={isCancelling}
+          loadingText="Cancelando..."
+          disabled={isLoading}
+        >
           Cancelar
         </Button>
-        <Button variant="primary" type="submit" disabled={isLoading}>
+        <Button variant="primary" type="submit" disabled={isLoading || isCancelling}>
           Atualizar Aviso
         </Button>
       </footer>

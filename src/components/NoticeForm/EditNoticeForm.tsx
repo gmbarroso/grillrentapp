@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Bell } from "lucide-react"
 import { useUpdateNotice } from "../../hooks/notice/useUpdateNotice"
 import { useToast } from "../../context/ToastContext"
@@ -16,6 +16,8 @@ interface EditNoticeFormProps {
   onCancel: () => void
 }
 
+const NOTICE_CONTENT_MAX_LENGTH = 10000
+
 const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated, onCancel }) => {
   const [title, setTitle] = useState(notice.title)
   const [subtitle, setSubtitle] = useState(notice.subtitle)
@@ -23,12 +25,29 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
   const { updateNotice, isLoading } = useUpdateNotice()
   const { showToast } = useToast()
   const { setIsLoading } = useLoading()
+  const didShowContentLimitToastRef = useRef(false)
 
   useEffect(() => {
     setTitle(notice.title)
     setSubtitle(notice.subtitle)
     setContent(notice.content)
+    didShowContentLimitToastRef.current = false
   }, [notice])
+
+  const handleContentChange = (nextContent: string) => {
+    setContent(nextContent)
+
+    const didReachLimit = nextContent.length >= NOTICE_CONTENT_MAX_LENGTH
+    if (didReachLimit && !didShowContentLimitToastRef.current) {
+      showToast("Limite de caracteres atingido.", "error")
+      didShowContentLimitToastRef.current = true
+      return
+    }
+
+    if (!didReachLimit) {
+      didShowContentLimitToastRef.current = false
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -98,12 +117,15 @@ const EditNoticeForm: React.FC<EditNoticeFormProps> = ({ notice, onNoticeUpdated
         <textarea
           id="edit-notice-content"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => handleContentChange(e.target.value)}
           placeholder="Escreva o conteúdo do aviso..."
           required
           rows={5}
-          maxLength={2000}
+          maxLength={NOTICE_CONTENT_MAX_LENGTH}
         />
+        {content.length >= NOTICE_CONTENT_MAX_LENGTH ? (
+          <small className="notice-compose-limit-info">*Limite de {NOTICE_CONTENT_MAX_LENGTH} de caracteres atingido.</small>
+        ) : null}
       </div>
 
       <footer className="notice-compose-actions">

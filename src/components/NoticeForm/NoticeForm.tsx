@@ -15,6 +15,8 @@ interface NoticeFormProps {
   onCancel: () => void
 }
 
+const NOTICE_CONTENT_MAX_LENGTH = 10000
+
 const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) => {
   const [title, setTitle] = useState("")
   const [subtitle, setSubtitle] = useState("")
@@ -25,6 +27,22 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
   const { showToast } = useToast()
   const { setIsLoading } = useLoading()
   const didSetDefaultRef = useRef(false)
+  const didShowContentLimitToastRef = useRef(false)
+
+  const handleContentChange = (nextContent: string) => {
+    setContent(nextContent)
+
+    const didReachLimit = nextContent.length >= NOTICE_CONTENT_MAX_LENGTH
+    if (didReachLimit && !didShowContentLimitToastRef.current) {
+      showToast("Limite de caracteres atingido.", "error")
+      didShowContentLimitToastRef.current = true
+      return
+    }
+
+    if (!didReachLimit) {
+      didShowContentLimitToastRef.current = false
+    }
+  }
 
   useEffect(() => {
     const loadWhatsappDefault = async () => {
@@ -128,12 +146,15 @@ const NoticeForm: React.FC<NoticeFormProps> = ({ onNoticeCreated, onCancel }) =>
         <textarea
           id="notice-content"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => handleContentChange(e.target.value)}
           placeholder="Escreva o conteúdo do aviso..."
           required
           rows={5}
-          maxLength={2000}
+          maxLength={NOTICE_CONTENT_MAX_LENGTH}
         />
+        {content.length >= NOTICE_CONTENT_MAX_LENGTH ? (
+          <small className="notice-compose-limit-info">*Limite de {NOTICE_CONTENT_MAX_LENGTH} de caracteres atingido.</small>
+        ) : null}
       </div>
 
       <div className="notice-compose-channel">

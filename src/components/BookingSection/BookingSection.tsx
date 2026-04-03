@@ -145,6 +145,16 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
   }, [resources, selectedOption])
   const hourlyResource = useMemo(() => resources?.find((resource: Resource) => resource.type === "hourly") ?? null, [resources])
   const dailyResource = useMemo(() => resources?.find((resource: Resource) => resource.type === "daily") ?? null, [resources])
+  const hourlyResourceLabel = useMemo(() => hourlyResource?.name?.trim() || t("Resource.hourly"), [hourlyResource?.name, t])
+  const dailyResourceLabel = useMemo(() => dailyResource?.name?.trim() || t("Resource.daily"), [dailyResource?.name, t])
+  const selectedResourceLabel = useMemo(
+    () => selectedResource?.name?.trim() || t(`Resource.${selectedOption}`),
+    [selectedOption, selectedResource?.name, t],
+  )
+  const selectedResourceDescription = useMemo(
+    () => selectedResource?.description?.trim() || "",
+    [selectedResource?.description],
+  )
 
   const resourceBookings = useMemo(() => {
     const now = new Date()
@@ -423,14 +433,14 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
           className={selectedOption === "hourly" ? "selected" : ""}
           onClick={() => setSelectedOption("hourly")}
         >
-          {hourlyResource?.name ?? ""}
+          {hourlyResourceLabel}
         </Button>
         <Button
           variant="secondary"
           className={selectedOption === "daily" ? "selected" : ""}
           onClick={() => setSelectedOption("daily")}
         >
-          {dailyResource?.name ?? ""}
+          {dailyResourceLabel}
         </Button>
       </div>
 
@@ -606,14 +616,14 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
             />
           </div>
           <div className="scheduler-side-card scheduler-resource-card">
-            <h4>{selectedResource?.name ?? ""}</h4>
-            <p>{selectedResource?.description ?? ""}</p>
+            <h4>{selectedResourceLabel}</h4>
+            {selectedResourceDescription ? <p>{selectedResourceDescription}</p> : null}
           </div>
         </aside>
       </div>
 
       <section className="scheduler-rules">
-        <h3>Regras de Uso - {selectedResource?.name ?? ""}</h3>
+        <h3>Regras de Uso - {selectedResourceLabel}</h3>
         <ul className="card-content">
           {rules.map((item, index) => (
             <li key={index}>{item}</li>
@@ -674,7 +684,7 @@ const BookingSection: React.FC<BookingSectionProps> = ({ token, onBookingCreated
           {!batchBookingResult ? (
             <>
               <div className="booking-confirm-panel-subtitle">
-                {selectedResource?.name ?? ""}{" "}
+                {selectedResourceLabel}{" "}
                 {pendingBookingData
                   ? `- ${formatPanelTimeRange(pendingBookingData.startTime, pendingBookingData.endTime)}`
                   : ""}

@@ -57,7 +57,7 @@ const normalizeHintBlock = (value: unknown): number | undefined => {
 
 export const persistAuthIdentityHint = (hint: AuthIdentityHint): void => {
   const rawSlug = normalizeHintString(hint.organizationSlug)
-  const normalizedSlug = rawSlug ? normalizeOrganizationSlug(rawSlug) || undefined : undefined
+  const normalizedSlug = rawSlug ? (normalizeOrganizationSlug(rawSlug) || undefined) : undefined
   const normalizedHint: AuthIdentityHint = {
     organizationSlug: normalizedSlug,
     apartment: normalizeHintString(hint.apartment),
@@ -79,7 +79,7 @@ export const readStoredAuthIdentityHint = (): AuthIdentityHint | null => {
   try {
     const parsed = JSON.parse(raw) as AuthIdentityHint
     const rawSlug = normalizeHintString(parsed.organizationSlug)
-    const normalizedSlug = rawSlug ? normalizeOrganizationSlug(rawSlug) || undefined : undefined
+    const normalizedSlug = rawSlug ? (normalizeOrganizationSlug(rawSlug) || undefined) : undefined
     const normalizedHint: AuthIdentityHint = {
       organizationSlug: normalizedSlug,
       apartment: normalizeHintString(parsed.apartment),

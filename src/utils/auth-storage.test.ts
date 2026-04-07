@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import {
+  clearStoredAuthIdentityHint,
   clearStoredAccessToken,
+  persistAuthIdentityHint,
   persistAccessToken,
+  readStoredAuthIdentityHint,
   readStoredAccessToken,
   stripAccessTokenFromUrl,
 } from "./auth-storage"
@@ -45,6 +48,7 @@ describe("auth storage", () => {
     vi.stubGlobal("document", { title: "Test Title" })
     vi.stubGlobal("sessionStorage", storage)
     clearStoredAccessToken()
+    clearStoredAuthIdentityHint()
   })
 
   afterEach(() => {
@@ -86,5 +90,15 @@ describe("auth storage", () => {
 
     expect(stripAccessTokenFromUrl()).toBe(true)
     expect(replaceState).toHaveBeenCalledWith({}, "Test Title", "/home?tab=1")
+  })
+
+  it("persists and reads auth identity hint", () => {
+    persistAuthIdentityHint({ organizationSlug: "seuze", apartment: "101", block: 2 })
+
+    expect(readStoredAuthIdentityHint()).toEqual({
+      organizationSlug: "seuze",
+      apartment: "101",
+      block: 2,
+    })
   })
 })

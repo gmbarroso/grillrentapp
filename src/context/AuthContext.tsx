@@ -14,6 +14,7 @@ import {
 } from "../utils/api"
 import {
   clearStoredAccessToken,
+  persistAuthIdentityHint,
   persistAccessToken,
   readStoredAccessToken,
   stripAccessTokenFromUrl,
@@ -162,6 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       clearRuntimeBearerToken()
       clearStoredAccessToken()
       clearStoredCsrfToken()
+      persistAuthIdentityHint({ organizationSlug, apartment, block })
       const loginResult = await loginMutate({ organizationSlug, apartment, block, password })
       if (typeof loginResult?.access_token === "string" && loginResult.access_token.length > 0) {
         persistAccessToken(loginResult.access_token)

@@ -1,6 +1,14 @@
 const TOKEN_KEY = "access_token"
 const LEGACY_TOKEN_KEY = "token"
+const AUTH_IDENTITY_HINT_KEY = "auth_identity_hint"
 let inMemoryAccessToken: string | null = null
+let inMemoryAuthIdentityHint: AuthIdentityHint | null = null
+
+export interface AuthIdentityHint {
+  organizationSlug?: string
+  apartment?: string
+  block?: number
+}
 
 const hasStorage = (): boolean => typeof window !== "undefined" && !!window.sessionStorage
 
@@ -27,6 +35,61 @@ export const clearStoredAccessToken = (): void => {
 
   sessionStorage.removeItem(TOKEN_KEY)
   sessionStorage.removeItem(LEGACY_TOKEN_KEY)
+}
+
+const normalizeHintString = (value: unknown, maxLength = 64): string | undefined => {
+  if (typeof value !== "string") return undefined
+  const normalized = value.trim()
+  if (!normalized) return undefined
+  return normalized.slice(0, maxLength)
+}
+
+const normalizeHintBlock = (value: unknown): number | undefined => {
+  if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value)
+  if (typeof value === "string") {
+    const parsed = Number.parseInt(value, 10)
+    if (Number.isFinite(parsed)) return parsed
+  }
+  return undefined
+}
+
+export const persistAuthIdentityHint = (hint: AuthIdentityHint): void => {
+  const normalizedHint: AuthIdentityHint = {
+    organizationSlug: normalizeHintString(hint.organizationSlug),
+    apartment: normalizeHintString(hint.apartment),
+    block: normalizeHintBlock(hint.block),
+  }
+  inMemoryAuthIdentityHint = normalizedHint
+  if (!hasStorage()) return
+
+  sessionStorage.setItem(AUTH_IDENTITY_HINT_KEY, JSON.stringify(normalizedHint))
+}
+
+export const readStoredAuthIdentityHint = (): AuthIdentityHint | null => {
+  if (inMemoryAuthIdentityHint) return inMemoryAuthIdentityHint
+  if (!hasStorage()) return null
+
+  const raw = sessionStorage.getItem(AUTH_IDENTITY_HINT_KEY)
+  if (!raw) return null
+
+  try {
+    const parsed = JSON.parse(raw) as AuthIdentityHint
+    const normalizedHint: AuthIdentityHint = {
+      organizationSlug: normalizeHintString(parsed.organizationSlug),
+      apartment: normalizeHintString(parsed.apartment),
+      block: normalizeHintBlock(parsed.block),
+    }
+    inMemoryAuthIdentityHint = normalizedHint
+    return normalizedHint
+  } catch {
+    return null
+  }
+}
+
+export const clearStoredAuthIdentityHint = (): void => {
+  inMemoryAuthIdentityHint = null
+  if (!hasStorage()) return
+  sessionStorage.removeItem(AUTH_IDENTITY_HINT_KEY)
 }
 
 export const stripAccessTokenFromUrl = (): boolean => {

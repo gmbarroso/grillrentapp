@@ -101,4 +101,58 @@ describe("auth storage", () => {
       block: 2,
     })
   })
+
+  it("normalizes organizationSlug using normalizeOrganizationSlug on persist", () => {
+    persistAuthIdentityHint({ organizationSlug: "  Séuze Cond  ", apartment: "101", block: 1 })
+
+    const hint = readStoredAuthIdentityHint()
+    expect(hint?.organizationSlug).toBe("seuze-cond")
+  })
+
+  it("trims and truncates apartment hint string", () => {
+    const longApartment = "A".repeat(100)
+    persistAuthIdentityHint({ apartment: `  ${longApartment}  ` })
+
+    const hint = readStoredAuthIdentityHint()
+    expect(hint?.apartment).toBe("A".repeat(64))
+  })
+
+  it("strips control characters from hint strings", () => {
+    persistAuthIdentityHint({ organizationSlug: "my\nslug", apartment: "101\r" })
+
+    const hint = readStoredAuthIdentityHint()
+    expect(hint?.organizationSlug).toBe("myslug")
+    expect(hint?.apartment).toBe("101")
+  })
+
+  it("treats non-string organizationSlug as undefined", () => {
+    persistAuthIdentityHint({ organizationSlug: undefined, apartment: "101", block: 1 })
+
+    const hint = readStoredAuthIdentityHint()
+    expect(hint?.organizationSlug).toBeUndefined()
+  })
+
+  it("treats empty organizationSlug after normalization as undefined", () => {
+    persistAuthIdentityHint({ organizationSlug: "  \n\r  " })
+
+    const hint = readStoredAuthIdentityHint()
+    expect(hint?.organizationSlug).toBeUndefined()
+  })
+
+  it("returns null and clears storage when stored JSON is malformed", () => {
+    storage.setItem("auth_identity_hint", "not-valid-json{")
+
+    const result = readStoredAuthIdentityHint()
+
+    expect(result).toBeNull()
+    expect(storage.removeItem).toHaveBeenCalledWith("auth_identity_hint")
+  })
+
+  it("clearStoredAuthIdentityHint removes hint from memory and sessionStorage", () => {
+    persistAuthIdentityHint({ organizationSlug: "seuze", apartment: "101", block: 1 })
+    clearStoredAuthIdentityHint()
+
+    expect(readStoredAuthIdentityHint()).toBeNull()
+    expect(storage.getItem("auth_identity_hint")).toBeNull()
+  })
 })

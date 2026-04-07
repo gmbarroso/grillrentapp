@@ -1,3 +1,5 @@
+import { normalizeOrganizationSlug } from "./organizationSlug"
+
 const TOKEN_KEY = "access_token"
 const LEGACY_TOKEN_KEY = "token"
 const AUTH_IDENTITY_HINT_KEY = "auth_identity_hint"
@@ -39,7 +41,7 @@ export const clearStoredAccessToken = (): void => {
 
 const normalizeHintString = (value: unknown, maxLength = 64): string | undefined => {
   if (typeof value !== "string") return undefined
-  const normalized = value.trim()
+  const normalized = value.replace(/[\u0000-\u001F\u007F]/g, "").trim()
   if (!normalized) return undefined
   return normalized.slice(0, maxLength)
 }
@@ -54,8 +56,10 @@ const normalizeHintBlock = (value: unknown): number | undefined => {
 }
 
 export const persistAuthIdentityHint = (hint: AuthIdentityHint): void => {
+  const rawSlug = normalizeHintString(hint.organizationSlug)
+  const normalizedSlug = rawSlug ? normalizeOrganizationSlug(rawSlug) || undefined : undefined
   const normalizedHint: AuthIdentityHint = {
-    organizationSlug: normalizeHintString(hint.organizationSlug),
+    organizationSlug: normalizedSlug,
     apartment: normalizeHintString(hint.apartment),
     block: normalizeHintBlock(hint.block),
   }
@@ -74,14 +78,17 @@ export const readStoredAuthIdentityHint = (): AuthIdentityHint | null => {
 
   try {
     const parsed = JSON.parse(raw) as AuthIdentityHint
+    const rawSlug = normalizeHintString(parsed.organizationSlug)
+    const normalizedSlug = rawSlug ? normalizeOrganizationSlug(rawSlug) || undefined : undefined
     const normalizedHint: AuthIdentityHint = {
-      organizationSlug: normalizeHintString(parsed.organizationSlug),
+      organizationSlug: normalizedSlug,
       apartment: normalizeHintString(parsed.apartment),
       block: normalizeHintBlock(parsed.block),
     }
     inMemoryAuthIdentityHint = normalizedHint
     return normalizedHint
   } catch {
+    clearStoredAuthIdentityHint()
     return null
   }
 }

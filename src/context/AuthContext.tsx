@@ -14,6 +14,7 @@ import {
 } from "../utils/api"
 import {
   clearStoredAccessToken,
+  clearStoredAuthIdentityHint,
   persistAuthIdentityHint,
   persistAccessToken,
   readStoredAccessToken,
@@ -79,6 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     clearRuntimeBearerToken()
     clearStoredAccessToken()
     clearStoredCsrfToken()
+    clearStoredAuthIdentityHint()
     setIsAuthenticated(false)
     setToken(null)
   }, [])
@@ -163,7 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       clearRuntimeBearerToken()
       clearStoredAccessToken()
       clearStoredCsrfToken()
-      persistAuthIdentityHint({ organizationSlug, apartment, block })
+      clearStoredAuthIdentityHint()
       const loginResult = await loginMutate({ organizationSlug, apartment, block, password })
       if (typeof loginResult?.access_token === "string" && loginResult.access_token.length > 0) {
         persistAccessToken(loginResult.access_token)
@@ -190,6 +192,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!profileResponse?.user) {
         throw new Error("Não foi possível confirmar a sessão autenticada")
       }
+      persistAuthIdentityHint({ organizationSlug, apartment, block })
       setToken(COOKIE_SESSION_TOKEN)
       setIsAuthenticated(true)
       setIsAuthResolved(true)
@@ -200,6 +203,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       clearRuntimeBearerToken()
       clearStoredAccessToken()
       clearStoredCsrfToken()
+      clearStoredAuthIdentityHint()
       setIsAuthenticated(false)
       setToken(null)
       setIsAuthResolved(true)

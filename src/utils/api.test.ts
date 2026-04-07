@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { clearRuntimeBearerToken, fetchWithAuthHandling, setRuntimeBearerToken } from "./api"
-import { clearStoredAccessToken, persistAccessToken } from "./auth-storage"
+import { clearStoredAccessToken, clearStoredAuthIdentityHint, persistAccessToken, persistAuthIdentityHint } from "./auth-storage"
 
 describe("fetchWithAuthHandling runtime bearer fallback", () => {
   let fetchMock: ReturnType<typeof vi.fn>
@@ -8,6 +8,7 @@ describe("fetchWithAuthHandling runtime bearer fallback", () => {
   beforeEach(() => {
     clearRuntimeBearerToken()
     clearStoredAccessToken()
+    clearStoredAuthIdentityHint()
     fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
       return new Response(JSON.stringify({ ok: true, headers: Object.fromEntries(new Headers(init?.headers).entries()) }), {
         status: 200,
@@ -20,6 +21,7 @@ describe("fetchWithAuthHandling runtime bearer fallback", () => {
   afterEach(() => {
     clearRuntimeBearerToken()
     clearStoredAccessToken()
+    clearStoredAuthIdentityHint()
     vi.unstubAllGlobals()
   })
 
@@ -92,5 +94,62 @@ describe("fetchWithAuthHandling runtime bearer fallback", () => {
     const init = fetchMock.mock.calls[0][1] as RequestInit
     const headers = new Headers(init.headers)
     expect(headers.get("Authorization")).toBeNull()
+  })
+
+  it("attaches apartment identity hints when available", async () => {
+    persistAuthIdentityHint({ organizationSlug: "seuze", apartment: "1201", block: 1 })
+
+    await fetchWithAuthHandling("https://example.com/protected")
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const headers = new Headers(init.headers)
+    expect(headers.get("X-Organization-Slug-Hint")).toBe("seuze")
+    expect(headers.get("X-User-Apartment-Hint")).toBe("1201")
+    expect(headers.get("X-User-Block-Hint")).toBe("1")
+  })
+
+  it("does not attach identity hint headers when hint is absent", async () => {
+    await fetchWithAuthHandling("https://example.com/protected")
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const headers = new Headers(init.headers)
+    expect(headers.get("X-Organization-Slug-Hint")).toBeNull()
+    expect(headers.get("X-User-Apartment-Hint")).toBeNull()
+    expect(headers.get("X-User-Block-Hint")).toBeNull()
+  })
+
+  it("does not attach identity hint headers after hint is cleared", async () => {
+    persistAuthIdentityHint({ organizationSlug: "seuze", apartment: "1201", block: 1 })
+    clearStoredAuthIdentityHint()
+
+    await fetchWithAuthHandling("https://example.com/protected")
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const headers = new Headers(init.headers)
+    expect(headers.get("X-Organization-Slug-Hint")).toBeNull()
+    expect(headers.get("X-User-Apartment-Hint")).toBeNull()
+    expect(headers.get("X-User-Block-Hint")).toBeNull()
+  })
+
+  it("does not override explicit identity hint headers provided in options", async () => {
+    persistAuthIdentityHint({ organizationSlug: "seuze", apartment: "1201", block: 1 })
+
+    await fetchWithAuthHandling("https://example.com/protected", {
+      headers: {
+        "X-Organization-Slug-Hint": "explicit-org",
+        "X-User-Apartment-Hint": "explicit-apt",
+        "X-User-Block-Hint": "explicit-block",
+      },
+    })
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const init = fetchMock.mock.calls[0][1] as RequestInit
+    const headers = new Headers(init.headers)
+    expect(headers.get("X-Organization-Slug-Hint")).toBe("explicit-org")
+    expect(headers.get("X-User-Apartment-Hint")).toBe("explicit-apt")
+    expect(headers.get("X-User-Block-Hint")).toBe("explicit-block")
   })
 })

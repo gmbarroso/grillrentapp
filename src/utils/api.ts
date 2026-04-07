@@ -1,5 +1,5 @@
 import { authDebug, authError, sanitizeForLog, stripSensitiveQueryParams } from "./auth-logger"
-import { readStoredAccessToken } from "./auth-storage"
+import { readStoredAccessToken, readStoredAuthIdentityHint } from "./auth-storage"
 import { isStateChangingMethod, readCsrfToken } from "./csrf"
 
 let unauthorizedSignalSent = false
@@ -52,8 +52,18 @@ export const fetchWithAuthHandling = async (url: string, options: RequestInit = 
   const method = options.method || "GET"
   const headers = new Headers(options.headers || {})
   const effectiveBearerToken = runtimeBearerToken || readStoredAccessToken()
+  const identityHint = readStoredAuthIdentityHint()
   if (!headers.has("Authorization") && effectiveBearerToken) {
     headers.set("Authorization", `Bearer ${effectiveBearerToken}`)
+  }
+  if (identityHint?.organizationSlug && !headers.has("X-Organization-Slug-Hint")) {
+    headers.set("X-Organization-Slug-Hint", identityHint.organizationSlug)
+  }
+  if (identityHint?.apartment && !headers.has("X-User-Apartment-Hint")) {
+    headers.set("X-User-Apartment-Hint", identityHint.apartment)
+  }
+  if (typeof identityHint?.block === "number" && Number.isFinite(identityHint.block) && !headers.has("X-User-Block-Hint")) {
+    headers.set("X-User-Block-Hint", `${identityHint.block}`)
   }
 
   if (isStateChangingMethod(method)) {

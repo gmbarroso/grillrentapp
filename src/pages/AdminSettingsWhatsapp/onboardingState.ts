@@ -1,11 +1,17 @@
 export type OnboardingStage = "bootstrapping" | "idle" | "creating_instance" | "qr_ready" | "connecting" | "group_selection" | "active" | "failed"
 
-interface OnboardingSnapshot {
+export interface OnboardingSnapshot {
   state?: string
   status?: string
+  qrCode?: string
+  qrCodeBase64?: string
+  qrcode?: string
   expiresInSeconds?: number
   ttlSeconds?: number
   qrExpiresInSeconds?: number
+  statusEndpoint?: string
+  maskedWhatsappNumber?: string | null
+  instanceName?: string
 }
 
 export const FALLBACK_QR_SECONDS = 59

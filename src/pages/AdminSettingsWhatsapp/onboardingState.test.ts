@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { isQrExpired, parseOnboardingState, parseQrSeconds, resolveSettingsStage } from "./onboardingState"
+import { FALLBACK_QR_SECONDS, isQrExpired, parseOnboardingState, parseQrSeconds, resolveSettingsStage } from "./onboardingState"
 
 describe("Admin WhatsApp onboarding frontend state flow", () => {
   it("happy path: resolves connected settings with binding to active", () => {
@@ -13,7 +13,7 @@ describe("Admin WhatsApp onboarding frontend state flow", () => {
   })
 
   it("provider timeout fallback: qr ttl falls back to default when provider omits ttl", () => {
-    expect(parseQrSeconds({ ttlSeconds: 0 })).toBe(59)
+    expect(parseQrSeconds({ ttlSeconds: 0 })).toBe(FALLBACK_QR_SECONDS)
   })
 
   it("no groups path: connected settings without binding enters group selection", () => {

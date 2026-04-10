@@ -54,6 +54,11 @@
   justify-content: center;
 }
 
+:root[data-theme="dark"] .wa-empty-icon {
+  background: #1d2d4d;
+  color: #8fa1c1;
+}
+
 .wa-flow-card h3 {
   margin: 0;
   text-align: center;
@@ -120,6 +125,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+:root[data-theme="dark"] .wa-loading-icon {
+  background: #1d2d4d;
+  color: #74a8ff;
 }
 
 .wa-loading-icon svg,
@@ -473,6 +483,102 @@
   margin: 0;
   color: #9a6a00;
   text-align: center;
+}
+
+:root[data-theme="dark"] .wa-warning-inline {
+  color: var(--accent-warning);
+}
+
+:root[data-theme="dark"] .wa-steps-box span {
+  background: #74a8ff;
+  color: #0f1727;
+}
+
+:root[data-theme="dark"] .wa-empty-groups {
+  border-color: #7a3540;
+  background: #2b1a1d;
+  color: #fb7185;
+}
+
+:root[data-theme="dark"] .wa-group-option.selected {
+  border-color: #74a8ff;
+  background: #1d2d4d;
+}
+
+:root[data-theme="dark"] .wa-group-icon {
+  background: #1d3d2e;
+  color: #5fde93;
+}
+
+:root[data-theme="dark"] .wa-radio {
+  border-color: #3a537f;
+}
+
+:root[data-theme="dark"] .wa-radio.checked {
+  border-color: #74a8ff;
+  background: #74a8ff;
+  box-shadow: inset 0 0 0 3px #1d2d4d;
+}
+
+:root[data-theme="dark"] .wa-status-card {
+  border-color: #2a5c40;
+  background: #172d22;
+}
+
+:root[data-theme="dark"] .wa-status-badge {
+  border-color: #2a5c40;
+  background: #1d3d2e;
+  color: #5fde93;
+}
+
+:root[data-theme="dark"] .wa-status-badge.warning {
+  border-color: #7a5c1a;
+  background: #2d2410;
+  color: var(--accent-warning);
+}
+
+:root[data-theme="dark"] .wa-connected-title > span {
+  background: #1d3d2e;
+  color: #5fde93;
+}
+
+:root[data-theme="dark"] .wa-disconnect-confirm {
+  border-color: #7a3540;
+  background: #2b1a1d;
+}
+
+:root[data-theme="dark"] .wa-disconnect-confirm h4 {
+  color: #fb7185;
+}
+
+:root[data-theme="dark"] .wa-disconnect-confirm p {
+  color: #f4a0ac;
+}
+
+:root[data-theme="dark"] .wa-danger-link {
+  color: #fb7185;
+}
+
+:root[data-theme="dark"] .switch {
+  background: #253758;
+}
+
+:root[data-theme="dark"] .switch.on {
+  background: #74a8ff;
+}
+
+:root[data-theme="dark"] .wa-error-inline {
+  color: #fb7185;
+}
+
+:root[data-theme="dark"] .wa-qr-wrap {
+  background: var(--surface-muted);
+  border-color: var(--border-default);
+}
+
+:root[data-theme="dark"] .wa-qr-placeholder {
+  background: var(--surface-muted);
+  color: var(--text-secondary);
 }
 
 @keyframes wa-spin {

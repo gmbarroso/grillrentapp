@@ -5,7 +5,7 @@ import { Button } from "../../components"
 import { useToast } from "../../context/ToastContext"
 import { useOrganizationSettings } from "../../hooks/organization/useOrganizationSettings"
 import { fetchWithAuthHandling, getApiBaseUrl, handleApiError } from "../../utils/api"
-import { FALLBACK_QR_SECONDS, parseOnboardingState, parseQrSeconds, resolveSettingsStage, type OnboardingStage } from "./onboardingState"
+import { FALLBACK_QR_SECONDS, parseOnboardingState, parseQrSeconds, resolveSettingsStage, type OnboardingSnapshot, type OnboardingStage } from "./onboardingState"
 import "./AdminSettingsWhatsapp.css"
 
 interface WhatsappSettingsView {
@@ -28,20 +28,6 @@ interface GroupOption {
 }
 
 type GroupSyncState = "idle" | "syncing" | "warning"
-
-interface OnboardingSnapshot {
-  state?: string
-  status?: string
-  qrCode?: string
-  qrCodeBase64?: string
-  qrcode?: string
-  expiresInSeconds?: number
-  ttlSeconds?: number
-  qrExpiresInSeconds?: number
-  statusEndpoint?: string
-  maskedWhatsappNumber?: string | null
-  instanceName?: string
-}
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -122,7 +108,7 @@ const AdminSettingsWhatsapp = () => {
     }
   }
 
-  const loadSettings = async () => {
+  const loadSettings = async (): Promise<boolean> => {
     try {
       setIsLoading(true)
       const response = await fetchWithAuthHandling(`${API_BASE_URL}/whatsapp/settings`)
@@ -158,10 +144,12 @@ const AdminSettingsWhatsapp = () => {
       }
 
       setStageError(null)
+      return true
     } catch (error) {
       console.error(handleApiError(error, "/whatsapp/settings"))
       setStage("failed")
       setStageError("Não foi possível carregar o estado da integração WhatsApp.")
+      return false
     } finally {
       setIsLoading(false)
       setHasLoadedOnce(true)
@@ -186,50 +174,75 @@ const AdminSettingsWhatsapp = () => {
   useEffect(() => {
     if ((stage !== "qr_ready" && stage !== "connecting") || !statusEndpoint) return
 
-    const interval = window.setInterval(() => {
-      void (async () => {
-        try {
-          const response = await fetchWithAuthHandling(statusEndpoint)
-          if (!response.ok) return
-          const payload = (await response.json()) as OnboardingSnapshot
-          const parsedStage = parseOnboardingState(payload)
-          if (parsedStage === "group_selection") {
-            const loadedGroups = await fetchGroups()
-            setStage("group_selection")
-            if (loadedGroups.length === 1) {
-              setSelectedGroupJid(loadedGroups[0].groupJid)
-            }
-            return
-          }
+    let cancelled = false
+    let timeout: number | undefined
 
-          if (parsedStage === "active") {
-            await loadSettings()
-            setStage("active")
-            return
-          }
+    const scheduleNextPoll = () => {
+      if (cancelled) return
+      timeout = window.setTimeout(() => {
+        void pollStatus()
+      }, 2500)
+    }
 
-          if (parsedStage === "connecting") {
-            setStage("connecting")
-            return
-          }
+    const pollStatus = async () => {
+      try {
+        const response = await fetchWithAuthHandling(statusEndpoint)
+        if (!response.ok || cancelled) return
 
-          if (parsedStage === "failed") {
-            setStage("failed")
-            setStageError("A conexão foi encerrada. Gere um novo QR Code para continuar.")
-          }
+        const payload = (await response.json()) as OnboardingSnapshot
+        if (cancelled) return
 
-          const maybeQr = asDataUrl(payload.qrCode || payload.qrCodeBase64 || payload.qrcode)
-          if (maybeQr) {
-            setQrCodeDataUrl(maybeQr)
-            setQrSecondsLeft(parseQrSeconds(payload))
+        const parsedStage = parseOnboardingState(payload)
+        if (parsedStage === "group_selection") {
+          const loadedGroups = await fetchGroups()
+          if (cancelled) return
+
+          setStage("group_selection")
+          if (loadedGroups.length === 1) {
+            setSelectedGroupJid(loadedGroups[0].groupJid)
           }
-        } catch {
           return
         }
-      })()
-    }, 2500)
 
-    return () => window.clearInterval(interval)
+        if (parsedStage === "active") {
+          const success = await loadSettings()
+          if (cancelled) return
+
+          if (success) setStage("active")
+          return
+        }
+
+        if (parsedStage === "connecting") {
+          setStage("connecting")
+          return
+        }
+
+        if (parsedStage === "failed") {
+          setStage("failed")
+          setStageError("A conexão foi encerrada. Gere um novo QR Code para continuar.")
+          return
+        }
+
+        const maybeQr = asDataUrl(payload.qrCode || payload.qrCodeBase64 || payload.qrcode)
+        if (maybeQr) {
+          setQrCodeDataUrl(maybeQr)
+          setQrSecondsLeft(parseQrSeconds(payload))
+        }
+      } catch {
+        // ignore transient errors
+      } finally {
+        scheduleNextPoll()
+      }
+    }
+
+    void pollStatus()
+
+    return () => {
+      cancelled = true
+      if (timeout !== undefined) {
+        window.clearTimeout(timeout)
+      }
+    }
   }, [stage, statusEndpoint])
 
   const beginOnboarding = async () => {
@@ -328,7 +341,6 @@ const AdminSettingsWhatsapp = () => {
 
       showToast("Grupo de avisos configurado com sucesso.", "success")
       await loadSettings()
-      setStage("active")
     } catch (error) {
       console.error(handleApiError(error, "/whatsapp/settings/bindings/notices"))
       setStageError("Não foi possível salvar o grupo selecionado.")
@@ -511,18 +523,26 @@ const AdminSettingsWhatsapp = () => {
             {isSyncingGroups ? (
               <div className="wa-loading-row"><Loader2 size={16} /> Carregando grupos...</div>
             ) : groups.length === 0 ? (
-              <div className="wa-empty-groups">
-                <AlertTriangle size={14} />
-                Nenhum grupo encontrado. Tente sincronizar novamente após conectar no WhatsApp.
-              </div>
+              <>
+                <div className="wa-empty-groups">
+                  <AlertTriangle size={14} />
+                  Nenhum grupo encontrado. Verifique se o WhatsApp está conectado e tente novamente.
+                </div>
+                <Button variant="secondary" onClick={() => void fetchGroups()} isLoading={isSyncingGroups} fullWidth>
+                  <RefreshCcw size={14} />
+                  Tentar novamente
+                </Button>
+              </>
             ) : (
-              <div className="wa-group-list" role="list">
+              <div className="wa-group-list" role="radiogroup" aria-label="Selecionar grupo de avisos">
                 {groups.map((group) => {
                   const isSelected = selectedGroupJid === group.groupJid
                   return (
                     <button
                       key={group.groupJid}
                       type="button"
+                      role="radio"
+                      aria-checked={isSelected}
                       className={`wa-group-option ${isSelected ? "selected" : ""}`.trim()}
                       onClick={() => setSelectedGroupJid(group.groupJid)}
                     >

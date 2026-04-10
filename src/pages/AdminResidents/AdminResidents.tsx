@@ -209,7 +209,7 @@ const AdminResidents = () => {
       <header className="admin-page-heading with-action">
         <div>
           <h2>Moradores</h2>
-          <p>{total} moradores cadastrados</p>
+          <p>{total} moradores {query.trim() ? "encontrados" : "cadastrados"}</p>
         </div>
 
         <Button variant="primary" onClick={openCreateModal}>
@@ -231,9 +231,11 @@ const AdminResidents = () => {
       </section>
 
       <section className="admin-table-card">
-        <header>
-          <h3>{total} moradores encontrados</h3>
-        </header>
+        {query.trim() ? (
+          <header>
+            <h3>{total} moradores encontrados</h3>
+          </header>
+        ) : null}
 
         <div className="admin-table-scroll">
           <table>

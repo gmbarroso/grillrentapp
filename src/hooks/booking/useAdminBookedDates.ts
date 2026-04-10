@@ -27,6 +27,7 @@ export function useAdminBookedDates(options?: UseAdminBookedDatesOptions) {
   const [limit, setLimit] = useState(options?.initialLimit ?? 10)
   const [sort, setSort] = useState("startTime")
   const [order, setOrder] = useState<"ASC" | "DESC">("ASC")
+  const [query, setQuery] = useState("")
   const todayKey = formatBookingDateKey(new Date())
 
   const dateRange = useMemo(() => {
@@ -50,8 +51,11 @@ export function useAdminBookedDates(options?: UseAdminBookedDatesOptions) {
     params.set("order", order)
     params.set("startDate", dateRange.startDate)
     params.set("endDate", dateRange.endDate)
+    if (query.trim()) {
+      params.set("q", query.trim())
+    }
     return `${ADMIN_BOOKED_DATES_ENDPOINT}?${params.toString()}`
-  }, [dateRange.endDate, dateRange.startDate, limit, order, page, sort])
+  }, [dateRange.endDate, dateRange.startDate, limit, order, page, query, sort])
 
   const fetcher = useCallback(
     async (targetUrl: string): Promise<BookedDatesResponse> => {
@@ -92,21 +96,28 @@ export function useAdminBookedDates(options?: UseAdminBookedDatesOptions) {
     limit,
     sort,
     order,
+    query,
     isLoading,
     isError,
-    setPage: (next: number) => setPage(Math.max(1, next)),
-    setLimit: (next: number) => {
+    setPage: useCallback((next: number) => {
+      setPage(Math.max(1, next))
+    }, []),
+    setLimit: useCallback((next: number) => {
       setLimit(next)
       setPage(1)
-    },
-    setSort: (next: string) => {
+    }, []),
+    setSort: useCallback((next: string) => {
       setSort(next)
       setPage(1)
-    },
-    setOrder: (next: "ASC" | "DESC") => {
+    }, []),
+    setOrder: useCallback((next: "ASC" | "DESC") => {
       setOrder(next)
       setPage(1)
-    },
+    }, []),
+    setQuery: useCallback((next: string) => {
+      setQuery(next)
+      setPage(1)
+    }, []),
     refreshBookedDates: useCallback(() => mutate(), [mutate]),
   }
 }

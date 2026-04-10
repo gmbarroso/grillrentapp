@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Filter, Search, Trash2 } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
@@ -20,12 +20,20 @@ const AdminBookings = () => {
   const [resourceFilter, setResourceFilter] = useState<ResourceFilter>("all")
   const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null)
 
-  const { bookings, total, page, lastPage, limit, setPage, setLimit, isLoading, refreshBookedDates } = useAdminBookedDates({ initialLimit: 10 })
+  const { bookings, total, page, lastPage, limit, setPage, setLimit, setQuery, isLoading, refreshBookedDates } = useAdminBookedDates({
+    initialLimit: 10,
+  })
   const { deleteBooking, isLoading: isDeleting } = useDeleteBooking(token ?? "")
 
-  const filteredBookings = useMemo(() => {
-    const query = search.trim().toLowerCase()
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setQuery(search)
+    }, 300)
 
+    return () => window.clearTimeout(timeout)
+  }, [search, setQuery])
+
+  const filteredBookings = useMemo(() => {
     return [...bookings]
       .sort((a, b) => parseBookingDateTime(a.startTime).getTime() - parseBookingDateTime(b.startTime).getTime())
       .filter((booking) => {
@@ -34,13 +42,9 @@ const AdminBookings = () => {
 
         if (resourceFilter !== "all" && booking.resourceType !== resourceFilter) return false
 
-        if (!query) return true
-
-        const apt = `${booking.userApartment} bl. ${booking.userBlock}`.toLowerCase()
-        const resource = booking.resourceType === "hourly" ? "por hora" : "dia inteiro"
-        return apt.includes(query) || resource.includes(query)
+        return true
       })
-  }, [bookings, search, statusFilter, resourceFilter])
+  }, [bookings, statusFilter, resourceFilter])
 
   const handleDeleteBooking = async () => {
     if (!deletingBooking) return
@@ -126,7 +130,7 @@ const AdminBookings = () => {
                   <tr key={booking.id}>
                     <td>
                       <span className={`resource-dot ${booking.resourceType}`}></span>
-                      {booking.resourceType === "hourly" ? "Por hora" : "Dia inteiro"}
+                      {booking.resourceName?.trim() || (booking.resourceType === "hourly" ? "Por hora" : "Dia inteiro")}
                     </td>
                     <td>{formatBookingDate(booking.startTime, "pt-BR")}</td>
                     <td>

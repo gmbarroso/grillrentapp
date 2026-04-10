@@ -33,13 +33,13 @@ const getInitials = (fullName: string) => {
 const AdminResidents = () => {
   const { user: currentUser } = useAuth()
   const { showToast } = useToast()
-  const { users, isLoading, refreshUsers } = useAllUsers()
+  const { users, total, page, lastPage, limit, setPage, setLimit, setQuery: setServerQuery, isLoading, refreshUsers } = useAllUsers({
+    initialLimit: 10,
+  })
   const { updateUser, isLoading: isUpdatingUser } = useUpdateUser()
   const { deleteUser, isLoading: isDeletingUser } = useDeleteUser()
   const { register, isLoading: isRegisteringResident } = useRegisterUser()
   const [query, setQuery] = useState("")
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [createOrganizationSlug, setCreateOrganizationSlug] = useState("")
   const [createName, setCreateName] = useState("")
@@ -56,48 +56,25 @@ const AdminResidents = () => {
   const [editBlock, setEditBlock] = useState<number>(1)
 
   const rows = useMemo<ResidentRow[]>(() => {
-    return [...users]
-      .map((user) => ({
-        id: user.id,
-        initials: getInitials(user.name),
-        name: user.name,
-        email: user.email || "",
-        apartmentLabel: `${user.apartment} bl. ${user.block}`,
-        apartment: user.apartment,
-        block: user.block,
-        role: user.role === "admin" ? "Administrador" : "Morador",
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name))
+    return users.map((user) => ({
+      id: user.id,
+      initials: getInitials(user.name),
+      name: user.name,
+      email: user.email || "",
+      apartmentLabel: `${user.apartment} bl. ${user.block}`,
+      apartment: user.apartment,
+      block: user.block,
+      role: user.role === "admin" ? "Administrador" : "Morador",
+    }))
   }, [users])
 
-  const filteredRows = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase()
-    return rows.filter((row) => {
-      if (!normalizedQuery) return true
-      return (
-        row.name.toLowerCase().includes(normalizedQuery) ||
-        row.email.toLowerCase().includes(normalizedQuery) ||
-        row.apartmentLabel.toLowerCase().includes(normalizedQuery)
-      )
-    })
-  }, [query, rows])
-
-  const lastPage = Math.max(1, Math.ceil(filteredRows.length / limit))
-
-  const paginatedRows = useMemo(() => {
-    const offset = (page - 1) * limit
-    return filteredRows.slice(offset, offset + limit)
-  }, [filteredRows, limit, page])
-
   useEffect(() => {
-    setPage(1)
-  }, [query])
+    const timeout = window.setTimeout(() => {
+      setServerQuery(query)
+    }, 300)
 
-  useEffect(() => {
-    if (page > lastPage) {
-      setPage(lastPage)
-    }
-  }, [lastPage, page])
+    return () => window.clearTimeout(timeout)
+  }, [query, setServerQuery])
 
   const openEditModal = (resident: ResidentRow) => {
     setEditingResident(resident)
@@ -232,7 +209,7 @@ const AdminResidents = () => {
       <header className="admin-page-heading with-action">
         <div>
           <h2>Moradores</h2>
-          <p>{rows.length} moradores cadastrados</p>
+          <p>{total} moradores {query.trim() ? "encontrados" : "cadastrados"}</p>
         </div>
 
         <Button variant="primary" onClick={openCreateModal}>
@@ -254,9 +231,11 @@ const AdminResidents = () => {
       </section>
 
       <section className="admin-table-card">
-        <header>
-          <h3>{filteredRows.length} moradores encontrados</h3>
-        </header>
+        {query.trim() ? (
+          <header>
+            <h3>{total} moradores encontrados</h3>
+          </header>
+        ) : null}
 
         <div className="admin-table-scroll">
           <table>
@@ -270,7 +249,7 @@ const AdminResidents = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedRows.map((row) => (
+              {rows.map((row) => (
                 <tr key={row.id}>
                   <td>
                     <div className="resident-name-cell">
@@ -295,7 +274,7 @@ const AdminResidents = () => {
                   </td>
                 </tr>
               ))}
-              {paginatedRows.length === 0 ? (
+              {rows.length === 0 ? (
                 <tr>
                   <td colSpan={5}>Nenhum morador encontrado.</td>
                 </tr>
@@ -306,7 +285,7 @@ const AdminResidents = () => {
 
       </section>
 
-      {filteredRows.length > 0 ? (
+      {total > 0 ? (
         <PaginationControls
           compact
           currentPage={page}

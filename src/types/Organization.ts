@@ -1,5 +1,6 @@
 export interface OrganizationSettings {
   id: string
+  showNameInSidebar?: boolean
   name: string
   slug: string
   address?: string | null
@@ -15,6 +16,7 @@ export interface OrganizationSettings {
 }
 
 export interface UpdateOrganizationSettingsPayload {
+  showNameInSidebar?: boolean
   name?: string
   address?: string | null
   email?: string | null

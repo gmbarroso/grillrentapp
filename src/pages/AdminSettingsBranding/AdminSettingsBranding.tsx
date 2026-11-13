@@ -7,6 +7,7 @@ import { useOrganizationSettings } from "../../hooks/organization/useOrganizatio
 import "./AdminSettingsBranding.css"
 
 interface BrandingFormState {
+  showNameInSidebar: boolean
   name: string
   address: string
   email: string
@@ -16,6 +17,7 @@ interface BrandingFormState {
 }
 
 const DEFAULT_FORM: BrandingFormState = {
+  showNameInSidebar: true,
   name: "",
   address: "",
   email: "",
@@ -29,8 +31,10 @@ const AdminSettingsBranding = () => {
   const { organization, isLoading, updateOrganization } = useOrganizationSettings()
   const [form, setForm] = useState<BrandingFormState>(DEFAULT_FORM)
   const [isSaving, setIsSaving] = useState(false)
+  const [nameError, setNameError] = useState("")
 
   const loadedForm = useMemo<BrandingFormState>(() => ({
+    showNameInSidebar: organization?.showNameInSidebar ?? true,
     name: organization?.name || "",
     address: organization?.address || "",
     email: organization?.email || "",
@@ -41,13 +45,21 @@ const AdminSettingsBranding = () => {
 
   useEffect(() => {
     setForm(loadedForm)
+    setNameError("")
   }, [loadedForm])
 
   const handleSave = async () => {
+    const name = form.name.trim()
+    if (name.length < 2 || name.length > 120) {
+      setNameError("Informe um nome com 2 a 120 caracteres.")
+      return
+    }
+    setNameError("")
     setIsSaving(true)
     try {
       await updateOrganization({
-        name: form.name.trim(),
+        name,
+        showNameInSidebar: form.showNameInSidebar,
         address: form.address,
         email: form.email,
         phone: form.phone,
@@ -106,12 +118,35 @@ const AdminSettingsBranding = () => {
 
         <div className="branding-form-grid">
           <label>
-            <span><Building2 size={13} />Nome do Condomínio</span>
+            <span><Building2 size={13} />Nome do Condomínio *</span>
             <input
               value={form.name}
-              onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+              required
+              minLength={2}
+              maxLength={120}
+              aria-invalid={Boolean(nameError)}
+              aria-describedby={nameError ? "branding-name-error" : "branding-name-help"}
+              onChange={(event) => {
+                setForm((prev) => ({ ...prev, name: event.target.value }))
+                setNameError("")
+              }}
               disabled={isLoading || isSaving}
             />
+            <small id="branding-name-help">O nome é obrigatório para identificar o condomínio.</small>
+            {nameError && <small id="branding-name-error" className="branding-field-error" role="alert">{nameError}</small>}
+          </label>
+
+          <label className="branding-visibility-toggle">
+            <span>Exibir nome no menu lateral</span>
+            <input
+              type="checkbox"
+              role="switch"
+              checked={form.showNameInSidebar}
+              onChange={(event) => setForm((prev) => ({ ...prev, showNameInSidebar: event.target.checked }))}
+              disabled={isLoading || isSaving}
+              aria-describedby="branding-sidebar-help"
+            />
+            <small id="branding-sidebar-help">Desative para mostrar apenas o logotipo.</small>
           </label>
 
           <label className="full">
@@ -157,6 +192,7 @@ const AdminSettingsBranding = () => {
             variant="secondary"
             onClick={() => {
               setForm(loadedForm)
+              setNameError("")
               showToast("Alterações descartadas.", "success")
             }}
             disabled={isLoading || isSaving}

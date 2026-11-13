@@ -15,6 +15,7 @@ export interface DashboardSidebarNavItem {
 }
 
 interface DashboardSidebarProps {
+  showNameInSidebar?: boolean
   condominiumName: string
   condominiumSubtitle: string
   organizationLogoUrl?: string | null
@@ -30,6 +31,7 @@ interface DashboardSidebarProps {
 }
 
 export default function DashboardSidebar({
+  showNameInSidebar = true,
   condominiumName,
   condominiumSubtitle,
   organizationLogoUrl,
@@ -46,7 +48,7 @@ export default function DashboardSidebar({
   const location = useLocation()
   const { themeMode, setThemeMode } = useTheme()
   const isHiddenOnMobile = isMobileViewport && !isMobileOpen
-  const hasCondominiumName = condominiumName.trim().length > 0
+  const hasCondominiumName = showNameInSidebar && condominiumName.trim().length > 0
   const hasCondominiumSubtitle = condominiumSubtitle.trim().length > 0
   const showCondominiumText = hasCondominiumName || hasCondominiumSubtitle
 

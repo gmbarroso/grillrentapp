@@ -148,6 +148,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     >
       <DashboardSidebar
         condominiumName={organization?.name || ""}
+        showNameInSidebar={organization?.showNameInSidebar ?? true}
         condominiumSubtitle=""
         organizationLogoUrl={organization?.logoUrl || null}
         primaryNav={primaryNav}
